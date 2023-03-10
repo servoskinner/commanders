@@ -35,8 +35,8 @@
      <rect>
       <x>90</x>
       <y>110</y>
-      <width>221</width>
-      <height>291</height>
+      <width>231</width>
+      <height>351</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -65,6 +65,13 @@
       <widget class="QPushButton" name="pushButton_3">
        <property name="text">
         <string>Правила игры (справка?)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_5">
+       <property name="text">
+        <string>Выход</string>
        </property>
       </widget>
      </item>
