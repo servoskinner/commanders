@@ -14,8 +14,8 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::on_pushButton_5_clicked()
+void MainWindow::on_quit_button_clicked()
 {
-
+    QApplication::quit();
 }
 
