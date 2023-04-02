@@ -80,8 +80,9 @@ class Tile
 
     Card* card; //NULL if empty
 
-    // std::vector<std::reference_wrapper<Tile>> getAdjacent();
-    // std::vector<std::reference_wrapper<Tile>> getSurrounding();
+    enum nearbyTiles {UP, RIGHT, DOWN, LEFT, UPRIGHT, DOWNRIGHT, DOWNLEFT, UPLEFT};
+    std::vector<Tile*> getAdjacent();
+    std::vector<Tile*> getSurrounding();
 
     Tile(GameMaster& new_master, int x = -1, int y = -1);
 };
@@ -92,6 +93,8 @@ class Card
     // General game parameters
     // Player* owner;
     int id;
+    //int type
+    enum cardType {UNIT, CONTRACT, TACTIC};
 
     enum playPositions {UNDEFINED = -1, DECK = 0, HAND = 1, IN_PLAY = 2, DISCARD = 3};
     int playPosition;
@@ -102,8 +105,12 @@ class Card
     int advantage;
 
     //Actions
-    // void moveTo(Tile& destination);
-    // void attack(Tile& target);
+    bool Deploy(Tile* destination = NULL);
+    bool Move(int direction);
+    void Kill();
+    bool Attack(int direction);
+    int ResolveCombat(Card& target);
+    enum combatOutcome {WIN, TIE, LOSE};
 
     Card();
 

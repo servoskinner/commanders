@@ -9,7 +9,7 @@ GameMaster::GameMaster(int gridHeight, int gridWidth)
 
     for(int row = 0; row < gridHeight; row++)
         for(int column = 0; column < gridWidth; column ++)
-            grid[row][column].x = column, grid[row][column].y = row;
+            grid[row][column].y = column, grid[row][column].x = row; 
 
     // deployZones = {}; //TBA
     // captureZone = {};
