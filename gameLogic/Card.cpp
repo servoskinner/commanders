@@ -2,10 +2,11 @@
 
 Card::Card()
 {
-    owner = NULL;
+    //owner = NULL;
     id = -1;
 
     playPosition = Card::UNDEFINED;
+    gridPosition = NULL;
 
     playCost = 0;
     value = 0;
@@ -13,4 +14,9 @@ Card::Card()
 
     name = "unknown";
     text = "";
+
+    bool move(int direction)
+    {
+
+    }
 }

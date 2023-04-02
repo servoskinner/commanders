@@ -4,7 +4,9 @@
 
 #include "gameLogic.h"
 
-int printUI(const GameMaster& gm)
+void higlightTileBold(std::string &buffer, int width, int height, int x, int y);
+
+void printUI(const GameMaster& gm)
 {
     int width, height;
 
@@ -21,6 +23,10 @@ int printUI(const GameMaster& gm)
 
      for(int j = 0; j < height; j++)
      {
+        //empty spaces
+        for(int i = 0; i < 3; i++)
+            buffer.append(std::string(width*4, ' ').append("\n"));  
+
         //divider
         buffer.append(".");
 
@@ -28,10 +34,6 @@ int printUI(const GameMaster& gm)
         buffer.append("   .");
 
         buffer.append("\n");
-
-        //empty spaces
-        for(int i = 0; i < 3; i++)
-            buffer.append(std::string(width*4, ' ').append("\n"));  
      }
 
      // render cards
@@ -39,37 +41,37 @@ int printUI(const GameMaster& gm)
         for(Tile tile : row)
             if(tile.card)
             {
-                higlightTileStrong(buffer, width, height, tile.x, tile.y);
+                higlightTileBold(buffer, width, height, tile.x, tile.y);
                 // assuming card name is longer than 3 characters
                 for(int bias = 0; bias < 3 && bias < tile.card->name.size(); bias++)
-                    buffer[(tile.y*4 + 1)*(4*width + 2) + tile.x*4 + 1 + bias] = tile.card->name[bias];
+                    buffer[(tile.y*4 + 1)*(4*width + 2) + tile.x*4 + 1 + bias - tile.y*3] = tile.card->name[bias];
 
-                buffer[(tile.y*4 + 3)*(4*width + 2) + tile.x*4 + 3] = (std::to_string(tile.card->value % 10))[0];
+                buffer[(tile.y*4 + 3)*(4*width + 2) + tile.x*4 + 1 - tile.y*3] = (std::to_string(tile.card->value % 10))[0];
             }
 
      std::cout << buffer << std::endl;
      //render contracts
 };
 
-void higlightTileStrong(std::string &buffer, int width, int height, int x, int y)
+void higlightTileBold(std::string &buffer, int width, int height, int x, int y)
 {
     // + as corners
-    buffer[y*4*(4*width + 2) + x*4] = '+';
-    buffer[y*4*(4*width + 2) + (x+1)*4] = '+';
-    buffer[(y + 1)*4*(4*width + 2) + x*4] = '+';
-    buffer[(y+1)*4*(4*width + 2) + (x + 1)*4] = '+';
+    buffer[y*4*(4*width + 2) + x*4 - y*3] = '+';
+    buffer[y*4*(4*width + 2) + (x+1)*4 - y*3] = '+';
+    buffer[(y + 1)*4*(4*width + 2) + x*4 - 3 - y*3] = '+';
+    buffer[(y+1)*4*(4*width + 2) + (x + 1)*4 - 3 - y*3] = '+';
 
     // vertical |
     for(int bias = 0; bias < 3; bias++)
     {
-       buffer[(y*4 + (bias + 1))*(4*width + 2) + x*4 ] = '|';
-       buffer[(y*4 + (bias + 1))*(4*width + 2) + (x+1)*4] = '|'; 
+       buffer[(y*4 + (bias + 1))*(4*width + 2)+ x*4  - bias - y*3] = '|';
+       buffer[(y*4 + (bias + 1))*(4*width + 2) + (x+1)*4  - bias - y*3] = '|'; 
     }
 
     // horizontal -
     for(int bias = 0; bias < 3; bias++)
     {
-       buffer[y*4*(4*width + 2) + x*4 + (bias + 1)] = '-';
-       buffer[(y + 1)*4*(4*width + 2) + (x+1)*4 + (bias + 1)] = '-'; 
+       buffer[y*4*(4*width + 2) + x*4 + (bias + 1) - y*3] = '-';
+       buffer[(y + 1)*4*(4*width + 2) + (x+1)*4 + (bias + 1) - 7 - y*3] = '-'; 
     }
 }

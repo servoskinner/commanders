@@ -5,69 +5,74 @@
 
 #include "playerController.h"
 
+class GameMaster;
+// class Player;
+// class Deck;
+class Card;
+class Tile;
+
 class GameMaster
 {
     public:
-    std::vector<Player> players;
-    std::vector<PlayerController&> playerControllers; //entities that provide player inputs.
+    // std::vector<Player> players;
+    // std::vector<std::reference_wrapper<PlayerController>> playerControllers; //entities that provide player inputs.
                                                       //E.G. User, AIs, network-connected players
 
     //grid
     std::vector<std::vector<Tile>> grid;
 
-    std::vector<std::vector<Tile>> deployZones;
-    std::vector<Tile> captureZone;
+    // std::vector<std::vector<Tile>> deployZones;
+    // std::vector<Tile> captureZone;
 
-    void setup(); 
-    void switchTurn();
+    // void setup(); 
+    // void switchTurn();
 
     GameMaster(int gridHeight = 6, int gridWidth = 8);
 };
 
-class Player //inherited by different player agent types
-{
-    public:
-    int playerId;
+// class Player //inherited by different player agent types
+// {
+//     public:
+//     int playerId;
 
-    Deck& deck;
-    std::vector<Card&> hand;
+//     Deck& deck;
+//     std::vector<std::reference_wrapper<Card>> hand;
 
-    int points;
-    int funds;
-    std::vector<Card&> cardsInPlay;
+//     int points;
+//     int funds;
+//     std::vector<std::reference_wrapper<Card>> cardsInPlay;
 
-    int draw(Deck& targetDeck); //should return whether deck was refreshed or not
-    void discard(int handIndex);
-    void play(int handIndex, Tile& target);
-    /*void commandMove(Card& object, Tile& destination);
-    void commandAttack(Card& object, Tile& target);
-    void commandActivateAbility(Card& object, Card& target);*/
-    void endTurn();
+//     int draw(Deck& targetDeck); //should return whether deck was refreshed or not
+//     void discard(int handIndex);
+//     void play(int handIndex, Tile& target);
+//     /*void commandMove(Card& object, Tile& destination);
+//     void commandAttack(Card& object, Tile& target);
+//     void commandActivateAbility(Card& object, Card& target);*/
+//     void endTurn();
 
-    //Event triggers
-    std::vector<void()> onTurnStart;
-    std::vector<void()> onTurnEnd;
-    std::vector<void(Card& drawn)> onDraw;
-    std::vector<void(Card& played)> onPlay;
-    std::vector<void(Card& target)> onCommandAbilityActivate;
-    //...
-};
+//     //Event triggers
+//     std::vector<std::function<void()>> onTurnStart;
+//     std::vector<std::function<void()>> onTurnEnd;
+//     std::vector<std::function<void(Card&)>> onDraw;  // Card& drawn
+//     std::vector<std::function<void(Card&)>> onPlay; // Card& played
+//     std::vector<std::function<void(Card&)>> onCommandAbilityActivate; //Card& target
+//     //...
+// };
 
-class Deck
-{
-    public:
-    std::vector<Card> cards;
-    std::vector<Card> discard;
+// class Deck
+// {
+//     public:
+//     std::vector<Card> cards;
+//     std::vector<Card> discard;
 
-    void shuffle();
-    void refresh();
-};
+//     void shuffle();
+//     void refresh();
+// };
 
 class Tile
 {
     public:
     GameMaster& master;
-    Tile::Tile(GameMaster& new_master, int x = -1, int y = -1);
 
     int x, y;
     enum tileTypes {CAPTUREZONE = -2, NORMAL = -1}; //Non-negatives refer to deploy zones of players with same IDs
@@ -75,15 +80,17 @@ class Tile
 
     Card* card; //NULL if empty
 
-    std::vector<Tile&> getAdjacent();
-    std::vector<Tile&> getSurrounding();
+    // std::vector<std::reference_wrapper<Tile>> getAdjacent();
+    // std::vector<std::reference_wrapper<Tile>> getSurrounding();
+
+    Tile(GameMaster& new_master, int x = -1, int y = -1);
 };
 
 class Card
 {
     public:
     // General game parameters
-    Player* owner;
+    // Player* owner;
     int id;
 
     enum playPositions {UNDEFINED = -1, DECK = 0, HAND = 1, IN_PLAY = 2, DISCARD = 3};
@@ -95,21 +102,23 @@ class Card
     int advantage;
 
     //Actions
-    void moveTo(Tile& destination);
-    void attack(Tile& target);
+    // void moveTo(Tile& destination);
+    // void attack(Tile& target);
+
+    Card();
 
     // Event triggers
-    std::vector<void(Tile& deployLocation)> onPlay;
+    // std::vector<std::function<void(Tile*)>> onPlay; // Tile* deployLocation
 
-    std::vector<void()> onTurnStart;
-    std::vector<void()> onTurnEnd;
+    // std::vector<std::function<void()>> onTurnStart;
+    // std::vector<std::function<void()>> onTurnEnd;
 
-    std::vector<void(Tile& destination)> onMove;
-    std::vector<void(Tile& target, int damageDone)> onAttack;
-    std::vector<void(Card& target)> onKill;
-    std::vector<void(Card& damagedBy, int damageSustained)> onReceiveDamage;
-    std::vector<void(Card& killedBy)> onDeath;
-    std::vector<void(Card& target)> onAbilityActivate;
+    // std::vector<std::function<void(Tile&)>> onMove; // Tile& destination
+    // std::vector<std::function<void(Tile&, int)>> onAttack; // Tile& target, int damageDone
+    // std::vector<std::function<void(Card&)>> onKill; // Card& target
+    // std::vector<std::function<void(Card&, int)>> onReceiveDamage; // Card& damagedBy, int damageSustained
+    // std::vector<std::function<void(Card&)>> onDeath; // Card& killedBy
+    // std::vector<std::function<void(Card* target)>> onAbilityActivate; // Card* target
     //...
 
 
