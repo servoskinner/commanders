@@ -14,7 +14,7 @@ class Tile;
 class GameMaster
 {
     public:
-    // std::vector<Player> players;
+    std::vector<Player> players;
     // std::vector<std::reference_wrapper<PlayerController>> playerControllers; //entities that provide player inputs.
                                                       //E.G. User, AIs, network-connected players
 
@@ -30,44 +30,50 @@ class GameMaster
     GameMaster(int gridHeight = 6, int gridWidth = 8);
 };
 
-// class Player //inherited by different player agent types
-// {
-//     public:
-//     int playerId;
+class Player
+{
+    public:
+    int playerId;
 
-//     Deck& deck;
-//     std::vector<std::reference_wrapper<Card>> hand;
+    Deck& deck;
+    std::vector<std::reference_wrapper<Card>> hand;
 
-//     int points;
-//     int funds;
-//     std::vector<std::reference_wrapper<Card>> cardsInPlay;
+    int points;
+    int funds;
+    std::vector<std::reference_wrapper<Card>> cardsInPlay;
 
-//     int draw(Deck& targetDeck); //should return whether deck was refreshed or not
-//     void discard(int handIndex);
-//     void play(int handIndex, Tile& target);
-//     /*void commandMove(Card& object, Tile& destination);
-//     void commandAttack(Card& object, Tile& target);
-//     void commandActivateAbility(Card& object, Card& target);*/
-//     void endTurn();
+    Player::Player(Deck& ndeck);
 
-//     //Event triggers
-//     std::vector<std::function<void()>> onTurnStart;
-//     std::vector<std::function<void()>> onTurnEnd;
-//     std::vector<std::function<void(Card&)>> onDraw;  // Card& drawn
-//     std::vector<std::function<void(Card&)>> onPlay; // Card& played
-//     std::vector<std::function<void(Card&)>> onCommandAbilityActivate; //Card& target
-//     //...
-// };
+    int draw(Deck& targetDeck); //should return whether deck was refreshed or not
+    void discard(int handIndex);
+    void play(int handIndex, Tile& target);
+    /*void commandMove(Card& object, Tile& destination);
+    void commandAttack(Card& object, Tile& target);
+    void commandActivateAbility(Card& object, Card& target);*/
+    void endTurn();
 
-// class Deck
-// {
-//     public:
-//     std::vector<Card> cards;
-//     std::vector<Card> discard;
+    //Event triggers
+    std::vector<std::function<void()>> onTurnStart;
+    std::vector<std::function<void()>> onTurnEnd;
+    std::vector<std::function<void(Card&)>> onDraw;  // Card& drawn
+    std::vector<std::function<void(Card&)>> onPlay; // Card& played
+    std::vector<std::function<void(Card&)>> onCommandAbilityActivate; //Card& target
+    //...
+};
 
-//     void shuffle();
-//     void refresh();
-// };
+class Deck
+{
+     public:
+     std::vector<Card> cards;
+     std::vector<Card> discard;
+
+     std::vector<Card*> associated;
+
+     Deck();
+     
+     void shuffle();
+     void refresh();
+};
 
 class Tile
 {
