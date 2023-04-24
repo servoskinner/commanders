@@ -2,20 +2,30 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <memory>
 
 #include "playerController.h"
 
 class GameMaster;
-// class Player;
-// class Deck;
+class Player;
+class Deck;
 class Card;
 class Tile;
+
+struct CardInfo; 
+struct PlayerInfo;
+
+typedef std::shared_ptr<GameMaster> MasterPtr;
+typedef std::shared_ptr<Player> PlayerPtr;
+typedef std::shared_ptr<Deck> DeckPtr;
+typedef std::shared_ptr<Card> CardPtr;
+typedef std::shared_ptr<Tile> TilePtr;
 
 class GameMaster
 {
     public:
     std::vector<Player> players;
-    // std::vector<std::reference_wrapper<PlayerController>> playerControllers; //entities that provide player inputs.
+    std::vector<ControllerPtr> playerControllers; //entities that provide player inputs.
                                                       //E.G. User, AIs, network-connected players
 
     //grid
@@ -24,10 +34,13 @@ class GameMaster
     // std::vector<std::vector<Tile>> deployZones;
     // std::vector<Tile> captureZone;
 
-    // void setup(); 
-    // void switchTurn();
+    void switchTurn();
 
-    GameMaster(int gridHeight = 6, int gridWidth = 8);
+    GameMaster(std::vector<ControllerPtr> controllers, std::vector<DeckPtr> decks, int gridHeight = 6, int gridWidth = 8);
+
+    private:
+
+    int turn;
 };
 
 class Player
@@ -36,13 +49,13 @@ class Player
     int playerId;
 
     Deck& deck;
-    std::vector<std::reference_wrapper<Card>> hand;
+    std::vector<CardPtr> hand;
 
     int points;
     int funds;
-    std::vector<std::reference_wrapper<Card>> cardsInPlay;
+    std::vector<CardPtr> cardsInPlay;
 
-    Player::Player(Deck& ndeck);
+    Player(Deck& ndeck, int playerid);
 
     int draw(Deck& targetDeck); //should return whether deck was refreshed or not
     void discard(int handIndex);
@@ -61,13 +74,25 @@ class Player
     //...
 };
 
+struct PlayerInfo
+{
+    int id;
+
+    //std::string name;
+
+    int points;
+    int money;
+    int deckSize;
+    int discardSize;
+};
+
 class Deck
 {
      public:
      std::vector<Card> cards;
      std::vector<Card> discard;
 
-     std::vector<Card*> associated;
+     std::vector<std::shared_ptr<Card>> associated;
 
      Deck();
      
@@ -84,11 +109,11 @@ class Tile
     enum tileTypes {CAPTUREZONE = -2, NORMAL = -1}; //Non-negatives refer to deploy zones of players with same IDs
     int type;
 
-    Card* card; //NULL if empty
+    CardPtr card; //NULL if empty
 
     enum nearbyTiles {UP, RIGHT, DOWN, LEFT, UPRIGHT, DOWNRIGHT, DOWNLEFT, UPLEFT};
-    std::vector<Tile*> getAdjacent();
-    std::vector<Tile*> getSurrounding();
+    std::vector<TilePtr> getAdjacent();
+    std::vector<TilePtr> getSurrounding();
 
     Tile(GameMaster& new_master, int x = -1, int y = -1);
 };
@@ -97,24 +122,29 @@ class Card
 {
     public:
     // General game parameters
-    // Player* owner;
+    PlayerPtr owner;
     int id;
     //int type
     enum cardType {UNIT, CONTRACT, TACTIC};
 
     enum playPositions {UNDEFINED = -1, DECK = 0, HAND = 1, IN_PLAY = 2, DISCARD = 3};
     int playPosition;
-    Tile *gridPosition;
+    TilePtr gridPosition;
 
     int playCost;
     int value;
     int advantage;
 
+    bool canAttack;
+    bool canMove;
+    bool isOverwhelmed;
+
     //Actions
-    bool Deploy(Tile* destination = NULL);
+    bool Deploy(TilePtr destination = NULL);
     bool Move(int direction);
     void Kill();
     bool Attack(int direction);
+
     int ResolveCombat(Card& target);
     enum combatOutcome {WIN, TIE, LOSE};
 
@@ -131,7 +161,7 @@ class Card
     // std::vector<std::function<void(Card&)>> onKill; // Card& target
     // std::vector<std::function<void(Card&, int)>> onReceiveDamage; // Card& damagedBy, int damageSustained
     // std::vector<std::function<void(Card&)>> onDeath; // Card& killedBy
-    // std::vector<std::function<void(Card* target)>> onAbilityActivate; // Card* target
+    // std::vector<std::function<void(CardPtr target)>> onAbilityActivate; // CardPtr target
     //...
 
 
@@ -140,5 +170,23 @@ class Card
     std::string text;
     //...
 
-    
+};
+
+struct CardInfo //Out of game context info tag
+{
+    int ownerid;
+    int playPosition;
+
+    std::string name;
+    std::string text;
+
+    int x, y;
+    int value;
+    int cost;
+    int advantage;
+    int type;
+
+    bool canAttack;
+    bool canMove;
+    bool isOverwhelmed;
 };

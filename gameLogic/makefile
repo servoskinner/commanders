@@ -4,7 +4,7 @@ SOURCES = GameMaster.cpp Player.cpp Card.cpp Tile.cpp Deck.cpp
 
 OBJECTS = $(SOURCES:%.cpp=build/%.o)
 
-TESTSRC = Terminal_UI.cpp Test_main.cpp
+TESTSRC = TerminalControl.cpp Test_main.cpp
 TESTOBJ = $(TESTSRC:%.cpp=build/%.o)
 
 all: $(OBJECTS)

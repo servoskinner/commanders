@@ -1,4 +1,5 @@
 #include "gameLogic.h"
+
 #include <stdexcept>
 #include <iostream>
 
@@ -9,10 +10,6 @@ Card::Card()
 
     playPosition = Card::UNDEFINED;
     gridPosition = NULL;
-
-    playCost = 0;
-    value = 0;
-    advantage = 0;
 
     name = "unknown";
     text = "";
@@ -28,14 +25,14 @@ bool Card::Move(int direction)
     if(!options[direction] || options[direction]->card)
         return false;
 
-    options[direction]->card = this;
+    options[direction]->card = (CardPtr)this;
     this->gridPosition->card = NULL;
     this->gridPosition = options[direction];
 
     return true;
 }
 
-bool Card::Deploy(Tile* destination)
+bool Card::Deploy(TilePtr destination)
 {
     if(gridPosition) throw std::runtime_error("Card has been already deployed");
     if(playPosition == IN_PLAY) std::clog << "WARNING: Deploying card marked as \"IN PLAY\"";
@@ -45,7 +42,7 @@ bool Card::Deploy(Tile* destination)
         if(destination->card)
             return false; 
         
-        destination->card = this;
+        destination->card = (CardPtr)this;
         gridPosition = destination;
     }
     //TODO: fire events
@@ -83,6 +80,8 @@ bool Card::Attack(int direction)
 int Card::ResolveCombat(Card& target)
 {
     int deltaAdvantage = advantage - target.advantage;
+    //resolve overwhelming mechanic
+    if(target.isOverwhelmed) deltaAdvantage++;
     //advantage resolution
     if(deltaAdvantage > 0)
         {
@@ -94,6 +93,10 @@ int Card::ResolveCombat(Card& target)
         value += deltaAdvantage;
         if(value < 0) value = 0;
         }
+
+    canAttack = false;
+    canMove = false;
+    target.isOverwhelmed = true;
     //normal damage resolution
     if(value > target.value)
     {
