@@ -4,8 +4,6 @@
 #include <functional>
 #include <memory>
 
-#include "playerController.h"
-
 class GameMaster;
 class Player;
 class Deck;
@@ -21,6 +19,8 @@ typedef std::shared_ptr<Deck> DeckPtr;
 typedef std::shared_ptr<Card> CardPtr;
 typedef std::shared_ptr<Tile> TilePtr;
 
+#include "playerController.h"
+
 class GameMaster
 {
     public:
@@ -29,17 +29,20 @@ class GameMaster
                                                       //E.G. User, AIs, network-connected players
 
     //grid
-    std::vector<std::vector<Tile>> grid;
+    std::vector<std::vector<Tile>> grid; //(0,0) is top left corner; X axis is vertical, Y is horizontal.
 
     // std::vector<std::vector<Tile>> deployZones;
     // std::vector<Tile> captureZone;
 
-    void switchTurn();
+    void MainLoop();
+    void EndTurn();
 
     GameMaster(std::vector<ControllerPtr> controllers, std::vector<DeckPtr> decks, int gridHeight = 6, int gridWidth = 8);
 
     private:
-
+    int ProcessAction(const PlayerAction& action);
+    //void GameMaster::updateStatus(PlayerController& controller);
+    enum invalidAction {NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
     int turn;
 };
 
@@ -89,12 +92,12 @@ struct PlayerInfo
 class Deck
 {
      public:
-     std::vector<Card> cards;
-     std::vector<Card> discard;
+     std::vector<CardPtr> library;
+     std::vector<CardPtr> discard;
 
-     std::vector<std::shared_ptr<Card>> associated;
+     std::vector<CardPtr> roster;
 
-     Deck();
+     Deck(const std::vector<Card>& cards);
      
      void shuffle();
      void refresh();
@@ -124,7 +127,7 @@ class Card
     // General game parameters
     PlayerPtr owner;
     int id;
-    //int type
+    int type;
     enum cardType {UNIT, CONTRACT, TACTIC};
 
     enum playPositions {UNDEFINED = -1, DECK = 0, HAND = 1, IN_PLAY = 2, DISCARD = 3};

@@ -5,9 +5,10 @@
 
 Card::Card()
 {
-    //owner = NULL;
+    owner = nullptr;
     id = -1;
 
+    type = Card::UNIT;
     playPosition = Card::UNDEFINED;
     gridPosition = NULL;
 
@@ -16,18 +17,24 @@ Card::Card()
 }
 
 bool Card::Move(int direction)
-{
+{   
+    //
     if(direction < 0 || direction > 3) throw std::invalid_argument("invalid direction");
     if(!gridPosition) throw std::runtime_error("Trying to move an off-grid card");
 
     auto options = gridPosition->getAdjacent();
 
+    //TODO add mutual exchange movement option
+    // Check if tile is occupied
     if(!options[direction] || options[direction]->card)
         return false;
 
+    // Exchange positions
     options[direction]->card = (CardPtr)this;
     this->gridPosition->card = NULL;
     this->gridPosition = options[direction];
+
+    canMove = false;
 
     return true;
 }
@@ -95,7 +102,7 @@ int Card::ResolveCombat(Card& target)
         }
 
     canAttack = false;
-    canMove = false;
+    canMove   = false;
     target.isOverwhelmed = true;
     //normal damage resolution
     if(value > target.value)

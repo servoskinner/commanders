@@ -9,8 +9,8 @@ void TerminalControl::printUI()
 {
     int width, height;
 
-    height = master.grid.size();
-    width = master.grid[0].size();
+    height = master->grid.size();
+    width = master->grid[0].size();
 
      //first, draw the empty field
      std::string buffer = ".";
@@ -35,8 +35,22 @@ void TerminalControl::printUI()
         buffer.append(" \n");
      }
 
+     // highlight special regions
+     // deploy zones
+     for(int i = 0; i < height; i++)
+     {
+         higlightTileLight(buffer, width, height, i, 0);
+         higlightTileLight(buffer, width, height, i, width - 1);
+     }
+     // combat zones
+     for(int i = 0; i < height; i++)
+     {
+         higlightTileHazard(buffer, width, height, i, width / 2);
+         higlightTileHazard(buffer, width, height, i, (width - 1) / 2);
+     }
+
      // render cards
-     for(std::vector<Tile> row : master.grid)
+     for(std::vector<Tile> row : master->grid)
         for(Tile tile : row)
             if(tile.card)
             {
@@ -62,6 +76,7 @@ PlayerAction TerminalControl::getAction()
 
 while(true)
    {
+      std::cout << "PLAYER " << id << " GOES \n"; 
       std::cout << "PENDING ACTION: (P)ASS - (M)OVE - (A)TTACK" << std::endl;
       std::cin >> buffer;
       
@@ -101,6 +116,16 @@ while(true)
          continue;
       }
    }
+}
+
+void TerminalControl::handleActionError(int errorCode)
+{
+   std::cout << "something happened..." << std::endl;
+}
+
+void TerminalControl::applyUpdates()
+{
+   printUI();
 }
 
 void TerminalControl::higlightTileBold(std::string &buffer, int width, int height, int x, int y)
