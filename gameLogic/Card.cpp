@@ -5,8 +5,9 @@
 
 #include "misc.h"
 
-Card::Card(int nid) : id(nid)
+Card::Card(int nid)
 {
+    id = nid;
     ownerId = -1;
 
     value = 0;
@@ -20,8 +21,8 @@ Card::Card(int nid) : id(nid)
     name = "unknown";
     text = "";
 
-    canAttack = true;
-    canMove = true;
+    canAttack = false;
+    canMove = false;
     isOverwhelmed = false;
 }
 

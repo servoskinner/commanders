@@ -30,10 +30,10 @@ typedef std::shared_ptr<Tile> TilePtr;
 class GameMaster
 {
     public: // _____________________________________________________________________________
-    GameMaster(const std::vector<PlayerController*> controllers, const std::vector<Deck*>& decks);
+    GameMaster(const std::vector<PlayerController*> controllers, const std::vector<Deck>& decks);
 
     std::vector<Player> players; 
-    std::vector<Deck*> decks;
+    std::vector<Deck> decks;
     std::vector<PlayerController*> playerControllers; // entities that provide player inputs.
                                                       // E.G. User, AIs, network-connected players
     //grid
@@ -50,7 +50,9 @@ class GameMaster
     //protected: // _____________________________________________________________________________
     int processAction(const PlayerAction& action);
     enum invalidAction {NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
-    //void GameMaster::updateStatus(PlayerController& controller);
+
+    void updateStatus(int playerId);
+
     int turn;
     int turnAbsolute;
 
@@ -83,7 +85,7 @@ class Player
     int points; //"Dominance points" scored by the player. 10 are required to win the game;
     int funds; // Funds used to play cards and fire abilities.
 
-    PlayerInfo getInfo();
+    PlayerInfo getInfo(Deck& deck);
     
     /*void commandMove(Card& object, Tile& destination);
     void commandAttack(Card& object, Tile& target);
@@ -103,7 +105,7 @@ struct PlayerInfo
     //std::string name;
     int id;
     int points;
-    int money;
+    int funds;
     int deckSize;
     int discardSize;
 };
@@ -113,6 +115,7 @@ class Deck
     public: // _____________________________________________________________________________
     Deck(const std::vector<Card>& cards);
     Deck(const Deck& original);
+    Deck& operator=(const Deck& original);
  
     std::vector<Card> roster; //All cards associated with this deck. Original cards are stored here.
     std::vector<Card*> discard; //Cards that have been removed after being put into play.
@@ -125,8 +128,7 @@ class Deck
 class Tile
 {
     public: // _____________________________________________________________________________
-    Tile(int nx, int ny, int ntype = -1) : x(nx), y(ny), type(ntype), card(nullptr) {}
-    Tile(Tile& original) = default;
+    Tile(int nx = -1, int ny = -1, int ntype = -1) : x(nx), y(ny), type(ntype), card(nullptr) {}
 
     int x, y;
     int type;
@@ -139,11 +141,11 @@ class Tile
 class Card
 {
     public: // _____________________________________________________________________________
-    Card(int nid);
-    Card(const Card& original) = default;
+    Card(int nid = -1);
+
     // Identification 
     int ownerId;
-    const int id;
+    int id;
 
     enum cardType {UNIT, CONTRACT, TACTIC};
     int type;

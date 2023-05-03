@@ -10,3 +10,17 @@ Player::Player(int playerid) : id(playerid)
     funds = 0;
     points = 0;
 }
+
+PlayerInfo Player::getInfo(Deck& deck)
+{
+    PlayerInfo info;
+
+    info.id = id;
+    info.funds = funds;
+    info.points = points;
+
+    info.deckSize = deck.library.size();
+    info.discardSize = deck.discard.size();
+
+    return info;
+}

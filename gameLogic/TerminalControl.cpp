@@ -17,23 +17,23 @@ void TerminalControl::printUI()
      std::string buffer = ".";
 
      for(int i = 0; i < width; i++)
-        buffer.append("   .");  //first divider line
+        buffer.append(std::string(8, ' ').append("."));  //first divider line
 
-     buffer.append(" \n");
+     buffer.append("\n");
 
      for(int j = 0; j < height; j++)
      {
         //empty spaces
         for(int i = 0; i < 3; i++)
-            buffer.append(std::string(width*4, ' ').append(" \n"));  
+            buffer.append(std::string(width*9, ' ').append(" \n"));  
 
         //divider
         buffer.append(".");
 
         for(int i = 0; i < width; i++)
-        buffer.append("   .");
+        buffer.append(std::string(8, ' ').append("."));
 
-        buffer.append(" \n");
+        buffer.append("\n");
      }
 
      // highlight special regions
@@ -52,33 +52,46 @@ void TerminalControl::printUI()
    // (it sucks)
 
      // render cards
-     for(std::vector<Tile> row : master->grid)
-        for(Tile tile : row)
-            if(tile.card)
-            {
-                higlightTileBold(buffer, width, height, tile.getX(), tile.getY());
-                // assuming card name is longer than 3 characters
-                for(int bias = 0; bias < 3 && bias < tile.card->name.size(); bias++)
-                    buffer[(tile.getX()*4 + 1)*(4*width + 3) + tile.getY()*4 + 1 + bias - tile.getX()*3] = tile.card->name[bias];
-                //render power values
-                buffer[(tile.getX()*4 + 3)*(4*width + 3) + tile.getY()*4 + 1 - tile.getX()*3] = (std::to_string(tile.card->value % 10))[0];
-                //render advantage points (if there is any)
-                if(tile.card->advantage > 0)
-                    buffer[(tile.getX()*4 + 3)*(4*width + 3) + tile.getY()*4 - 1 - tile.getX()*3] = (std::to_string(tile.card->advantage % 10))[0];
-            }
+      for(CardInfo card : activeCards)
+         if(card.type == Card::UNIT)
+         {
+               higlightTileBold(buffer, width, height, card.x, card.y);
+               // Name
+               for(int bias = 1; bias < 9 && bias < card.name.size() + 1; bias++)
+                  buffer[(card.x*4 + 1)*(width*9 + 2) + card.y*9 + bias] = card.name[bias-1];
 
+               for(int bias = card.name.size() + 1; bias < 9; bias++)
+                  buffer[(card.x*4 + 1)*(width*9 + 2) + card.y*9 + bias] = '_';
+               // Value
+               buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 8] = (std::to_string(card.value % 10))[0];
+               buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 7] = (std::to_string(card.value / 10))[0];
+               // Advantage points (if there is any)
+               if(card.advantage > 0)
+               {
+                  buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 2] = (std::to_string(card.advantage % 10))[0];
+                  buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 1] = (std::to_string(card.advantage / 10))[0];
+               }
+               // Overwhelming indicator
+               if(card.isOverwhelmed)
+                  buffer[(card.x*4 + 2)*(width*9 + 2) + card.y*9 + 8] = '!';
+               // Ability exhaustion
+               if(!card.canMove)
+                  if(!card.canAttack)
+                     buffer[(card.x*4 + 2)*(width*9 + 2) + card.y*9 + 1] = 'X';
+                  else
+                     buffer[(card.x*4 + 2)*(width*9 + 2) + card.y*9 + 1] = '~';
+         }
      std::cout << buffer << std::endl;
 
      // HAND __________________________________________
-      std::cout << "HAND: " << master->players[id].hand.size() \
-                << "/?? DECK: " << master->players[id].deck.library.size() \
-                << "/" << master->players[id].deck.roster.size() \
-                << " DISCARD: " << master->players[id].deck.discard.size() << "\n";
+      std::cout << "HAND: " << hand.size() \
+                << "/?? DECK: " << players[id].deckSize \
+                << " DISCARD: " << players[id].discardSize << "\n";
       std::cout << "_______________________________\n";
-      std::cout << "YOU HAVE $" << master->players[id].funds << ":\n";
+      std::cout << "YOU HAVE $" << players[id].funds << ":\n";
 
-      for(Card* cptr : master->players[id].hand)
-         std::cout << "(" << cptr->value << ") $" << cptr->cost << "- " << cptr->name << ": " << cptr->text << "\n";
+      for(CardInfo card : hand)
+         std::cout << "(" << card.value << ") $" << card.cost << "- " << card.name << ": " << card.text << "\n";
       
       std::cout << "_______________________________\n" << std::endl;
      //render contracts TBA
@@ -100,7 +113,6 @@ while(true)
          std::cout << "Invalid input;" << std::endl;
          continue;
       }
-
 
       switch (buffer[0])
       {
@@ -191,68 +203,45 @@ void TerminalControl::applyUpdates()
 void TerminalControl::higlightTileBold(std::string &buffer, int width, int height, int x, int y)
 {
     // corners
-    buffer[x*4*(4*width + 3) + y*4 - x*3] = '+';
-    buffer[x*4*(4*width + 3) + (y+1)*4 - x*3] = '+';
-    buffer[(x + 1)*4*(4*width + 3) + y*4 - 3 - x*3] = '+';
-    buffer[(x+1)*4*(4*width + 3) + (y + 1)*4 - 3 - x*3] = '+';
+    buffer[x*4*(width*9 + 2) + y*9] = '+';
+    buffer[(x+1)*4*(width*9 + 2) + y*9] = '+';
+    buffer[x*4*(width*9 + 2) + (y+1)*9] = '+';
+    buffer[(x+1)*4*(width*9 + 2) + (y+1)*9] = '+';
 
     // vertical border
-    for(int bias = 0; bias < 3; bias++)
+    for(int bias = 1; bias < 4; bias++)
     {
-       buffer[(x*4 + (bias + 1))*(4*width + 3)+ y*4  - bias - x*3] = '|';
-       buffer[(x*4 + (bias + 1))*(4*width + 3) + (y+1)*4  - bias - x*3] = '|'; 
+       buffer[(x*4 + bias)*(width*9 + 2) + y*9] = '|';
+       buffer[(x*4 + bias)*(width*9 + 2) + (y+1)*9] = '|'; 
     }
 
     // horizontal border
-    for(int bias = 0; bias < 3; bias++)
+    for(int bias = 1; bias < 9; bias++)
     {
-       buffer[x*4*(4*width + 3) + y*4 + (bias + 1) - x*3] = '-';
-       buffer[(x + 1)*4*(4*width + 3) + (y+1)*4 + (bias + 1) - 7 - x*3] = '-'; 
+       buffer[x*4*(width*9 + 2) + y*9 + bias] = '-';
+       buffer[(x+1)*4*(width*9 + 2) + y*9 + bias] = '-'; 
     }
 }
 
 void TerminalControl::higlightTileLight(std::string &buffer, int width, int height, int x, int y)
 {
     // corners
-    buffer[x*4*(4*width + 3) + y*4 - x*3] = '.';
-    buffer[x*4*(4*width + 3) + (y+1)*4 - x*3] = '.';
-    buffer[(x + 1)*4*(4*width + 3) + y*4 - 3 - x*3] = ':';
-    buffer[(x+1)*4*(4*width + 3) + (y + 1)*4 - 3 - x*3] = ':';
+    buffer[x*4*(width*9 + 2) + y*9] = '.';
+    buffer[(x+1)*4*(width*9 + 2) + y*9] = ':';
+    buffer[x*4*(width*9 + 2) + (y+1)*9] = '.';
+    buffer[(x+1)*4*(width*9 + 2) + (y+1)*9] = ':';
 
     // vertical border
-    for(int bias = 0; bias < 3; bias++)
+    for(int bias = 1; bias < 4; bias++)
     {
-       buffer[(x*4 + (bias + 1))*(4*width + 3)+ y*4  - bias - x*3] = ':';
-       buffer[(x*4 + (bias + 1))*(4*width + 3) + (y+1)*4  - bias - x*3] = ':'; 
+       buffer[(x*4 + bias)*(width*9 + 2) + y*9] = ':';
+       buffer[(x*4 + bias)*(width*9 + 2) + (y+1)*9] = ':'; 
     }
 
     // horizontal border
-    for(int bias = 0; bias < 3; bias++)
+    for(int bias = 1; bias < 9; bias++)
     {
-       buffer[x*4*(4*width + 3) + y*4 + (bias + 1) - x*3] = '.';
-       buffer[(x + 1)*4*(4*width + 3) + (y+1)*4 + (bias + 1) - 7 - x*3] = '.'; 
-    }
-}
-
-void TerminalControl::higlightTileHazard(std::string &buffer, int width, int height, int x, int y)
-{
-    // corners
-    buffer[x*4*(4*width + 3) + y*4 - x*3] = '7';
-    buffer[x*4*(4*width + 3) + (y+1)*4 - x*3] = '7';
-    buffer[(x + 1)*4*(4*width + 3) + y*4 - 3 - x*3] = '/';
-    buffer[(x+1)*4*(4*width + 3) + (y + 1)*4 - 3 - x*3] = '/';
-
-    // vertical border
-    for(int bias = 0; bias < 3; bias++)
-    {
-       buffer[(x*4 + (bias + 1))*(4*width + 3)+ y*4  - bias - x*3] = '/';
-       buffer[(x*4 + (bias + 1))*(4*width + 3) + (y+1)*4  - bias - x*3] = '/'; 
-    }
-
-    // horizontal border
-    for(int bias = 0; bias < 3; bias++)
-    {
-       buffer[x*4*(4*width + 3) + y*4 + (bias + 1) - x*3] = '7';
-       buffer[(x + 1)*4*(4*width + 3) + (y+1)*4 + (bias + 1) - 7 - x*3] = '7'; 
+       buffer[x*4*(width*9 + 2) + y*9 + bias] = '.';
+       buffer[(x+1)*4*(width*9 + 2) + y*9 + bias] = '.'; 
     }
 }

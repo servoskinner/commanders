@@ -34,8 +34,9 @@ class PlayerController //Abstract player interface class (slave of GameMaster)
     
     inline int getId() { return id;}
 
-    std::vector<CardInfo> activeCardsAll;
+    std::vector<CardInfo> activeCards;
     std::vector<CardInfo> hand;
+    std::vector<PlayerInfo> players;
 
     virtual PlayerAction getAction() = 0;
     virtual void applyUpdates() = 0;
@@ -59,6 +60,5 @@ class TerminalControl : public PlayerController
     void printUI();
 
     void higlightTileBold(std::string &buffer, int width, int height, int x, int y);
-    void higlightTileLight(std::string &buffer, int width, int height, int x, int y);
-    void higlightTileHazard(std::string &buffer, int width, int height, int x, int y);
+    void higlightTileLight(std::string &buffer, int width, int height, int x, int y);;
 };

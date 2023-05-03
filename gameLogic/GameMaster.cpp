@@ -4,48 +4,48 @@
 #include <stdexcept>
 #include <iostream>
 
-GameMaster::GameMaster(const std::vector<PlayerController*> controllers, const std::vector<Deck*>& ndecks)
+GameMaster::GameMaster(const std::vector<PlayerController*> controllers, const std::vector<Deck>& ndecks)
 {
     // Check argument validity
-    if(controllers.size() > decks.size()) 
+    if(controllers.size() > ndecks.size()) 
         throw std::runtime_error("Insufficient decks specified for game creation;");
-    if(controllers.size() < decks.size())
+    if(controllers.size() < ndecks.size())
         std::clog << "Redundant decks provided for GameMaster constructor. Ignoring last;" << std::endl;
 
     // Set up variables
     playerControllers = controllers;
     decks = ndecks;
 
-    turn = 0;
-    turnAbsolute = 0;
-
     // Build grid
     grid = std::vector<std::vector<Tile>>(GRID_HEIGHT, std::vector<Tile>(GRID_WIDTH));
 
     for(int row = 0; row < GRID_HEIGHT; row++)
         for(int column = 0; column < GRID_WIDTH; column ++)
-            grid[row][column].y = column, grid[row][column].x = row; 
+            grid[row][column] = Tile(row, column, Tile::NORMAL); 
 
-    // Set up player entities
+    // Assign IDs to various entities
     for(int playerid = 0; playerid < controllers.size(); playerid++)
         {
         players.emplace_back(playerid);
 
         controllers[playerid]->id = playerid;
         controllers[playerid]->master = this;
+
+        for(Card& card : decks[playerid].roster)
+            card.ownerId = playerid;
         }
 
-    // deployZones = {}; //TBA
-    // captureZone = {};
+    turn = 0;
+    turnAbsolute = 0;
 }
 
 void GameMaster::mainLoop()
 {
     //Send game status updates to every player
-    for(PlayerController* pcp : playerControllers)
+    for(int id = 0; id < playerControllers.size(); id++)
     {
-        //updateStatus(pcp);
-        pcp->applyUpdates();
+        updateStatus(id);
+        playerControllers[id]->applyUpdates();
     }
     
     PlayerAction action = playerControllers[turn]->getAction();
@@ -58,6 +58,7 @@ void GameMaster::mainLoop()
 void GameMaster::endTurn()
 {
     turn = (turn + 1) % playerControllers.size();
+    turnAbsolute++;
     // restore
     // score points
     // income, decrement contracts
@@ -106,10 +107,10 @@ int GameMaster::processAction(const PlayerAction& action)
             deltax = action.args[2] - action.args[0];
             deltay = action.args[3] - action.args[1];
                     // valid
-            if     (!(deltax ==  1 && deltay ==  0))    direction = GameMaster::UP;
-            else if(!(deltax == -1 && deltay ==  0))    direction = GameMaster::DOWN;
-            else if(!(deltax ==  0 && deltay ==  1))    direction = GameMaster::RIGHT;
-            else if(!(deltax ==  0 && deltay == -1))    direction = GameMaster::LEFT;
+            if     (deltax ==  1 && deltay ==  0)    direction = GameMaster::DOWN;
+            else if(deltax == -1 && deltay ==  0)    direction = GameMaster::UP; 
+            else if(deltax ==  0 && deltay ==  1)    direction = GameMaster::RIGHT;
+            else if(deltax ==  0 && deltay == -1)    direction = GameMaster::LEFT;
             else    //invalid
             return GameMaster::INVARGS;
 
@@ -119,6 +120,8 @@ int GameMaster::processAction(const PlayerAction& action)
         if(grid[action.args[2]][action.args[3]].card != nullptr)            return GameMaster::NOTARGET;
         //check for ownership permissions
         if(grid[action.args[0]][action.args[1]].card->ownerId != turn)      return GameMaster::PERMISSION;
+        //check if ability was exhausted
+        if(!grid[action.args[0]][action.args[1]].card->canMove)           return GameMaster::EXHAUSTED;
 
         //Finally, perform the action
         //grid[action.args[0]][action.args[1]].card->moveCard(direction);
@@ -145,15 +148,15 @@ int GameMaster::processAction(const PlayerAction& action)
             deltax = action.args[2] - action.args[0];
             deltay = action.args[3] - action.args[1];
                     // valid adjacent
-            if     (!(deltax ==  1 && deltay ==  0))    direction = GameMaster::UP;
-            else if(!(deltax == -1 && deltay ==  0))    direction = GameMaster::DOWN;
-            else if(!(deltax ==  0 && deltay ==  1))    direction = GameMaster::RIGHT;
-            else if(!(deltax ==  0 && deltay == -1))    direction = GameMaster::LEFT;
+            if     (deltax ==  1 && deltay ==  0)    direction = GameMaster::DOWN;
+            else if(deltax == -1 && deltay ==  0)    direction = GameMaster::UP;
+            else if(deltax ==  0 && deltay ==  1)    direction = GameMaster::RIGHT;
+            else if(deltax ==  0 && deltay == -1)    direction = GameMaster::LEFT;
                      // valid diagonals
-            else if(!(deltax ==  1 && deltay ==  1))    direction = GameMaster::UPRIGHT;
-            else if(!(deltax ==  1 && deltay == -1))    direction = GameMaster::UPLEFT;
-            else if(!(deltax == -1 && deltay ==  1))    direction = GameMaster::DOWNRIGHT;
-            else if(!(deltax == -1 && deltay == -1))    direction = GameMaster::DOWNLEFT;
+            else if(deltax ==  1 && deltay ==  1)    direction = GameMaster::DOWNRIGHT;
+            else if(deltax ==  1 && deltay == -1)    direction = GameMaster::DOWNLEFT;
+            else if(deltax == -1 && deltay ==  1)    direction = GameMaster::UPRIGHT;
+            else if(deltax == -1 && deltay == -1)    direction = GameMaster::UPLEFT;
             else    //invalid
             return GameMaster::INVARGS;
 
@@ -163,6 +166,8 @@ int GameMaster::processAction(const PlayerAction& action)
         if(grid[action.args[2]][action.args[3]].card == nullptr)            return GameMaster::NOTARGET;
         //check for ownership permissions
         if(grid[action.args[0]][action.args[1]].card->ownerId != turn)      return GameMaster::PERMISSION;
+        //check if ability was exhausted
+        if(!grid[action.args[0]][action.args[1]].card->canAttack)           return GameMaster::EXHAUSTED;
 
         //Finally, perform the action
         //grid[action.args[0]][action.args[1]].card->attack(direction);
@@ -180,7 +185,22 @@ int GameMaster::processAction(const PlayerAction& action)
     return GameMaster::INVTYPE; //Disable compiler warnings
 }
 
-//void GameMaster::updateStatus(PlayerController& controller);
+void GameMaster::updateStatus(int playerId)
+{
+    PlayerController& controller = *playerControllers[playerId];
+    
+    controller.activeCards = std::vector<CardInfo>(activeCards.size());
+    for(int i = 0; i < activeCards.size(); i++)
+        controller.activeCards[i] = activeCards[i]->getInfo();
+
+    controller.hand = std::vector<CardInfo>(players[playerId].hand.size());
+    for(int i = 0; i < players[playerId].hand.size(); i++)
+        controller.hand[i] = players[playerId].hand[i]->getInfo();
+
+    controller.players = std::vector<PlayerInfo>(players.size());
+    for(int i = 0; i < players.size(); i++)
+        controller.players[i] = players[i].getInfo(decks[i]);
+}
 
 bool GameMaster::deployCard(Card& card, Tile* target)
 {
@@ -200,7 +220,11 @@ bool GameMaster::deployCard(Card& card, Tile* target)
     //TODO: fire events
     card.status = Card::IN_PLAY;
     activeCards.push_back(&card);
-    
+
+    card.canAttack = false;
+    card.canMove = false;
+    card.isOverwhelmed = false;
+
     return true;
 }
 
@@ -240,7 +264,7 @@ void GameMaster::destroyCard(Card& card)
 
     //TODO restore, fire events
     card.status = Card::DISCARD;
-    decks[card.ownerId]->discard.push_back(&card);
+    decks[card.ownerId].discard.push_back(&card);
 }
 
 bool GameMaster::attackWith(Card& card, const int& direction)
