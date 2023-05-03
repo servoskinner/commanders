@@ -7,12 +7,14 @@ template <typename Type>
 bool vectorPop(std::vector<Type>& vec, const Type& key) //Remove element with target value from a vector
 {
     //find first pointer that points to object that is equal to key.
-    auto iter = std::remove(vec.begin(), vec.end(), key);
+    for(auto iter = vec.begin(); iter != vec.end(); iter++)
+        if(*iter == key)
+        {
+            vec.erase(iter);
+            return true;
+        }
 
-    if(iter == vec.end()) return false;
-
-    vec.erase(iter, vec.end());
-    return true;
+    return false;
 }
 
 template <typename Type>
@@ -20,10 +22,9 @@ bool vectorPopIndex(std::vector<Type>& vec, const int& index) //Remove element w
 {
     if(index >= vec.size() || index < 0) return false;
 
-    auto iter = vec.begin();
-    std::advance(iter, index);
-    vec.erase(iter, vec.end());
-    
+    auto iter = vec.begin() + index;
+    vec.erase(iter);
+
     return true;
 }
 

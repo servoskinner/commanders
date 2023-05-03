@@ -329,8 +329,11 @@ void GameMaster::destroyCard(Card& card)
     if(card.x > 0 && card.y > 0)
         grid[card.x][card.y].card = NULL;
 
-    if(!vectorPop(activeCards, &card) || card.status != Card::IN_PLAY)
-        std::clog << "WARNING: killing card that was inactive" << std::endl;
+    if(!vectorPop(activeCards, &card))
+        std::clog << "WARNING: killing card that was not in activeCards" << std::endl;
+
+    if(card.status != Card::IN_PLAY)
+        std::clog << "WARNING: killing card that was not \"in play\"" << std::endl;
 
     //TODO restore, fire events
     card.status = Card::DISCARD;
