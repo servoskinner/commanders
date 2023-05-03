@@ -8,6 +8,9 @@
 #define GRID_WIDTH 8
 #define GRID_HEIGHT 6
 
+#define BASIC_INCOME 2
+#define STARTING_HAND_SIZE 4
+
 class GameMaster; // Basically, a singular game session. 
 class Player; // A player in context of game. Does not generate any input.
 class Deck; // A card pool that can be used by players.
@@ -30,10 +33,10 @@ typedef std::shared_ptr<Tile> TilePtr;
 class GameMaster
 {
     public: // _____________________________________________________________________________
-    GameMaster(const std::vector<PlayerController*> controllers, const std::vector<Deck>& decks);
+    GameMaster(const std::vector<PlayerController*>& controllers, const std::vector<Deck*>& decks);
 
     std::vector<Player> players; 
-    std::vector<Deck> decks;
+    std::vector<Deck*> decks;
     std::vector<PlayerController*> playerControllers; // entities that provide player inputs.
                                                       // E.G. User, AIs, network-connected players
     //grid
@@ -49,7 +52,7 @@ class GameMaster
 
     //protected: // _____________________________________________________________________________
     int processAction(const PlayerAction& action);
-    enum invalidAction {NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
+    enum invalidAction {NONE, UNKNOWN, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
 
     void updateStatus(int playerId);
 
@@ -69,9 +72,9 @@ class GameMaster
     std::vector<Tile*> getAdjacentTiles(const Tile& tile);
     std::vector<Tile*> getSurroundingTiles(const Tile& tile);
     // Players
-    bool giveCard(int player); // Returns whether deck was refreshed or not
-    bool discard(int player, int handIndex); // 
-    bool playCard(int handIndex, Tile& target);
+    bool forceDraw(int playerId); // Returns whether deck is empty or not
+    bool discard(int playerId, int handIndex); // Returns whether 
+    bool playCard(int playerId, int handIndex, Tile* target); // Perform rule checks and deploy card
 };
 
 class Player
@@ -128,7 +131,7 @@ class Deck
 class Tile
 {
     public: // _____________________________________________________________________________
-    Tile(int nx = -1, int ny = -1, int ntype = -1) : x(nx), y(ny), type(ntype), card(nullptr) {}
+    Tile(int nx = -1, int ny = -1, int ntype = NORMAL) : x(nx), y(ny), type(ntype), card(nullptr) {}
 
     int x, y;
     int type;

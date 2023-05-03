@@ -51,50 +51,57 @@ void TerminalControl::printUI()
    //   }
    // (it sucks)
 
-     // render cards
-      for(CardInfo card : activeCards)
-         if(card.type == Card::UNIT)
+     // Render Units
+   for(CardInfo card : activeCards)
+      if(card.type == Card::UNIT)
+      {
+         higlightTileBold(buffer, width, height, card.x, card.y);
+         // Name
+         for(int bias = 1; bias < 9 && bias < card.name.size() + 1; bias++)
+            buffer[(card.x*4 + 1)*(width*9 + 2) + card.y*9 + bias] = card.name[bias-1];
+
+         for(int bias = card.name.size() + 1; bias < 9; bias++)
+            buffer[(card.x*4 + 1)*(width*9 + 2) + card.y*9 + bias] = '_';
+         // Value
+         buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 8] = (std::to_string(card.value % 10))[0];
+         buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 7] = (std::to_string(card.value / 10))[0];
+         // Advantage points (if there is any)
+         if(card.advantage > 0)
          {
-               higlightTileBold(buffer, width, height, card.x, card.y);
-               // Name
-               for(int bias = 1; bias < 9 && bias < card.name.size() + 1; bias++)
-                  buffer[(card.x*4 + 1)*(width*9 + 2) + card.y*9 + bias] = card.name[bias-1];
-
-               for(int bias = card.name.size() + 1; bias < 9; bias++)
-                  buffer[(card.x*4 + 1)*(width*9 + 2) + card.y*9 + bias] = '_';
-               // Value
-               buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 8] = (std::to_string(card.value % 10))[0];
-               buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 7] = (std::to_string(card.value / 10))[0];
-               // Advantage points (if there is any)
-               if(card.advantage > 0)
-               {
-                  buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 2] = (std::to_string(card.advantage % 10))[0];
-                  buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 1] = (std::to_string(card.advantage / 10))[0];
-               }
-               // Overwhelming indicator
-               if(card.isOverwhelmed)
-                  buffer[(card.x*4 + 2)*(width*9 + 2) + card.y*9 + 8] = '!';
-               // Ability exhaustion
-               if(!card.canMove)
-                  if(!card.canAttack)
-                     buffer[(card.x*4 + 2)*(width*9 + 2) + card.y*9 + 1] = 'X';
-                  else
-                     buffer[(card.x*4 + 2)*(width*9 + 2) + card.y*9 + 1] = '~';
+            buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 2] = (std::to_string(card.advantage % 10))[0];
+            buffer[(card.x*4 + 3)*(width*9 + 2) + card.y*9 + 1] = (std::to_string(card.advantage / 10))[0];
          }
-     std::cout << buffer << std::endl;
+         // Overwhelming indicator
+         if(card.isOverwhelmed)
+            buffer[(card.x*4 + 2)*(width*9 + 2) + card.y*9 + 8] = '!';
+         // Ability exhaustion
+         if(!card.canMove)
+            if(!card.canAttack)
+               buffer[(card.x*4 + 2)*(width*9 + 2) + card.y*9 + 1] = 'X';
+            else
+               buffer[(card.x*4 + 2)*(width*9 + 2) + card.y*9 + 1] = '~';
+      }
+   std::cout << buffer << std::endl;
 
-     // HAND __________________________________________
-      std::cout << "HAND: " << hand.size() \
-                << "/?? DECK: " << players[id].deckSize \
-                << " DISCARD: " << players[id].discardSize << "\n";
-      std::cout << "_______________________________\n";
-      std::cout << "YOU HAVE $" << players[id].funds << ":\n";
+   // HAND __________________________________________
+   std::cout << "HAND: " << hand.size() \
+               << "/?? DECK: " << players[id].deckSize \
+               << " DISCARD: " << players[id].discardSize << "\n";
+   std::cout << "_______________________________\n";
+   std::cout << "YOU HAVE $" << players[id].funds << ":\n";
 
-      for(CardInfo card : hand)
-         std::cout << "(" << card.value << ") $" << card.cost << "- " << card.name << ": " << card.text << "\n";
-      
-      std::cout << "_______________________________\n" << std::endl;
-     //render contracts TBA
+   for(CardInfo card : hand)
+      std::cout << "(" << card.value << ") $" << card.cost << " - " << card.name << ": " << card.text << "\n";
+   
+   std::cout << "_______________________________\n";
+   std::cout << "CONTRACTS: \n";
+   // CONTRACTS _____________________________________
+   for(CardInfo card : activeCards)
+      if(card.type == Card::CONTRACT && card.ownerId == id)
+            std::cout << card.name << " (" << card.value << ")\n";
+
+   std::cout << std::endl;
+
 };
 
 PlayerAction TerminalControl::getAction()
@@ -138,6 +145,19 @@ while(true)
          std::cin >> action.args[2] >> action.args[3];
          return action;
          break;
+
+      case 'd': case 'D': //Deploy
+         action.type = PlayerAction::PLAY;
+         std::cout << "SPECIFY CARD NO.:" << std::endl;
+         std::cin >> action.args[0];
+         if(action.args[0] >= 0 && action.args[0] < hand.size() && hand[action.args[0]].type == Card::UNIT)
+         {
+            std::cout << "SPECIFY DEPLOYMENT COORDINATES:" << std::endl;
+            std::cin >> action.args[1] >> action.args[2];
+         }
+         return action;
+         break;
+      
       
       default:
          std::cout << "Invalid input;" << std::endl;

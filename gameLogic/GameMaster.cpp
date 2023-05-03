@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 
-GameMaster::GameMaster(const std::vector<PlayerController*> controllers, const std::vector<Deck>& ndecks)
+GameMaster::GameMaster(const std::vector<PlayerController*>& controllers, const std::vector<Deck*>& ndecks)
 {
     // Check argument validity
     if(controllers.size() > ndecks.size()) 
@@ -21,7 +21,19 @@ GameMaster::GameMaster(const std::vector<PlayerController*> controllers, const s
 
     for(int row = 0; row < GRID_HEIGHT; row++)
         for(int column = 0; column < GRID_WIDTH; column ++)
-            grid[row][column] = Tile(row, column, Tile::NORMAL); 
+            grid[row][column] = Tile(row, column);
+
+    // Mark up special tiles (All are aligned vertically)
+    for(int row = 0; row < GRID_HEIGHT; row++)
+    {
+        // Deploy zone
+        grid[row][0].type = 0;
+        grid[row][GRID_WIDTH-1].type = 1;
+        // Capture zone
+        grid[row][(GRID_WIDTH-1)/2].type = Tile::CAPTUREZONE;
+        grid[row][(GRID_WIDTH)/2].type = Tile::CAPTUREZONE;
+    }
+
 
     // Assign IDs to various entities
     for(int playerid = 0; playerid < controllers.size(); playerid++)
@@ -31,12 +43,23 @@ GameMaster::GameMaster(const std::vector<PlayerController*> controllers, const s
         controllers[playerid]->id = playerid;
         controllers[playerid]->master = this;
 
-        for(Card& card : decks[playerid].roster)
+        for(Card& card : decks[playerid]->roster)
             card.ownerId = playerid;
         }
 
-    turn = 0;
-    turnAbsolute = 0;
+    //The non-existent turn before the first one.
+    turn = -1;
+    turnAbsolute = -1;
+
+    //Deal cards TODO add re-draw
+    for(int id = 0; id < players.size(); id++)
+    {
+        decks[id]->shuffle();
+        for(int card = 0; card < STARTING_HAND_SIZE; card++)
+            forceDraw(id);
+    }
+
+    endTurn();
 }
 
 void GameMaster::mainLoop()
@@ -57,12 +80,15 @@ void GameMaster::mainLoop()
 
 void GameMaster::endTurn()
 {
+    // Change turn number (also is playerid of whoever takes the turn)
     turn = (turn + 1) % playerControllers.size();
     turnAbsolute++;
-    // restore
-    // score points
-    // income, decrement contracts
-    // draw
+
+    // Basic income
+    players[turn].funds += BASIC_INCOME;
+    // Draw a card
+    forceDraw(turn); //TOOD: if false fire controller event
+
     for(Card* cardp : activeCards)
     {
         if(cardp->type == Card::UNIT && cardp->ownerId == turn) // Purge next player's units' status effects
@@ -70,6 +96,14 @@ void GameMaster::endTurn()
             cardp->canMove       = true;
             cardp->canAttack     = true;
             cardp->isOverwhelmed = false;
+        }
+        if(cardp->type == Card::CONTRACT && cardp->ownerId == turn) // Gain profit for each contract and decrement them.
+        {
+            cardp->value--;
+            players[turn].funds++;
+
+            if(cardp->value <= 0)
+                destroyCard(*cardp);
         }
     }
 };
@@ -93,94 +127,131 @@ int GameMaster::processAction(const PlayerAction& action)
         //  MOVE  _________________________________________________
 
         case PlayerAction::MOVE:
+        {
 
-        //check whether all arguments are present
-        if(action.args[0] < 0 || action.args[1] < 0 || action.args[2] < 0 || action.args[3] < 0)
-            return GameMaster::NOARGS;
+            //check whether all arguments are present
+            if(action.args[0] < 0 || action.args[1] < 0 || action.args[2] < 0 || action.args[3] < 0)
+                return GameMaster::NOARGS;
 
-        //check for out-of-bounds arguments
-        if(action.args[0] >= grid.size() || action.args[1] >= grid[0].size() || \
-           action.args[2] >= grid.size() || action.args[3] >= grid[0].size())
-            return GameMaster::INVARGS;
+            //check for out-of-bounds arguments
+            if(action.args[0] >= grid.size() || action.args[1] >= grid[0].size() || \
+            action.args[2] >= grid.size() || action.args[3] >= grid[0].size())
+                return GameMaster::INVARGS;
 
-            //determine direction and check if it is invalid
-            deltax = action.args[2] - action.args[0];
-            deltay = action.args[3] - action.args[1];
-                    // valid
-            if     (deltax ==  1 && deltay ==  0)    direction = GameMaster::DOWN;
-            else if(deltax == -1 && deltay ==  0)    direction = GameMaster::UP; 
-            else if(deltax ==  0 && deltay ==  1)    direction = GameMaster::RIGHT;
-            else if(deltax ==  0 && deltay == -1)    direction = GameMaster::LEFT;
-            else    //invalid
-            return GameMaster::INVARGS;
+                //determine direction and check if it is invalid
+                deltax = action.args[2] - action.args[0];
+                deltay = action.args[3] - action.args[1];
+                        // valid
+                if     (deltax ==  1 && deltay ==  0)    direction = GameMaster::DOWN;
+                else if(deltax == -1 && deltay ==  0)    direction = GameMaster::UP; 
+                else if(deltax ==  0 && deltay ==  1)    direction = GameMaster::RIGHT;
+                else if(deltax ==  0 && deltay == -1)    direction = GameMaster::LEFT;
+                else    //invalid
+                return GameMaster::INVARGS;
 
-        //check that an unit was selected
-        if(grid[action.args[0]][action.args[1]].card == nullptr)            return GameMaster::NOSELECT;
-        //check that target tile is vacant
-        if(grid[action.args[2]][action.args[3]].card != nullptr)            return GameMaster::NOTARGET;
-        //check for ownership permissions
-        if(grid[action.args[0]][action.args[1]].card->ownerId != turn)      return GameMaster::PERMISSION;
-        //check if ability was exhausted
-        if(!grid[action.args[0]][action.args[1]].card->canMove)           return GameMaster::EXHAUSTED;
+            //check that an unit was selected
+            if(grid[action.args[0]][action.args[1]].card == nullptr)            return GameMaster::NOSELECT;
+            //check that target tile is vacant
+            if(grid[action.args[2]][action.args[3]].card != nullptr)            return GameMaster::NOTARGET;
+            //check for ownership permissions
+            if(grid[action.args[0]][action.args[1]].card->ownerId != turn)      return GameMaster::PERMISSION;
+            //check if ability was exhausted
+            if(!grid[action.args[0]][action.args[1]].card->canMove)           return GameMaster::EXHAUSTED;
 
-        //Finally, perform the action
-        //grid[action.args[0]][action.args[1]].card->moveCard(direction);
-        moveCard(*grid[action.args[0]][action.args[1]].card, direction);
+            //Finally, perform the action
+            //grid[action.args[0]][action.args[1]].card->moveCard(direction);
+            if(!moveCard(*grid[action.args[0]][action.args[1]].card, direction))
+                return GameMaster::UNKNOWN;
 
-        std::cout << "Executing..." << std::endl;
-        return GameMaster::NONE;
+            std::cout << "Executing..." << std::endl;
+            return GameMaster::NONE;
+        }
         break;
         
         //  ATTACK  _________________________________________________
 
         case PlayerAction::ATTACK:
+        {
 
-        //check whether all arguments are present
-        if(action.args[0] < 0 || action.args[1] < 0 || action.args[2] < 0 || action.args[3] < 0)
-            return GameMaster::NOARGS;
+            //check whether all arguments are present
+            if(action.args[0] < 0 || action.args[1] < 0 || action.args[2] < 0 || action.args[3] < 0)
+                return GameMaster::NOARGS;
 
-        //check for out-of-bounds arguments
-        if(action.args[0] >= grid.size() || action.args[1] >= grid[0].size() || \
-           action.args[2] >= grid.size() || action.args[3] >= grid[0].size())
-            return GameMaster::INVARGS;
+            //check for out-of-bounds arguments
+            if(action.args[0] >= grid.size() || action.args[1] >= grid[0].size() || \
+            action.args[2] >= grid.size() || action.args[3] >= grid[0].size())
+                return GameMaster::INVARGS;
 
-            //determine direction and check if it is invalid
-            deltax = action.args[2] - action.args[0];
-            deltay = action.args[3] - action.args[1];
-                    // valid adjacent
-            if     (deltax ==  1 && deltay ==  0)    direction = GameMaster::DOWN;
-            else if(deltax == -1 && deltay ==  0)    direction = GameMaster::UP;
-            else if(deltax ==  0 && deltay ==  1)    direction = GameMaster::RIGHT;
-            else if(deltax ==  0 && deltay == -1)    direction = GameMaster::LEFT;
-                     // valid diagonals
-            else if(deltax ==  1 && deltay ==  1)    direction = GameMaster::DOWNRIGHT;
-            else if(deltax ==  1 && deltay == -1)    direction = GameMaster::DOWNLEFT;
-            else if(deltax == -1 && deltay ==  1)    direction = GameMaster::UPRIGHT;
-            else if(deltax == -1 && deltay == -1)    direction = GameMaster::UPLEFT;
-            else    //invalid
-            return GameMaster::INVARGS;
+                //determine direction and check if it is invalid
+                deltax = action.args[2] - action.args[0];
+                deltay = action.args[3] - action.args[1];
+                        // valid adjacent
+                if     (deltax ==  1 && deltay ==  0)    direction = GameMaster::DOWN;
+                else if(deltax == -1 && deltay ==  0)    direction = GameMaster::UP;
+                else if(deltax ==  0 && deltay ==  1)    direction = GameMaster::RIGHT;
+                else if(deltax ==  0 && deltay == -1)    direction = GameMaster::LEFT;
+                        // valid diagonals
+                else if(deltax ==  1 && deltay ==  1)    direction = GameMaster::DOWNRIGHT;
+                else if(deltax ==  1 && deltay == -1)    direction = GameMaster::DOWNLEFT;
+                else if(deltax == -1 && deltay ==  1)    direction = GameMaster::UPRIGHT;
+                else if(deltax == -1 && deltay == -1)    direction = GameMaster::UPLEFT;
+                else    //invalid
+                return GameMaster::INVARGS;
 
-        //check that an unit was selected
-        if(grid[action.args[0]][action.args[1]].card == nullptr)            return GameMaster::NOSELECT;
-        //check that a target is nonzero
-        if(grid[action.args[2]][action.args[3]].card == nullptr)            return GameMaster::NOTARGET;
-        //check for ownership permissions
-        if(grid[action.args[0]][action.args[1]].card->ownerId != turn)      return GameMaster::PERMISSION;
-        //check if ability was exhausted
-        if(!grid[action.args[0]][action.args[1]].card->canAttack)           return GameMaster::EXHAUSTED;
+            //check that an unit was selected
+            if(grid[action.args[0]][action.args[1]].card == nullptr)            return GameMaster::NOSELECT;
+            //check that a target is nonzero
+            if(grid[action.args[2]][action.args[3]].card == nullptr)            return GameMaster::NOTARGET;
+            //check for ownership permissions
+            if(grid[action.args[0]][action.args[1]].card->ownerId != turn)      return GameMaster::PERMISSION;
+            //check if ability was exhausted
+            if(!grid[action.args[0]][action.args[1]].card->canAttack)           return GameMaster::EXHAUSTED;
 
-        //Finally, perform the action
-        //grid[action.args[0]][action.args[1]].card->attack(direction);
-        attackWith(*grid[action.args[0]][action.args[1]].card, direction);
+            // Finally, perform the action and check for proper execution.
+            if(!attackWith(*grid[action.args[0]][action.args[1]].card, direction))
+                return GameMaster::UNKNOWN;
 
-        std::cout << "Executing..." << std::endl;
-        return GameMaster::NONE;
+            std::cout << "Executing..." << std::endl;
+            return GameMaster::NONE;
+        }
+        break;
+
+        //  PLAY  _________________________________________________
+
+        case PlayerAction::PLAY:
+        {
+        
+            if(action.args[0] < 0 || action.args[0] >= players[turn].hand.size())
+                return GameMaster::INVARGS;
+
+            // Check for out-of-bounds arguments for unit deployment
+            Tile* deploySite = nullptr; // Get tile pointer for unit deployment
+            if(players[turn].hand[action.args[0]]->type == Card::UNIT)
+            {
+                if(action.args[1] < 0 || action.args[2] < 0)
+                    return GameMaster::NOARGS;
+                if(action.args[1] >= grid.size() || action.args[2] >= grid[0].size())
+                    return GameMaster::INVARGS;
+
+                deploySite = &grid[action.args[1]][action.args[2]];
+            }
+            // Check for insufficient funds
+            if(players[turn].hand[action.args[0]]->cost > players[turn].funds)
+                return GameMaster::NOFUNDS;
+
+            // Finally, perform the action and check for proper execution.
+            if(!playCard(turn, action.args[0], deploySite))
+                return GameMaster::UNKNOWN;
+
+            return GameMaster::NONE; //Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
+        }
         break;
 
         //  INVALID  _________________________________________________
 
         default:
-        return GameMaster::INVTYPE;
+            return GameMaster::INVTYPE;
+        break;
     }
     return GameMaster::INVTYPE; //Disable compiler warnings
 }
@@ -199,7 +270,7 @@ void GameMaster::updateStatus(int playerId)
 
     controller.players = std::vector<PlayerInfo>(players.size());
     for(int i = 0; i < players.size(); i++)
-        controller.players[i] = players[i].getInfo(decks[i]);
+        controller.players[i] = players[i].getInfo(*decks[i]);
 }
 
 bool GameMaster::deployCard(Card& card, Tile* target)
@@ -255,16 +326,15 @@ bool GameMaster::moveCard(Card& card, const int& direction)
 
 void GameMaster::destroyCard(Card& card)
 {
-    if(card.x < 0 || card.y < 0)
+    if(card.x > 0 && card.y > 0)
         grid[card.x][card.y].card = NULL;
 
-
-    if(!vectorPop(activeCards, &card))
+    if(!vectorPop(activeCards, &card) || card.status != Card::IN_PLAY)
         std::clog << "WARNING: killing card that was inactive" << std::endl;
 
     //TODO restore, fire events
     card.status = Card::DISCARD;
-    decks[card.ownerId].discard.push_back(&card);
+    decks[card.ownerId]->discard.push_back(&card);
 }
 
 bool GameMaster::attackWith(Card& card, const int& direction)
@@ -359,6 +429,81 @@ std::vector<Tile*> GameMaster::getSurroundingTiles(const Tile& tile) //Get 8-nei
 
     if(tile.y > 0)                            res[LEFT]      = &grid[tile.x][tile.y-1];
     if(tile.y < grid[0].size() - 1)           res[RIGHT]     = &grid[tile.x][tile.y+1];
+
+    return res;
+}
+
+bool GameMaster::forceDraw(int playerId)
+{
+    if(decks[playerId]->library.size() == 0)
+        if(decks[playerId]->discard.size() == 0)
+            return false;
+        else
+            decks[playerId]->refresh();
+
+    if(decks[playerId]->library.back()->status != Card::DECK)
+        std::clog << "Warning: drawing card that has not been marked as \"In deck\"" << std::endl;
+    players[playerId].hand.push_back(decks[playerId]->library.back());
+    decks[playerId]->library.back()->status = Card::HAND;
+    decks[playerId]->library.pop_back();
+
+    return true;
+}
+
+bool GameMaster::discard(int playerId, int handIndex)
+{
+    if(playerId < 0 || playerId >= players.size()) throw std::out_of_range("playerId out of range");
+    if(handIndex < 0 || handIndex >= players[playerId].hand.size()) throw std::out_of_range("handIndex out of range");
+
+    if(players[playerId].hand[handIndex]->status != Card::HAND)
+        std::clog << "Warning: discarding card that has not been marked as \"In hand\"" << std::endl;
+    decks[playerId]->discard.push_back(players[playerId].hand[handIndex]);
+    players[playerId].hand[handIndex]->status = Card::DISCARD;
+    vectorPopIndex(players[playerId].hand, handIndex);
+
+    return true;
+}
+
+bool GameMaster::playCard(int playerId, int handIndex, Tile* target) //Returns false if there are insufficient funds.
+{
+    // Check for index correctness
+    if(playerId < 0 || playerId >= players.size()) throw std::out_of_range("playerId out of range");
+    if(handIndex < 0 || handIndex >= players[playerId].hand.size()) throw std::out_of_range("handIndex out of range");
+
+    // Check that a target tile was provided for units
+    if(players[playerId].hand[handIndex]->type == Card::UNIT)
+    {
+        if(target == nullptr)
+            std::runtime_error("No deployment site provided for playing a unit");
+
+        // Check surroundings or deployment zones
+        if(target->type != playerId) //If deploying outside of DZ
+        {
+            // At least one friendly unit on adjacent tiles
+            bool nearFriendly = false;
+            for(Tile* tptr : getAdjacentTiles(*target))
+                if(tptr != nullptr && tptr->card != nullptr && tptr->card->ownerId == playerId)
+                    nearFriendly = true;
+
+            if(!nearFriendly) return GameMaster::NOTARGET;
+
+            // No enemies on surrounding tiles
+            for(Tile* tptr : getSurroundingTiles(*target))
+                if(tptr != nullptr && tptr->card != nullptr && tptr->card->ownerId != playerId)
+                    return GameMaster::NOTARGET;
+        }
+    }
+
+    if(players[playerId].hand[handIndex]->status != Card::HAND)
+        std::clog << "Warning: trying to play card that has not been marked as \"In hand\"" << std::endl;
+
+    // Check whether a player has enough funds to play the card (subtract them if success)
+    if(players[playerId].funds < players[playerId].hand[handIndex]->cost)
+        return false;
+    players[playerId].funds -= players[playerId].hand[handIndex]->cost;
+    
+    bool res = deployCard(*players[playerId].hand[handIndex], target);
+    vectorPopIndex(players[playerId].hand, handIndex);
 
     return res;
 }
