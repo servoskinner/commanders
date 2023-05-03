@@ -1,8 +1,6 @@
 .vs
-*.sln
-*.vcxproj
-*.filters
-*.user
 *.dll
 x64
 CppProperties.json
+SFML-2.5.1
+x64
