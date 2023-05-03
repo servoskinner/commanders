@@ -7,6 +7,7 @@
 
 void TerminalControl::printUI()
 {
+   // GRID _________________________________________
     int width, height;
 
     height = master->grid.size();
@@ -37,35 +38,49 @@ void TerminalControl::printUI()
 
      // highlight special regions
      // deploy zones
-     for(int i = 0; i < height; i++)
-     {
-         higlightTileLight(buffer, width, height, i, 0);
-         higlightTileLight(buffer, width, height, i, width - 1);
-     }
-     // combat zones
-     for(int i = 0; i < height; i++)
-     {
-         higlightTileHazard(buffer, width, height, i, width / 2);
-         higlightTileHazard(buffer, width, height, i, (width - 1) / 2);
-     }
+   //   for(int i = 0; i < height; i++)
+   //   {
+   //       higlightTileLight(buffer, width, height, i, 0);
+   //       higlightTileLight(buffer, width, height, i, width - 1);
+   //   }
+   //   // combat zones
+   //   for(int i = 0; i < height; i++)
+   //   {
+   //       higlightTileHazard(buffer, width, height, i, width / 2);
+   //       higlightTileHazard(buffer, width, height, i, (width - 1) / 2);
+   //   }
+   // (it sucks)
 
      // render cards
      for(std::vector<Tile> row : master->grid)
         for(Tile tile : row)
             if(tile.card)
             {
-                higlightTileBold(buffer, width, height, tile.x, tile.y);
+                higlightTileBold(buffer, width, height, tile.getX(), tile.getY());
                 // assuming card name is longer than 3 characters
                 for(int bias = 0; bias < 3 && bias < tile.card->name.size(); bias++)
-                    buffer[(tile.x*4 + 1)*(4*width + 3) + tile.y*4 + 1 + bias - tile.x*3] = tile.card->name[bias];
+                    buffer[(tile.getX()*4 + 1)*(4*width + 3) + tile.getY()*4 + 1 + bias - tile.getX()*3] = tile.card->name[bias];
                 //render power values
-                buffer[(tile.x*4 + 3)*(4*width + 3) + tile.y*4 + 1 - tile.x*3] = (std::to_string(tile.card->value % 10))[0];
+                buffer[(tile.getX()*4 + 3)*(4*width + 3) + tile.getY()*4 + 1 - tile.getX()*3] = (std::to_string(tile.card->value % 10))[0];
                 //render advantage points (if there is any)
                 if(tile.card->advantage > 0)
-                    buffer[(tile.x*4 + 3)*(4*width + 3) + tile.y*4 - 1 - tile.x*3] = (std::to_string(tile.card->advantage % 10))[0];
+                    buffer[(tile.getX()*4 + 3)*(4*width + 3) + tile.getY()*4 - 1 - tile.getX()*3] = (std::to_string(tile.card->advantage % 10))[0];
             }
 
      std::cout << buffer << std::endl;
+
+     // HAND __________________________________________
+      std::cout << "HAND: " << master->players[id].hand.size() \
+                << "/?? DECK: " << master->players[id].deck.library.size() \
+                << "/" << master->players[id].deck.roster.size() \
+                << " DISCARD: " << master->players[id].deck.discard.size() << "\n";
+      std::cout << "_______________________________\n";
+      std::cout << "YOU HAVE $" << master->players[id].funds << ":\n";
+
+      for(Card* cptr : master->players[id].hand)
+         std::cout << "(" << cptr->value << ") $" << cptr->cost << "- " << cptr->name << ": " << cptr->text << "\n";
+      
+      std::cout << "_______________________________\n" << std::endl;
      //render contracts TBA
 };
 
@@ -77,7 +92,7 @@ PlayerAction TerminalControl::getAction()
 while(true)
    {
       std::cout << "PLAYER " << id << " GOES \n"; 
-      std::cout << "PENDING ACTION: (P)ASS - (M)OVE - (A)TTACK" << std::endl;
+      std::cout << "PENDING ACTION: (P)ASS - (M)OVE - (A)TTACK - (D)EPLOY" << std::endl;
       std::cin >> buffer;
       
       if(buffer.size() != 1)
@@ -109,6 +124,7 @@ while(true)
          std::cin >> action.args[0] >> action.args[1];
          std::cout << "SPECIFY TARGET COORDINATES:" << std::endl;
          std::cin >> action.args[2] >> action.args[3];
+         return action;
          break;
       
       default:
@@ -120,12 +136,56 @@ while(true)
 
 void TerminalControl::handleActionError(int errorCode)
 {
-   std::cout << "something happened..." << std::endl;
+   //enum invalidAction {NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
+   switch (errorCode)
+   {
+   case GameMaster::NONE:
+      std::cout << "something happened..." << std::endl;
+      break;
+   
+   case GameMaster::INVTYPE:
+      std::cout << "Invalid command type..." << std::endl;
+      break;
+
+   case GameMaster::NOARGS:
+      std::cout << "Insufficient arguments..." << std::endl;
+      break;
+
+   case GameMaster::INVARGS:
+      std::cout << "Invalid argument(s)..." << std::endl;
+      break;
+
+   case GameMaster::PERMISSION:
+      std::cout << "You don't have permission..." << std::endl;
+      break;
+
+   case GameMaster::NOSELECT:
+      std::cout << "No unit has been selected..." << std::endl;
+      break;
+
+   case GameMaster::NOTARGET:
+      std::cout << "No target has been specified..." << std::endl;
+      break;
+
+   case GameMaster::EXHAUSTED:
+      std::cout << "Option exhausted..." << std::endl;
+      break;
+   
+   case GameMaster::NOFUNDS:
+      std::cout << "Insufficient funds..." << std::endl;
+      break;
+
+   default:
+      std::cout << "Unknown error occurred..." << std::endl;
+      break;
+   }
+
 }
 
 void TerminalControl::applyUpdates()
 {
-   printUI();
+   if(master->getTurn() == id)
+      printUI();
 }
 
 void TerminalControl::higlightTileBold(std::string &buffer, int width, int height, int x, int y)

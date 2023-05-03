@@ -1,18 +1,24 @@
 #pragma once
+
 #include <vector>
 #include <string>
 #include <functional>
 #include <memory>
 
-class GameMaster;
-class Player;
-class Deck;
-class Card;
-class Tile;
+#define GRID_WIDTH 8
+#define GRID_HEIGHT 6
 
+class GameMaster; // Basically, a singular game session. 
+class Player; // A player in context of game. Does not generate any input.
+class Deck; // A card pool that can be used by players.
+class Card; // A card in any state, with gameplay parameters.
+class Tile; // An area that cards can be placed onto.
+
+// Info tags to conceal gameplay elements.
 struct CardInfo; 
 struct PlayerInfo;
 
+// Pointer type re-definition for clarity
 typedef std::shared_ptr<GameMaster> MasterPtr;
 typedef std::shared_ptr<Player> PlayerPtr;
 typedef std::shared_ptr<Deck> DeckPtr;
@@ -23,66 +29,79 @@ typedef std::shared_ptr<Tile> TilePtr;
 
 class GameMaster
 {
-    public:
-    std::vector<Player> players;
-    std::vector<ControllerPtr> playerControllers; //entities that provide player inputs.
-                                                      //E.G. User, AIs, network-connected players
+    public: // _____________________________________________________________________________
+    GameMaster(const std::vector<PlayerController*> controllers, const std::vector<Deck*>& decks);
 
+    std::vector<Player> players; 
+    std::vector<Deck*> decks;
+    std::vector<PlayerController*> playerControllers; // entities that provide player inputs.
+                                                      // E.G. User, AIs, network-connected players
     //grid
-    std::vector<std::vector<Tile>> grid; //(0,0) is top left corner; X axis is vertical, Y is horizontal.
+    std::vector<std::vector<Tile>> grid; //The playing field. (0,0) is top left corner; X axis is vertical, Y is horizontal.
+    std::vector<Card*> activeCards; // Cards that are currently on the playing field.
 
-    // std::vector<std::vector<Tile>> deployZones;
-    // std::vector<Tile> captureZone;
+    void mainLoop(); // Process player inputs and update status for everyone.
+    void endTurn(); // Pass the turn to next player and process the necessary triggers.
 
-    void MainLoop();
-    void EndTurn();
+    int getTurn() { return turn;}
+    int getTurnAbsolute() { return turnAbsolute;}
 
-    GameMaster(std::vector<ControllerPtr> controllers, std::vector<DeckPtr> decks, int gridHeight = 6, int gridWidth = 8);
 
-    private:
-    int ProcessAction(const PlayerAction& action);
-    //void GameMaster::updateStatus(PlayerController& controller);
+    //protected: // _____________________________________________________________________________
+    int processAction(const PlayerAction& action);
     enum invalidAction {NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
+    //void GameMaster::updateStatus(PlayerController& controller);
     int turn;
+    int turnAbsolute;
+
+    // Cards
+    bool deployCard(Card& card, Tile* target); // Place a card in play.
+    bool moveCard(Card& card, const int& direction); // Move a card in specified direction.
+    void destroyCard(Card& card); // Remove a card from play and discard it.
+    bool attackWith(Card& card, const int& direction); // Resolve an attack from one tile to another.
+
+    int ResolveCombat(Card& attacker, Card& defender); // Resolve combat between two units.
+    enum combatOutcome {WIN, TIE, LOSE};
+    // Tiles
+    enum nearbyTiles {UP, RIGHT, DOWN, LEFT, UPRIGHT, DOWNRIGHT, DOWNLEFT, UPLEFT};
+    std::vector<Tile*> getAdjacentTiles(const Tile& tile);
+    std::vector<Tile*> getSurroundingTiles(const Tile& tile);
+    // Players
+    bool giveCard(int player); // Returns whether deck was refreshed or not
+    bool discard(int player, int handIndex); // 
+    bool playCard(int handIndex, Tile& target);
 };
 
 class Player
 {
-    public:
-    int playerId;
+    public: // _____________________________________________________________________________
+    Player(int playerid);
+    
+    const int id; //Unique player ID and turn no. on which it issues orders.
+    std::vector<Card*> hand;
 
-    Deck& deck;
-    std::vector<CardPtr> hand;
+    int points; //"Dominance points" scored by the player. 10 are required to win the game;
+    int funds; // Funds used to play cards and fire abilities.
 
-    int points;
-    int funds;
-    std::vector<CardPtr> cardsInPlay;
-
-    Player(Deck& ndeck, int playerid);
-
-    int draw(Deck& targetDeck); //should return whether deck was refreshed or not
-    void discard(int handIndex);
-    void play(int handIndex, Tile& target);
+    PlayerInfo getInfo();
+    
     /*void commandMove(Card& object, Tile& destination);
     void commandAttack(Card& object, Tile& target);
     void commandActivateAbility(Card& object, Card& target);*/
-    void endTurn();
 
     //Event triggers
-    std::vector<std::function<void()>> onTurnStart;
-    std::vector<std::function<void()>> onTurnEnd;
-    std::vector<std::function<void(Card&)>> onDraw;  // Card& drawn
-    std::vector<std::function<void(Card&)>> onPlay; // Card& played
-    std::vector<std::function<void(Card&)>> onCommandAbilityActivate; //Card& target
+    // std::vector<std::function<void()>> onTurnStart;
+    // std::vector<std::function<void()>> onTurnEnd;
+    // std::vector<std::function<void(Card&)>> onDraw;  // Card& drawn
+    // std::vector<std::function<void(Card&)>> onPlay; // Card& played
+    // std::vector<std::function<void(Card&)>> onCommandAbilityActivate; //Card& target
     //...
 };
 
 struct PlayerInfo
 {
-    int id;
-
     //std::string name;
-
+    int id;
     int points;
     int money;
     int deckSize;
@@ -91,67 +110,61 @@ struct PlayerInfo
 
 class Deck
 {
-     public:
-     std::vector<CardPtr> library;
-     std::vector<CardPtr> discard;
-
-     std::vector<CardPtr> roster;
-
-     Deck(const std::vector<Card>& cards);
+    public: // _____________________________________________________________________________
+    Deck(const std::vector<Card>& cards);
+    Deck(const Deck& original);
+ 
+    std::vector<Card> roster; //All cards associated with this deck. Original cards are stored here.
+    std::vector<Card*> discard; //Cards that have been removed after being put into play.
+    std::vector<Card*> library; //Cards that can be drawn.
      
-     void shuffle();
-     void refresh();
+    void shuffle();
+    void refresh();
 };
 
 class Tile
 {
-    public:
-    GameMaster& master;
+    public: // _____________________________________________________________________________
+    Tile(int nx, int ny, int ntype = -1) : x(nx), y(ny), type(ntype), card(nullptr) {}
+    Tile(Tile& original) = default;
 
     int x, y;
-    enum tileTypes {CAPTUREZONE = -2, NORMAL = -1}; //Non-negatives refer to deploy zones of players with same IDs
     int type;
-
-    CardPtr card; //NULL if empty
-
-    enum nearbyTiles {UP, RIGHT, DOWN, LEFT, UPRIGHT, DOWNRIGHT, DOWNLEFT, UPLEFT};
-    std::vector<TilePtr> getAdjacent();
-    std::vector<TilePtr> getSurrounding();
-
-    Tile(GameMaster& new_master, int x = -1, int y = -1);
+    
+    enum tileTypes {CAPTUREZONE = -2, NORMAL = -1}; //Non-negatives refer to deploy zones of players with same IDs
+    
+    Card* card; //NULL if empty
 };
 
 class Card
 {
-    public:
-    // General game parameters
-    PlayerPtr owner;
-    int id;
-    int type;
+    public: // _____________________________________________________________________________
+    Card(int nid);
+    Card(const Card& original) = default;
+    // Identification 
+    int ownerId;
+    const int id;
+
     enum cardType {UNIT, CONTRACT, TACTIC};
+    int type;
+    enum cardStatus {UNDEFINED = -1, DECK = 0, HAND = 1, IN_PLAY = 2, DISCARD = 3};
+    int status;
 
-    enum playPositions {UNDEFINED = -1, DECK = 0, HAND = 1, IN_PLAY = 2, DISCARD = 3};
-    int playPosition;
-    TilePtr gridPosition;
+    CardInfo getInfo();
+    // UI parameters
+    std::string name;
+    std::string text;
+    //...
+    // Gameplay
+    int x, y;
 
-    int playCost;
+    int cost;
     int value;
     int advantage;
-
+    // Status effects
     bool canAttack;
     bool canMove;
     bool isOverwhelmed;
-
-    //Actions
-    bool Deploy(TilePtr destination = NULL);
-    bool Move(int direction);
-    void Kill();
-    bool Attack(int direction);
-
-    int ResolveCombat(Card& target);
-    enum combatOutcome {WIN, TIE, LOSE};
-
-    Card();
 
     // Event triggers
     // std::vector<std::function<void(Tile*)>> onPlay; // Tile* deployLocation
@@ -164,21 +177,14 @@ class Card
     // std::vector<std::function<void(Card&)>> onKill; // Card& target
     // std::vector<std::function<void(Card&, int)>> onReceiveDamage; // Card& damagedBy, int damageSustained
     // std::vector<std::function<void(Card&)>> onDeath; // Card& killedBy
-    // std::vector<std::function<void(CardPtr target)>> onAbilityActivate; // CardPtr target
-    //...
-
-
-    // Graphic & UI parameters
-    std::string name;
-    std::string text;
+    // std::vector<std::function<void(Card* target)>> onAbilityActivate; // Card* target
     //...
 
 };
 
 struct CardInfo //Out of game context info tag
 {
-    int ownerid;
-    int playPosition;
+    int ownerId;
 
     std::string name;
     std::string text;

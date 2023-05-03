@@ -29,10 +29,12 @@ struct PlayerAction
 class PlayerController //Abstract player interface class (slave of GameMaster)
 {
     public:
-    MasterPtr master;
+    GameMaster* master;
     int id;
+    
+    inline int getId() { return id;}
 
-    std::vector<CardInfo> inPlay;
+    std::vector<CardInfo> activeCardsAll;
     std::vector<CardInfo> hand;
 
     virtual PlayerAction getAction() = 0;

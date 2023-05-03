@@ -1,6 +1,12 @@
 #include "gameLogic.h"
 
-Player::Player(Deck& ndeck, int id) : deck(ndeck)
+#include <stdexcept>
+#include <iostream>
+
+Player::Player(int playerid) : id(playerid)
 {
-    playerId = id;
+    std::cout << " created player " << this << " with ID " << id << std::endl;
+
+    funds = 0;
+    points = 0;
 }

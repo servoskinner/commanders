@@ -1,12 +1,22 @@
 #include "gameLogic.h"
 
-Deck::Deck(const std::vector<Card>& cards) //Takes a <Card> container
+Deck::Deck(const std::vector<Card>& cards)
 {
-    
-    for(Card card : cards)
+    discard = std::vector<Card*>(0);
+
+    for(const Card& card : cards)
     {
-        CardPtr cardptr = std::make_shared<Card>(card);
-        roster.push_back(cardptr);
-        library.push_back(cardptr);
+        roster.push_back(card);
+        library.push_back(&roster.back());
+    }
+}
+Deck::Deck(const Deck& original)
+{
+    discard = std::vector<Card*>(0);
+    
+    for(const Card& card : original.roster)
+    {
+        roster.push_back(card);
+        library.push_back(&roster.back());
     }
 }

@@ -1,61 +1,70 @@
 #include "gameLogic.h"
+#include "misc.h"
 
 #include <stdexcept>
 #include <iostream>
 
-GameMaster::GameMaster(std::vector<ControllerPtr> controllers, std::vector<DeckPtr> decks, int gridHeight, int gridWidth)
+GameMaster::GameMaster(const std::vector<PlayerController*> controllers, const std::vector<Deck*>& ndecks)
 {
+    // Check argument validity
     if(controllers.size() > decks.size()) 
         throw std::runtime_error("Insufficient decks specified for game creation;");
     if(controllers.size() < decks.size())
         std::clog << "Redundant decks provided for GameMaster constructor. Ignoring last;" << std::endl;
 
+    // Set up variables
     playerControllers = controllers;
+    decks = ndecks;
+
     turn = 0;
+    turnAbsolute = 0;
 
-    grid = std::vector<std::vector<Tile>>(gridHeight, std::vector<Tile>(gridWidth, Tile(*this)));
+    // Build grid
+    grid = std::vector<std::vector<Tile>>(GRID_HEIGHT, std::vector<Tile>(GRID_WIDTH));
 
-    for(int row = 0; row < gridHeight; row++)
-        for(int column = 0; column < gridWidth; column ++)
+    for(int row = 0; row < GRID_HEIGHT; row++)
+        for(int column = 0; column < GRID_WIDTH; column ++)
             grid[row][column].y = column, grid[row][column].x = row; 
 
+    // Set up player entities
     for(int playerid = 0; playerid < controllers.size(); playerid++)
         {
-        players.push_back(Player(*decks[playerid], playerid));
+        players.emplace_back(playerid);
 
         controllers[playerid]->id = playerid;
-        controllers[playerid]->master = (MasterPtr)this;
+        controllers[playerid]->master = this;
         }
 
     // deployZones = {}; //TBA
     // captureZone = {};
 }
 
-void GameMaster::MainLoop()
+void GameMaster::mainLoop()
 {
-    PlayerAction action = playerControllers[turn]->getAction();
-    int actionVerdict = ProcessAction(action);
-
-    if(actionVerdict != GameMaster::NONE)
-        playerControllers[turn]->handleActionError(actionVerdict);
-
-    for(ControllerPtr pcp : playerControllers)
+    //Send game status updates to every player
+    for(PlayerController* pcp : playerControllers)
     {
         //updateStatus(pcp);
         pcp->applyUpdates();
     }
+    
+    PlayerAction action = playerControllers[turn]->getAction();
+    int actionVerdict = processAction(action);
+
+    if(actionVerdict != GameMaster::NONE) //Invalid action received;
+        playerControllers[turn]->handleActionError(actionVerdict);
 }
 
-void GameMaster::EndTurn()
+void GameMaster::endTurn()
 {
     turn = (turn + 1) % playerControllers.size();
     // restore
     // score points
     // income, decrement contracts
     // draw
-    for(CardPtr cardp : players[turn].cardsInPlay)
+    for(Card* cardp : activeCards)
     {
-        if(cardp->type == Card::UNIT) //purge status effects
+        if(cardp->type == Card::UNIT && cardp->ownerId == turn) // Purge next player's units' status effects
         {
             cardp->canMove       = true;
             cardp->canAttack     = true;
@@ -64,7 +73,7 @@ void GameMaster::EndTurn()
     }
 };
 
-int GameMaster::ProcessAction(const PlayerAction& action)
+int GameMaster::processAction(const PlayerAction& action)
 {
     int deltax, deltay; // Relative target postition for attacking and moving.
     int direction = -1; // Direction of attack or movement.
@@ -76,7 +85,7 @@ int GameMaster::ProcessAction(const PlayerAction& action)
 
         case PlayerAction::PASS:
         // self-explanatory.
-        EndTurn();
+        endTurn();
         return GameMaster::NONE; //Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
         break;
 
@@ -97,22 +106,23 @@ int GameMaster::ProcessAction(const PlayerAction& action)
             deltax = action.args[2] - action.args[0];
             deltay = action.args[3] - action.args[1];
                     // valid
-            if     (!(deltax ==  1 && deltay ==  0))    direction = Tile::UP;
-            else if(!(deltax == -1 && deltay ==  0))    direction = Tile::DOWN;
-            else if(!(deltax ==  0 && deltay ==  1))    direction = Tile::RIGHT;
-            else if(!(deltax ==  0 && deltay == -1))    direction = Tile::LEFT;
+            if     (!(deltax ==  1 && deltay ==  0))    direction = GameMaster::UP;
+            else if(!(deltax == -1 && deltay ==  0))    direction = GameMaster::DOWN;
+            else if(!(deltax ==  0 && deltay ==  1))    direction = GameMaster::RIGHT;
+            else if(!(deltax ==  0 && deltay == -1))    direction = GameMaster::LEFT;
             else    //invalid
             return GameMaster::INVARGS;
 
         //check that an unit was selected
-        if(grid[action.args[0]][action.args[1]].card == nullptr)                return GameMaster::NOSELECT;
+        if(grid[action.args[0]][action.args[1]].card == nullptr)            return GameMaster::NOSELECT;
         //check that target tile is vacant
-        if(grid[action.args[2]][action.args[3]].card != nullptr)                return GameMaster::NOTARGET;
+        if(grid[action.args[2]][action.args[3]].card != nullptr)            return GameMaster::NOTARGET;
         //check for ownership permissions
-        if(grid[action.args[0]][action.args[1]].card->owner->playerId != turn)  return GameMaster::PERMISSION;
+        if(grid[action.args[0]][action.args[1]].card->ownerId != turn)      return GameMaster::PERMISSION;
 
         //Finally, perform the action
-        grid[action.args[0]][action.args[1]].card->Move(direction);
+        //grid[action.args[0]][action.args[1]].card->moveCard(direction);
+        moveCard(*grid[action.args[0]][action.args[1]].card, direction);
 
         std::cout << "Executing..." << std::endl;
         return GameMaster::NONE;
@@ -135,27 +145,28 @@ int GameMaster::ProcessAction(const PlayerAction& action)
             deltax = action.args[2] - action.args[0];
             deltay = action.args[3] - action.args[1];
                     // valid adjacent
-            if     (!(deltax ==  1 && deltay ==  0))    direction = Tile::UP;
-            else if(!(deltax == -1 && deltay ==  0))    direction = Tile::DOWN;
-            else if(!(deltax ==  0 && deltay ==  1))    direction = Tile::RIGHT;
-            else if(!(deltax ==  0 && deltay == -1))    direction = Tile::LEFT;
+            if     (!(deltax ==  1 && deltay ==  0))    direction = GameMaster::UP;
+            else if(!(deltax == -1 && deltay ==  0))    direction = GameMaster::DOWN;
+            else if(!(deltax ==  0 && deltay ==  1))    direction = GameMaster::RIGHT;
+            else if(!(deltax ==  0 && deltay == -1))    direction = GameMaster::LEFT;
                      // valid diagonals
-            else if(!(deltax ==  1 && deltay ==  1))    direction = Tile::UPRIGHT;
-            else if(!(deltax ==  1 && deltay == -1))    direction = Tile::UPLEFT;
-            else if(!(deltax == -1 && deltay ==  1))    direction = Tile::DOWNRIGHT;
-            else if(!(deltax == -1 && deltay == -1))    direction = Tile::DOWNLEFT;
+            else if(!(deltax ==  1 && deltay ==  1))    direction = GameMaster::UPRIGHT;
+            else if(!(deltax ==  1 && deltay == -1))    direction = GameMaster::UPLEFT;
+            else if(!(deltax == -1 && deltay ==  1))    direction = GameMaster::DOWNRIGHT;
+            else if(!(deltax == -1 && deltay == -1))    direction = GameMaster::DOWNLEFT;
             else    //invalid
             return GameMaster::INVARGS;
 
         //check that an unit was selected
-        if(grid[action.args[0]][action.args[1]].card == nullptr)                return GameMaster::NOSELECT;
+        if(grid[action.args[0]][action.args[1]].card == nullptr)            return GameMaster::NOSELECT;
         //check that a target is nonzero
-        if(grid[action.args[2]][action.args[3]].card == nullptr)                return GameMaster::NOTARGET;
+        if(grid[action.args[2]][action.args[3]].card == nullptr)            return GameMaster::NOTARGET;
         //check for ownership permissions
-        if(grid[action.args[0]][action.args[1]].card->owner->playerId != turn)  return GameMaster::PERMISSION;
+        if(grid[action.args[0]][action.args[1]].card->ownerId != turn)      return GameMaster::PERMISSION;
 
         //Finally, perform the action
-        grid[action.args[0]][action.args[1]].card->Attack(direction);
+        //grid[action.args[0]][action.args[1]].card->attack(direction);
+        attackWith(*grid[action.args[0]][action.args[1]].card, direction);
 
         std::cout << "Executing..." << std::endl;
         return GameMaster::NONE;
@@ -170,3 +181,161 @@ int GameMaster::ProcessAction(const PlayerAction& action)
 }
 
 //void GameMaster::updateStatus(PlayerController& controller);
+
+bool GameMaster::deployCard(Card& card, Tile* target)
+{
+    if(card.type == Card::UNIT && target == nullptr) throw std::runtime_error("No deployment site provided for unit");
+    if(card.status == Card::IN_PLAY) std::clog << "WARNING: Deploying card marked as \"IN PLAY\"";
+
+    if(card.type == Card::UNIT)
+    {
+        if(target->card)
+            return false; 
+        
+        target->card = &card;
+
+        card.x = target->x;
+        card.y = target->y;
+    }
+    //TODO: fire events
+    card.status = Card::IN_PLAY;
+    activeCards.push_back(&card);
+    
+    return true;
+}
+
+bool GameMaster::moveCard(Card& card, const int& direction)
+{   
+    //
+    if(direction < 0 || direction > 3) throw std::invalid_argument("invalid direction");
+    if(grid[card.x][card.y].card != &card) throw std::runtime_error("Trying to move an off-grid card");
+
+    auto options = getAdjacentTiles(grid[card.x][card.y]);
+
+    //TODO add mutual exchange movement option
+    // Check if tile is occupied
+    if(!options[direction] || options[direction]->card)
+        return false;
+
+    // Exchange positions
+    grid[card.x][card.y].card = NULL;
+    options[direction]->card = &card;
+    // Update coords
+    card.x = options[direction]->x;
+    card.y = options[direction]->y;
+
+    card.canMove = false;
+
+    return true;
+}
+
+void GameMaster::destroyCard(Card& card)
+{
+    if(card.x < 0 || card.y < 0)
+        grid[card.x][card.y].card = NULL;
+
+
+    if(!vectorPop(activeCards, &card))
+        std::clog << "WARNING: killing card that was inactive" << std::endl;
+
+    //TODO restore, fire events
+    card.status = Card::DISCARD;
+    decks[card.ownerId]->discard.push_back(&card);
+}
+
+bool GameMaster::attackWith(Card& card, const int& direction)
+{
+    if(direction < 0 || direction > 7) throw std::invalid_argument("Invalid direction");
+    if(grid[card.x][card.y].card != &card) throw std::runtime_error("Attacking with card with bad position");
+
+    std::vector<Tile*> options = getSurroundingTiles(grid[card.x][card.y]);
+
+    if(!options[direction] || !(options[direction]->card))
+        return false;
+
+    //combat damage resolution
+    ResolveCombat(card, *options[direction]->card);
+    return true;
+}
+
+int GameMaster::ResolveCombat(Card& attacker, Card& defender)
+{
+    int deltaAdvantage = attacker.advantage - defender.advantage;
+    //resolve overwhelming mechanic
+    if(defender.isOverwhelmed) deltaAdvantage++;
+    //advantage resolution
+    if(deltaAdvantage > 0)
+        {
+        defender.value -= deltaAdvantage;
+        if(defender.value < 0) defender.value = 0;
+        }
+    else
+        {
+        attacker.value += deltaAdvantage;
+        if(attacker.value < 0) attacker.value = 0;
+        }
+
+    attacker.canAttack = false;
+    attacker.canMove   = false;
+    defender.isOverwhelmed = true;
+    //normal damage resolution
+    if(attacker.value > defender.value)
+    {
+        attacker.value -= defender.value;
+        defender.value = 0;
+        destroyCard(defender);
+        return GameMaster::WIN;
+    }
+    else if(attacker.value < defender.value)
+    {
+        defender.value -= attacker.value;
+        attacker.value = 0;
+        destroyCard(attacker);
+        return GameMaster::LOSE;
+    }
+    else //attacker.value == defender.value
+    {
+        destroyCard(attacker);
+        destroyCard(defender);
+        return GameMaster::TIE;
+    }
+}
+
+std::vector<Tile*> GameMaster::getAdjacentTiles(const Tile& tile)    //Get 4-neighbourhood of the tile.
+{
+    std::vector<Tile*> res(4);
+
+    if(tile.x > 0)                           res[UP]    = &grid[tile.x-1][tile.y];
+    if(tile.y < grid[0].size() - 1)          res[RIGHT] = &grid[tile.x][tile.y+1];
+    if(tile.x < grid.size() - 1)             res[DOWN]  = &grid[tile.x+1][tile.y];
+    if(tile.y > 0)                           res[LEFT]  = &grid[tile.x][tile.y-1];
+
+    return res;
+}
+
+std::vector<Tile*> GameMaster::getSurroundingTiles(const Tile& tile) //Get 8-neighbourhood of the tile.
+{
+    std::vector<Tile*> res = std::vector<Tile*>(8);
+    
+    if(tile.x > 0)
+    {
+        res[UP] = &grid[tile.x-1][tile.y];
+
+        if(tile.y > 0)                        res[UPLEFT]    = &grid[tile.x-1][tile.y-1];
+        if(tile.y < grid[0].size() - 1)       res[UPRIGHT]   = &grid[tile.x-1][tile.y+1];
+    }
+
+    if(tile.x < grid.size() - 1)
+    {
+        res[DOWN] = &grid[tile.x+1][tile.y];
+
+        if(tile.y > 0)                        res[DOWNLEFT]  = &grid[tile.x+1][tile.y-1];
+        if(tile.y < grid[0].size() - 1)       res[DOWNRIGHT] = &grid[tile.x+1][tile.y+1];
+    }
+
+    if(tile.y > 0)                            res[LEFT]      = &grid[tile.x][tile.y-1];
+    if(tile.y < grid[0].size() - 1)           res[RIGHT]     = &grid[tile.x][tile.y+1];
+
+    return res;
+}
+
