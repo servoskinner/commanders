@@ -29,15 +29,18 @@ struct PlayerAction
 class PlayerController //Abstract player interface class (slave of GameMaster)
 {
     public:
-    MasterPtr master;
+    GameMaster* master;
     int id;
+    
+    inline int getId() { return id;}
 
-    std::vector<CardInfo> inPlay;
+    std::vector<CardInfo> activeCards;
     std::vector<CardInfo> hand;
+    std::vector<PlayerInfo> players;
 
     virtual PlayerAction getAction() = 0;
     virtual void applyUpdates() = 0;
-    virtual void handleActionError(int errorCode) = 0;
+    virtual void handleControllerEvent(int eventCode) = 0;
     //virtual std::vector<int> chooseTile() = 0;
     //virtual std::vector<int> chooseContract() = 0;
     //virtual std::vector<int> choosePlayer() = 0;
@@ -48,7 +51,7 @@ class TerminalControl : public PlayerController
     public:
 
     PlayerAction getAction() override;
-    void handleActionError(int errorCode) override;
+    void handleControllerEvent(int errorCode) override;
     void applyUpdates() override;
 
     TerminalControl() = default;
@@ -57,6 +60,5 @@ class TerminalControl : public PlayerController
     void printUI();
 
     void higlightTileBold(std::string &buffer, int width, int height, int x, int y);
-    void higlightTileLight(std::string &buffer, int width, int height, int x, int y);
-    void higlightTileHazard(std::string &buffer, int width, int height, int x, int y);
+    void higlightTileLight(std::string &buffer, int width, int height, int x, int y);;
 };
