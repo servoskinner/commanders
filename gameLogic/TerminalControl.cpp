@@ -83,6 +83,10 @@ void TerminalControl::printUI()
       }
    std::cout << buffer << std::endl;
 
+   std::cout << "Turn " << master->getTurnAbsolute() << "\n";
+   std::cout << "P1: " << players[0].funds << "$ " << players[0].points << " DP " << players[0].handSize << " in hand\n";
+   std::cout << "P2: " << players[1].funds << "$ " << players[1].points << " DP " << players[1].handSize << " in hand\n";
+
    // HAND __________________________________________
    std::cout << "HAND: " << hand.size() \
                << "/?? DECK: " << players[id].deckSize \
@@ -166,49 +170,57 @@ while(true)
    }
 }
 
-void TerminalControl::handleActionError(int errorCode)
+void TerminalControl::handleControllerEvent(int errorCode)
 {
    //enum invalidAction {NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
    switch (errorCode)
    {
    case GameMaster::NONE:
-      std::cout << "something happened..." << std::endl;
+      std::cout << "\nSomething happened...\n" << std::endl;
+      break;
+
+   case GameMaster::GAME_WIN:
+      std::cout << "\nVICTORY! Another successful takeover.\n" << std::endl;
+      break;
+
+   case GameMaster::GAME_LOSE:
+      std::cout << "\nYOU FAILED! The management won't be glad to hear that...\n" << std::endl;
       break;
    
-   case GameMaster::INVTYPE:
-      std::cout << "Invalid command type..." << std::endl;
+   case GameMaster::ACT_INVTYPE:
+      std::cout << "\nInvalid command type...\n" << std::endl;
       break;
 
-   case GameMaster::NOARGS:
-      std::cout << "Insufficient arguments..." << std::endl;
+   case GameMaster::ACT_INVARGS:
+      std::cout << "\nInvalid argument(s)...\n" << std::endl;
       break;
 
-   case GameMaster::INVARGS:
-      std::cout << "Invalid argument(s)..." << std::endl;
+   case GameMaster::ACT_PERMISSION:
+      std::cout << "\nYou don't have permission...\n" << std::endl;
       break;
 
-   case GameMaster::PERMISSION:
-      std::cout << "You don't have permission..." << std::endl;
+   case GameMaster::ACT_NOSELECT:
+      std::cout << "\nNo unit has been selected...\n" << std::endl;
       break;
 
-   case GameMaster::NOSELECT:
-      std::cout << "No unit has been selected..." << std::endl;
+   case GameMaster::ACT_NOTARGET:
+      std::cout << "\nNo target has been specified...\n" << std::endl;
       break;
 
-   case GameMaster::NOTARGET:
-      std::cout << "No target has been specified..." << std::endl;
-      break;
-
-   case GameMaster::EXHAUSTED:
-      std::cout << "Option exhausted..." << std::endl;
+   case GameMaster::ACT_EXHAUSTED:
+      std::cout << "\nOption exhausted...\n" << std::endl;
       break;
    
-   case GameMaster::NOFUNDS:
-      std::cout << "Insufficient funds..." << std::endl;
+   case GameMaster::ACT_NOFUNDS:
+      std::cout << "\nInsufficient funds...\n" << std::endl;
+      break;
+
+   case GameMaster::UNKNOWN:
+      std::cout << "\nA brand new unknown error occurred...\n" << std::endl;
       break;
 
    default:
-      std::cout << "Unknown error occurred..." << std::endl;
+      std::cout << "\nAn unknown error occurred...\n" << std::endl;
       break;
    }
 

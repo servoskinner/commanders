@@ -10,6 +10,7 @@
 
 #define BASIC_INCOME 2
 #define STARTING_HAND_SIZE 4
+#define POINTS_REQ_FOR_VICTORY 10
 
 class GameMaster; // Basically, a singular game session. 
 class Player; // A player in context of game. Does not generate any input.
@@ -44,22 +45,26 @@ class GameMaster
     std::vector<std::vector<Tile>> grid; //The playing field. (0,0) is top left corner; X axis is vertical, Y is horizontal.
     std::vector<Card*> activeCards; // Cards that are currently on the playing field.
 
-    void mainLoop(); // Process player inputs and update status for everyone.
+    bool mainLoop(); // Process player inputs and update status for everyone.
     void endTurn(); // Pass the turn to next player and process the necessary triggers.
 
     int getTurn() { return turn;}
     int getTurnAbsolute() { return turnAbsolute;}
 
+    enum eventCodes {NONE, UNKNOWN, GAME_WIN, GAME_LOSE, ACT_INVTYPE, ACT_INVARGS, ACT_PERMISSION, ACT_NOSELECT, ACT_NOTARGET, ACT_EXHAUSTED, ACT_NOFUNDS,
+                     DECK_NOREFRESH};
+    enum nearbyTiles {UP, RIGHT, DOWN, LEFT, UPRIGHT, DOWNRIGHT, DOWNLEFT, UPLEFT};
 
-    //protected: // _____________________________________________________________________________
+    protected: // _____________________________________________________________________________
     int processAction(const PlayerAction& action);
-    enum invalidAction {NONE, UNKNOWN, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
 
     void updateStatus(int playerId);
     bool checkDominance(int playerId);
 
     int turn;
     int turnAbsolute;
+
+    bool enableGameLoop;
 
     // Cards
     bool deployCard(Card& card, Tile* target); // Place a card in play.
@@ -70,7 +75,7 @@ class GameMaster
     int ResolveCombat(Card& attacker, Card& defender); // Resolve combat between two units.
     enum combatOutcome {WIN, TIE, LOSE};
     // Tiles
-    enum nearbyTiles {UP, RIGHT, DOWN, LEFT, UPRIGHT, DOWNRIGHT, DOWNLEFT, UPLEFT};
+    
     std::vector<Tile*> getAdjacentTiles(const Tile& tile);
     std::vector<Tile*> getSurroundingTiles(const Tile& tile);
     // Players
@@ -111,8 +116,10 @@ struct PlayerInfo
     int id;
     int points;
     int funds;
+
     int deckSize;
     int discardSize;
+    int handSize;
 };
 
 class Deck

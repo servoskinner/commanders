@@ -21,6 +21,7 @@ PlayerInfo Player::getInfo(Deck& deck)
 
     info.deckSize = deck.library.size();
     info.discardSize = deck.discard.size();
+    info.handSize = hand.size();
 
     return info;
 }

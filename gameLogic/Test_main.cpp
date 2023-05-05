@@ -64,10 +64,7 @@ int main()
 
     GameMaster gm(controllers, decks);
 
-    while(true)
-    {
-        gm.mainLoop();
-    }
+    while(gm.mainLoop());
     
     return 0;
 }
