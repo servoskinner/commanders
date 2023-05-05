@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm>
-#include <memory>
+#include <vector>
 
 template <typename Type>
 bool vectorPop(std::vector<Type>& vec, const Type& key) //Remove element with target value from a vector
