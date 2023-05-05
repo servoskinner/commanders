@@ -6,6 +6,7 @@
 Deck::Deck(const std::vector<Card> &cards) : roster(0), library(0), discard(0)
 {
     roster = cards;
+
     for(Card& card : roster)
     {   
         card.status = Card::DECK;
@@ -40,6 +41,7 @@ void Deck::refresh()
 Deck::Deck(const Deck &original) : roster(0), library(0), discard(0)
 {
     roster = original.roster;
+
     for(Card& card : roster)
     {   
         card.status = Card::DECK;
@@ -49,11 +51,11 @@ Deck::Deck(const Deck &original) : roster(0), library(0), discard(0)
 
 Deck &Deck::operator=(const Deck &original)
 {
-    roster = std::vector<Card>(0);
     library = std::vector<Card *>(0);
     discard = std::vector<Card *>(0);
 
     roster = original.roster;
+
     for(Card& card : roster)
     {   
         card.status = Card::DECK;

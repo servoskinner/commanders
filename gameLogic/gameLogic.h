@@ -34,6 +34,7 @@ class GameMaster
 {
     public: // _____________________________________________________________________________
     GameMaster(const std::vector<PlayerController*>& controllers, const std::vector<Deck*>& decks);
+    std::vector<Card> origins;
 
     std::vector<Player> players; 
     std::vector<Deck*> decks;
@@ -55,6 +56,7 @@ class GameMaster
     enum invalidAction {NONE, UNKNOWN, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
 
     void updateStatus(int playerId);
+    bool checkDominance(int playerId);
 
     int turn;
     int turnAbsolute;
@@ -121,6 +123,7 @@ class Deck
     Deck& operator=(const Deck& original);
  
     std::vector<Card> roster; //All cards associated with this deck. Original cards are stored here.
+        std::vector<Card> origins; //These cards remain unchanged and used for restoration.
     std::vector<Card*> discard; //Cards that have been removed after being put into play.
     std::vector<Card*> library; //Cards that can be drawn.
      

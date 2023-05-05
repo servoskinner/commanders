@@ -273,6 +273,20 @@ void GameMaster::updateStatus(int playerId)
         controller.players[i] = players[i].getInfo(*decks[i]);
 }
 
+bool GameMaster::checkDominance(int playerId)
+{
+    int delta = 0;
+    for(Card* cptr : activeCards) // Find active cards that are in capture zone
+        if(grid[cptr->x][cptr->y].type = Tile::CAPTUREZONE)
+        {
+            if(cptr->ownerId == turn)
+                delta++;
+            else
+                delta--;
+        }
+    return delta > 0;
+}
+
 bool GameMaster::deployCard(Card& card, Tile* target)
 {
     if(card.type == Card::UNIT && target == nullptr) throw std::runtime_error("No deployment site provided for unit");
