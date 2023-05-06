@@ -24,7 +24,7 @@
     <ClCompile Include="gameLogic\Tile.cpp">
       <Filter>gameLogic</Filter>
     </ClCompile>
-    <ClCompile Include="game_Interface\Main_window\main_window.cpp">
+    <ClCompile Include="game_Interface\Main_window\window.cpp">
       <Filter>game_Interface</Filter>
     </ClCompile>
   </ItemGroup>
