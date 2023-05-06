@@ -134,7 +134,7 @@
     <ClCompile Include="gameLogic\GameMaster.cpp" />
     <ClCompile Include="gameLogic\Player.cpp" />
     <ClCompile Include="gameLogic\Tile.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="game_Interface\Main_window\main_window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameLogic\gameLogic.h" />

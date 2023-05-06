@@ -4,6 +4,12 @@
     <Filter Include="gameLogic">
       <UniqueIdentifier>{2965bef6-12b6-41b9-8757-5ba18520de93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="game_Interface">
+      <UniqueIdentifier>{73d64957-2a2c-4e13-84c7-0974b2a39dc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{b88ba9d0-51d2-4cb4-af60-aa60086c7e51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gameLogic\Card.cpp">
@@ -18,7 +24,9 @@
     <ClCompile Include="gameLogic\Tile.cpp">
       <Filter>gameLogic</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="game_Interface\Main_window\main_window.cpp">
+      <Filter>game_Interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameLogic\gameLogic.h">

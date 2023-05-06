@@ -1,30 +1,35 @@
-#include <iostream>
-
 #include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/Audio.hpp>
-#include <SFML/Network.hpp>
 
-/*
-int main_funk()
+int main()
 {
-    sf::RenderWindow window(sf::VideoMode(640, 480), "Corporate Wars v.0.0.1", sf::Style::Titlebar | sf::Style::Close);
-    sf::Event event;
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "Corporate Wars");
+    sf::CircleShape shape(100.f);
+    shape.setFillColor(sf::Color::Green);
 
-    while (window.isOpen()) {
-        while (window.pollEvent(event)) {
-            switch (event.type)
-            {
-            case sf::Event::Closed:
-                window.close();
-                break;
-            }
+    while (window.isOpen())
+    {
+        sf::Event event;
 
+
+        //icon:
+        sf::Image icon;
+        if (!icon.loadFromFile("Source/images/icon.png")) {
+            return 1;
         }
-        window.clear(); // clear old frame
-        window.display(); // tell app that window is done drawing
+        window.setIcon(976, 976, icon.getPixelsPtr());
+
+
+
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear();
+        window.draw(shape);
+        window.display();
     }
+
     return 0;
 }
-*/
