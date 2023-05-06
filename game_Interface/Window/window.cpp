@@ -7,7 +7,7 @@ int main()
 {
     sf::Event event;
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Corporate Wars", sf::Style::Fullscreen);
-    
+
     //creating time
     //sf::Clock clock();
 
@@ -23,7 +23,7 @@ int main()
 
     while (window.isOpen())
     {
-        
+
         //setting icon
         //do not use icon12.png
         sf::Image icon; // create image object
