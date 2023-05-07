@@ -26,6 +26,28 @@ Card::Card(int nid)
     isOverwhelmed = false;
 }
 
+Card& Card::operator=(const Card& other)
+{
+    //Status, ID and ownerID stay the same;
+    type = other.type;
+
+    x = other.x;
+    y = other.y;
+
+    name = other.name;
+    text = other.text;
+
+    cost = other.cost;
+    value = other.value;
+    advantage = other.advantage;
+    
+    onAbilityActivate = other.onAbilityActivate;
+    onPlay = other.onPlay;
+    onDeath = other.onDeath;
+
+    return *this;
+}
+
 CardInfo Card::getInfo()
 {
     CardInfo info;

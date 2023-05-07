@@ -1,6 +1,5 @@
-#pragma once
-
 #include "Roster.h"
+#include "gameLogic.h"
 
 Roster::Roster() : cards(TOTAL_CARDS_IN_GAME)
 {
@@ -65,10 +64,54 @@ Roster::Roster() : cards(TOTAL_CARDS_IN_GAME)
     cards[GUNKFOOD].cost = 1;
     cards[GUNKFOOD].value = 4; 
     //______________________________
-    cards[FISSION].name = "Nuclear fission";
+    cards[FISSION].name = "Nuclear Fission";
     cards[FISSION].type = Card::CONTRACT;
     cards[FISSION].text = "Lasts for months. Indistinguishable from sorcery.";
 
     cards[FISSION].cost = 5;
     cards[FISSION].value = 10;
+    //______________________________
+    cards[LOGISTICS].name = "Gray Logistics";
+    cards[LOGISTICS].type = Card::TACTIC;
+    cards[LOGISTICS].text = "DRAW 2 CARDS.";
+
+    cards[LOGISTICS].cost = 2;
+    cards[LOGISTICS].value = -1;
+    cards[LOGISTICS].onPlay.push_back(abilityDrawCards<2>);
+    //______________________________
+    cards[UNITANK].name = "Unicycle tank";
+    cards[UNITANK].type = Card::UNIT;
+    cards[UNITANK].text = "GAIN $2 WHEN THIS UNIT IS DESTROYED.";
+
+    cards[UNITANK].cost = 4;
+    cards[UNITANK].value = 2;
+    cards[UNITANK].onDeath.push_back(abilityGainCredits<2>);
+    //______________________________
+    cards[BIOWEAPONRD].name = "Bioweapons R&D";
+    cards[BIOWEAPONRD].type = Card::CONTRACT;
+    cards[BIOWEAPONRD].text = "DRAW 1 CARD WHEN THIS CONTRACT IS TERMINATED.";
+
+    cards[BIOWEAPONRD].cost = 3;
+    cards[BIOWEAPONRD].value = 4;
+    cards[BIOWEAPONRD].onDeath.push_back(abilityDrawCards<1>);
+    //______________________________
+    cards[BARGAIN].name = "Bargain";
+    cards[BARGAIN].type = Card::TACTIC;
+    cards[BARGAIN].text = "GAIN 5 CREDITS. DEAL!";
+
+    cards[BARGAIN].cost = 3;
+    cards[BARGAIN].value = -1;
+    cards[BARGAIN].onPlay.push_back(abilityGainCredits<5>);
+}
+
+template <int quantity>
+void abilityDrawCards(GameMaster& gm, Card& activator)
+{
+    for(int i = 0; i < quantity; i++)
+        gm.forceDraw(activator.ownerId);
+}
+template <int quantity>
+void abilityGainCredits(GameMaster& gm, Card& activator)
+{
+    gm.players[activator.ownerId].funds += quantity;
 }

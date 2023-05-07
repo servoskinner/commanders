@@ -10,8 +10,8 @@ void TerminalControl::printUI()
    // GRID _________________________________________
     int width, height;
 
-    height = master->grid.size();
-    width = master->grid[0].size();
+    height = master->getGridHeight();
+    width = master->getGridWidth();
 
      //first, draw the empty field
      std::string buffer = ".";
@@ -36,26 +36,22 @@ void TerminalControl::printUI()
         buffer.append("\n");
      }
 
-     // highlight special regions
-     // deploy zones
-   //   for(int i = 0; i < height; i++)
-   //   {
-   //       higlightTileLight(buffer, width, height, i, 0);
-   //       higlightTileLight(buffer, width, height, i, width - 1);
-   //   }
-   //   // combat zones
-   //   for(int i = 0; i < height; i++)
-   //   {
-   //       higlightTileHazard(buffer, width, height, i, width / 2);
-   //       higlightTileHazard(buffer, width, height, i, (width - 1) / 2);
-   //   }
-   // (it sucks)
+     // Highlight deploy zones
+     for(int i = 0; i < height; i++)
+     {
+         higlightTileLight(buffer, width, height, i, 0);
+         higlightTileLight(buffer, width, height, i, width - 1);
+     }
 
      // Render Units
    for(CardInfo card : activeCards)
       if(card.type == Card::UNIT)
       {
-         higlightTileBold(buffer, width, height, card.x, card.y);
+         if(card.y == 3 || card.y == 4) //in capture zone
+            higlightTileFunky(buffer, width, height, card.x, card.y);
+         else
+            higlightTileBold(buffer, width, height, card.x, card.y);
+
          // Name
          for(int bias = 1; bias < 9 && bias < card.name.size() + 1; bias++)
             buffer[(card.x*4 + 1)*(width*9 + 2) + card.y*9 + bias] = card.name[bias-1];
@@ -258,22 +254,45 @@ void TerminalControl::higlightTileBold(std::string &buffer, int width, int heigh
 void TerminalControl::higlightTileLight(std::string &buffer, int width, int height, int x, int y)
 {
     // corners
-    buffer[x*4*(width*9 + 2) + y*9] = '.';
-    buffer[(x+1)*4*(width*9 + 2) + y*9] = ':';
-    buffer[x*4*(width*9 + 2) + (y+1)*9] = '.';
-    buffer[(x+1)*4*(width*9 + 2) + (y+1)*9] = ':';
+    buffer[x*4*(width*9 + 2) + y*9] = '+';
+    buffer[(x+1)*4*(width*9 + 2) + y*9] = '+';
+    buffer[x*4*(width*9 + 2) + (y+1)*9] = '+';
+    buffer[(x+1)*4*(width*9 + 2) + (y+1)*9] = '+';
 
     // vertical border
     for(int bias = 1; bias < 4; bias++)
     {
-       buffer[(x*4 + bias)*(width*9 + 2) + y*9] = ':';
-       buffer[(x*4 + bias)*(width*9 + 2) + (y+1)*9] = ':'; 
+       buffer[(x*4 + bias)*(width*9 + 2) + y*9] = '.';
+       buffer[(x*4 + bias)*(width*9 + 2) + (y+1)*9] = '.'; 
+    }
+
+    // horizontal border
+   //  for(int bias = 1; bias < 9; bias++)
+   //  {
+   //     buffer[x*4*(width*9 + 2) + y*9 + bias] = '.';
+   //     buffer[(x+1)*4*(width*9 + 2) + y*9 + bias] = '.'; 
+   //  }
+}
+
+void TerminalControl::higlightTileFunky(std::string &buffer, int width, int height, int x, int y)
+{
+    // corners
+    buffer[x*4*(width*9 + 2) + y*9] = '%';
+    buffer[(x+1)*4*(width*9 + 2) + y*9] = '%';
+    buffer[x*4*(width*9 + 2) + (y+1)*9] = '%';
+    buffer[(x+1)*4*(width*9 + 2) + (y+1)*9] = '%';
+
+    // vertical border
+    for(int bias = 1; bias < 4; bias++)
+    {
+       buffer[(x*4 + bias)*(width*9 + 2) + y*9] = '%';
+       buffer[(x*4 + bias)*(width*9 + 2) + (y+1)*9] = '%'; 
     }
 
     // horizontal border
     for(int bias = 1; bias < 9; bias++)
     {
-       buffer[x*4*(width*9 + 2) + y*9 + bias] = '.';
-       buffer[(x+1)*4*(width*9 + 2) + y*9 + bias] = '.'; 
+       buffer[x*4*(width*9 + 2) + y*9 + bias] = '%';
+       buffer[(x+1)*4*(width*9 + 2) + y*9 + bias] = '%'; 
     }
 }

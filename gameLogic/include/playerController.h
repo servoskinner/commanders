@@ -60,5 +60,6 @@ class TerminalControl : public PlayerController
     void printUI();
 
     void higlightTileBold(std::string &buffer, int width, int height, int x, int y);
-    void higlightTileLight(std::string &buffer, int width, int height, int x, int y);;
+    void higlightTileLight(std::string &buffer, int width, int height, int x, int y);
+    void higlightTileFunky(std::string &buffer, int width, int height, int x, int y);
 };

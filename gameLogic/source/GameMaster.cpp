@@ -1,11 +1,14 @@
 #include "gameLogic.h"
 #include "misc.h"
+#include "Roster.h"
 
 #include <stdexcept>
 #include <iostream>
 
-GameMaster::GameMaster(const std::vector<PlayerController*>& controllers, const std::vector<Deck*>& ndecks)
+GameMaster::GameMaster(const std::vector<PlayerController*>& controllers, const std::vector<Deck*>& ndecks, \
+                        Roster& nroster) : roster(nroster)
 {
+
     enableGameLoop = true;
     // Check argument validity
     if(controllers.size() > ndecks.size()) 
@@ -89,8 +92,9 @@ void GameMaster::endTurn()
 
     // Basic income
     players[turn].funds += BASIC_INCOME;
-    // Draw a card
-    forceDraw(turn); //TOOD: if false fire controller event
+    // Draw a card, fire event if both discard and deck are exhausted
+    if(!forceDraw(turn))
+        playerControllers[turn]->handleControllerEvent(DECK_NOREFRESH);
 
     if(checkDominance(turn))
     {
@@ -309,7 +313,7 @@ bool GameMaster::deployCard(Card& card, Tile* target)
     if(card.status == Card::IN_PLAY) std::clog << "WARNING: Deploying card marked as \"IN PLAY\"";
 
     if(card.type == Card::UNIT)
-    {
+    {   // Set grid position
         if(target->card)
             return false; 
         
@@ -317,14 +321,24 @@ bool GameMaster::deployCard(Card& card, Tile* target)
 
         card.x = target->x;
         card.y = target->y;
-    }
-    //TODO: fire events
-    card.status = Card::IN_PLAY;
-    activeCards.push_back(&card);
 
-    card.canAttack = false;
-    card.canMove = false;
-    card.isOverwhelmed = false;
+        card.canAttack = true;
+        card.canMove = false;
+        card.isOverwhelmed = false;
+    }
+    
+    if(card.type != Card::TACTIC)
+    {   // Update status
+        card.status = Card::IN_PLAY;
+        activeCards.push_back(&card);
+    }
+
+    // Fire onPlay events
+    for(const auto& deployEvent : card.onPlay)
+        deployEvent(*this, card);
+
+    if(card.type == Card::TACTIC)
+        destroyCard(card);
 
     return true;
 }
@@ -355,19 +369,29 @@ bool GameMaster::moveCard(Card& card, const int& direction)
 }
 
 void GameMaster::destroyCard(Card& card)
-{
-    if(card.x > 0 && card.y > 0)
-        grid[card.x][card.y].card = NULL;
+{   
+    if(card.type != Card::TACTIC)
+    {
+        if(card.x > 0 && card.y > 0)
+            grid[card.x][card.y].card = NULL;
 
-    if(!vectorPop(activeCards, &card))
-        std::clog << "WARNING: killing card that was not in activeCards" << std::endl;
+        if(!vectorPop(activeCards, &card))
+            std::clog << "WARNING: killing card that was not in activeCards" << std::endl;
 
-    if(card.status != Card::IN_PLAY)
-        std::clog << "WARNING: killing card that was not \"in play\"" << std::endl;
+        if(card.status != Card::IN_PLAY)
+            std::clog << "WARNING: killing card that was not \"in play\"" << std::endl;
+    }
 
-    //TODO restore, fire events
+    // Fire death events
+    for(const auto& deathEvent : card.onDeath)
+        deathEvent(*this, card);
+
+    // Send to discard
     card.status = Card::DISCARD;
     decks[card.ownerId]->discard.push_back(&card);
+
+    // Restore
+    card = roster.getOrigin(card.id);
 }
 
 bool GameMaster::attackWith(Card& card, const int& direction)
@@ -501,12 +525,17 @@ bool GameMaster::discard(int playerId, int handIndex)
 
 bool GameMaster::playCard(int playerId, int handIndex, Tile* target) //Returns false if there are insufficient funds.
 {
+    Card& played = *players[playerId].hand[handIndex];
     // Check for index correctness
     if(playerId < 0 || playerId >= players.size()) throw std::out_of_range("playerId out of range");
     if(handIndex < 0 || handIndex >= players[playerId].hand.size()) throw std::out_of_range("handIndex out of range");
 
+    // Check whether a player has enough funds to play the card (subtract them if success)
+    if(players[playerId].funds < played.cost)
+        return false;
+
     // Check that a target tile was provided for units
-    if(players[playerId].hand[handIndex]->type == Card::UNIT)
+    if(played.type == Card::UNIT)
     {
         if(target == nullptr)
             std::runtime_error("No deployment site provided for playing a unit");
@@ -529,16 +558,13 @@ bool GameMaster::playCard(int playerId, int handIndex, Tile* target) //Returns f
         }
     }
 
-    if(players[playerId].hand[handIndex]->status != Card::HAND)
+    if(played.status != Card::HAND)
         std::clog << "Warning: trying to play card that has not been marked as \"In hand\"" << std::endl;
 
-    // Check whether a player has enough funds to play the card (subtract them if success)
-    if(players[playerId].funds < players[playerId].hand[handIndex]->cost)
-        return false;
     players[playerId].funds -= players[playerId].hand[handIndex]->cost;
     
-    bool res = deployCard(*players[playerId].hand[handIndex], target);
     vectorPopIndex(players[playerId].hand, handIndex);
+    bool res = deployCard(played, target);
 
     return res;
 }

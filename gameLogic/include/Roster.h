@@ -5,13 +5,13 @@
 
 #include "gameLogic.h"
 
-#define TOTAL_CARDS_IN_GAME 10
+#define TOTAL_CARDS_IN_GAME 20
 
 class Roster // All available cards will be listed here along with IDs.
 {
 public:
     Roster();
-    Card getOrigin(int index) { return cards[index]; }
+    const Card& getOrigin(int index) { return cards[index]; }
 
     enum cardIds
     {
@@ -23,7 +23,11 @@ public:
         ARCHON,
         GUNKFOOD,
         MACHINEPARTS,
-        FISSION
+        FISSION,
+        LOGISTICS,
+        UNITANK,
+        BIOWEAPONRD,
+        BARGAIN
     };
 
 private:

@@ -1,11 +1,11 @@
 CC = g++
-CFLAGS = -g
-SOURCES = GameMaster.cpp Player.cpp Card.cpp Tile.cpp Deck.cpp
+CFLAGS = -g -Iinclude
+SOURCES = $(addprefix source/, GameMaster.cpp Player.cpp Card.cpp Tile.cpp Deck.cpp Roster.cpp CardAbilities.cpp)
 
-OBJECTS = $(SOURCES:%.cpp=build/%.o)
+OBJECTS = $(patsubst source/%.cpp,build/%.o,$(SOURCES))
 
-TESTSRC = TerminalControl.cpp Test_main.cpp
-TESTOBJ = $(TESTSRC:%.cpp=build/%.o)
+TESTSRC = $(addprefix source/, TerminalControl.cpp Test_main.cpp)
+TESTOBJ = $(patsubst source/%.cpp,build/%.o,$(TESTSRC))
 
 all: $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o build/game
@@ -14,7 +14,7 @@ test: $(OBJECTS) $(TESTOBJ)
 	$(CC) $(CFLAGS) $(OBJECTS) $(TESTOBJ) -o build/test
 	build/test
 
-build/%.o: %.cpp
+build/%.o: source/%.cpp
 	@mkdir -p build
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -25,4 +25,4 @@ gdb: $(OBJECTS) $(TESTOBJ)
 clean:
 	rm -rf build
 
-.PHONY: clean 
+.PHONY: clean
