@@ -24,16 +24,20 @@ int main()
     s_game_background.setTexture(game_background);
 
 
+    //setting icon
+    //do not use icon12.png
+    sf::Image icon; // create image object
+    if (!icon.loadFromFile("Source/images/icon.png")) {
+        return 1;
+    }
+    window.setIcon(976, 976, icon.getPixelsPtr());
+
+
+
     while (window.isOpen())
     {
 
-        //setting icon
-        //do not use icon12.png
-        sf::Image icon; // create image object
-        if (!icon.loadFromFile("Source/images/icon.png")) {
-            return 1;
-        }
-        window.setIcon(976, 976, icon.getPixelsPtr());
+
 
 
         sf::Vector2i pixelPos = sf::Mouse::getPosition(window); //координаты курсора
