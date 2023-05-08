@@ -9,7 +9,7 @@
 #define GRID_HEIGHT 6
 
 #define BASIC_INCOME 2
-#define STARTING_HAND_SIZE 2
+#define STARTING_HAND_SIZE 4
 #define POINTS_REQ_FOR_VICTORY 10
 
 class GameMaster; // Basically, a singular game session.

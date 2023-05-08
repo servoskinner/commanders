@@ -79,22 +79,22 @@ void TerminalControl::printUI()
       }
    std::cout << buffer << std::endl;
 
-   std::cout << "Turn " << master->getTurnAbsolute() << "\n";
-   std::cout << "P1: " << players[0].funds << "$ " << players[0].points << " DP " << players[0].handSize << " in hand\n";
-   std::cout << "P2: " << players[1].funds << "$ " << players[1].points << " DP " << players[1].handSize << " in hand\n";
+   std::cout << "Turn " << master->getTurnAbsolute()+1 << "\n";
+   std::cout << "P1: $" << players[0].funds << "       " << players[0].points << " DP       " << players[0].handSize << " in hand\n";
+   std::cout << "P2: $" << players[1].funds << "       " << players[1].points << " DP       " << players[1].handSize << " in hand\n";
 
    // HAND __________________________________________
    std::cout << "HAND: " << hand.size() \
-               << "/?? DECK: " << players[id].deckSize \
-               << " DISCARD: " << players[id].discardSize << "\n";
-   std::cout << "_______________________________\n";
+               << "/??    DECK: " << players[id].deckSize \
+               << "    DISCARD: " << players[id].discardSize << "\n";
+   std::cout << "HAND:____________________________\n";
    std::cout << "YOU HAVE $" << players[id].funds << ":\n";
 
    for(CardInfo card : hand)
-      std::cout << "(" << card.value << ") $" << card.cost << " - " << card.name << ": " << card.text << "\n";
+      std::cout  << "$" << card.cost << ": (", (card.value >= 0 ? std::cout << card.value : std::cout << "T") \
+                << ") - " << card.name << ": " << card.text << "\n";
    
-   std::cout << "_______________________________\n";
-   std::cout << "CONTRACTS: \n";
+   std::cout << "CONTRACTS:_______________________\n";
    // CONTRACTS _____________________________________
    for(CardInfo card : activeCards)
       if(card.type == Card::CONTRACT && card.ownerId == id)
