@@ -14,8 +14,8 @@ find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 add_executable(corporatewars ${SOURCES})
 add_executable(test ${SOURCES} gameLogic/source/TerminalControl.cpp gameLogic/source/Test_main.cpp)
 
-target_link_libraries(corporatewars sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
-target_link_libraries(test sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
+#target_link_libraries(corporatewars sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
+#target_link_libraries(test sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 
 set_target_properties(test PROPERTIES OUTPUT_NAME "test")
 
