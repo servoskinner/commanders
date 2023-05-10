@@ -81,11 +81,11 @@ Roster::Roster() : cards(TOTAL_CARDS_IN_GAME)
     //______________________________
     cards[UNITANK].name = "Unicycle tank";
     cards[UNITANK].type = Card::UNIT;
-    cards[UNITANK].text = "GAIN $2 WHEN THIS UNIT IS DESTROYED.";
+    cards[UNITANK].text = "GAIN $3 WHEN THIS UNIT IS DESTROYED.";
 
     cards[UNITANK].cost = 4;
-    cards[UNITANK].value = 2;
-    cards[UNITANK].onDeath.push_back(abilityGainCredits<2>);
+    cards[UNITANK].value = 3;
+    cards[UNITANK].onDeath.push_back(abilityGainCredits<3>);
     //______________________________
     cards[BIOWEAPONRD].name = "Bioweapons R&D";
     cards[BIOWEAPONRD].type = Card::CONTRACT;
