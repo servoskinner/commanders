@@ -3,11 +3,13 @@
 #include <iostream>
 
 
-void menu(sf::RenderWindow & window) {
+void main_menu(sf::RenderWindow & window) {
+    sf::Event event;
     sf::Texture texture_start, texture_about, texture_exit;
     texture_start.loadFromFile("Assets/images/main_menu_images/start_game.png");
     texture_about.loadFromFile("Assets/images/main_menu_images/about.png");
     texture_exit.loadFromFile("Assets/images/main_menu_images/exit.png");
+    //texture_
 
 
     sf::Sprite tx_menu_start(texture_start), tx_menu_about(texture_about), tx_menu_exit(texture_exit);
@@ -22,20 +24,50 @@ void menu(sf::RenderWindow & window) {
     //// menu ////
 
     while (isMenu) {
+        tx_menu_start.setColor(sf::Color::White);
+        tx_menu_about.setColor(sf::Color::White);
+        tx_menu_exit.setColor(sf::Color::White);
+        menu_num = 0;
+        window.clear(sf::Color(129, 181, 221));
 
+        if (sf::IntRect(100, 30, 300, 50).contains(sf::Mouse::getPosition(window))) { tx_menu_start.setColor(sf::Color::Yellow); menu_num = 1; }
+        if (sf::IntRect(100, 90, 300, 50).contains(sf::Mouse::getPosition(window))) { tx_menu_about.setColor(sf::Color::Yellow); menu_num = 2; }
+        if (sf::IntRect(100, 150, 300, 50).contains(sf::Mouse::getPosition(window))) { tx_menu_exit.setColor(sf::Color::Yellow); menu_num = 3; }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) { window.close(); isMenu = false; }
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+            if (menu_num == 1) isMenu = false; // меню закрывается - игра начинается
+            //if (menu_num == 2) { window.draw(about); window.display(); while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)); }
+            if (menu_num == 3) { window.close(); isMenu = false; }
+        }
+
+        window.draw(tx_menu_start);
+        window.draw(tx_menu_about);
+        window.draw(tx_menu_exit);
+        //window.draw();
+
+        window.display();
     }
+    //////////////////
 }
-
-
-
-
-
 
 
 int main()
 {
+
     sf::Event event;
+
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Corporate Wars", sf::Style::Fullscreen);
+
+    //setting icon
+    //do not use icon12.png
+    sf::Image icon; // create image object
+    if (!icon.loadFromFile("Assets/images/icon.png")) {
+        return 1;
+    }
+    window.setIcon(976, 976, icon.getPixelsPtr());
+
+    main_menu(window); // вызов меню
 
     window.setFramerateLimit(60);
 
@@ -52,13 +84,7 @@ int main()
     s_game_background.setTexture(game_background);
 
 
-    //setting icon
-    //do not use icon12.png
-    sf::Image icon; // create image object
-    if (!icon.loadFromFile("Assets/images/icon.png")) {
-        return 1;
-    }
-    window.setIcon(976, 976, icon.getPixelsPtr());
+
 
 
 
