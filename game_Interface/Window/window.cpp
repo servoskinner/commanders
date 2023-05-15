@@ -21,7 +21,7 @@ void main_menu(sf::RenderWindow & window) {
     sf::Sprite tx_menu_start(texture_start), tx_menu_about(texture_about), tx_menu_exit(texture_exit), tx_menu_bg(texture_menu_background);
     
 
-    bool isMenu = 1; // нужно ли сейчас рисовать меню или нет
+    int isMenu = 1; // нужно ли сейчас рисовать меню или нет
     int menu_num = 0; // элемент меню
     tx_menu_start.setPosition(100, 30);
     tx_menu_about.setPosition(100, 90);
@@ -66,10 +66,36 @@ void main_menu(sf::RenderWindow & window) {
 }
 
 
+void game_menu(sf::RenderWindow& window) {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed)
+        window.close();
+    }
+    int isGame = 1; // нужно ли сейчас рисовать игровое поле или нет
+    // нужна смена очков
+
+    // нажатие на кнопку меню
+    sf::Texture clicked_three_dots_button;
+    clicked_three_dots_button.loadFromFile("Assets/images/game_process_images/pressed_button_1.png");
+    sf::Sprite tx_clicked_button(clicked_three_dots_button);
+
+    while (isGame) {
+
+        if (sf::IntRect(1737, 0, 183, 156).contains(sf::Mouse::getPosition(window))) { tx_clicked_button.setColor(sf::Color::Yellow); }
+
+
+
+    }
+
+
+}
+
+
 int main()
 {
     sf::Event event;
-    sf::RenderWindow window(sf::VideoMode(1920, 1080), "Corporate Wars", sf::Style::Fullscreen);
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "Corporate Wars", sf::Style::Default);
 
     //setting icon
     //do not use icon12.png
@@ -103,7 +129,7 @@ int main()
 
     //creating game background
     sf::Image game_background_image;
-    game_background_image.loadFromFile("Assets/images/game_background_image_final.png");
+    game_background_image.loadFromFile("Assets/images/game_process_images/game_background_image_final.png");
     sf::Texture game_background;
     game_background.loadFromImage(game_background_image);
     sf::Sprite s_game_background;
@@ -112,10 +138,6 @@ int main()
 
     while (window.isOpen())
     {
-
-        sf::Vector2i pixelPos = sf::Mouse::getPosition(window); //координаты курсора
-
-
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
