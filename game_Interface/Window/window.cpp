@@ -5,6 +5,10 @@
 
 void main_menu(sf::RenderWindow & window) {
     sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed)
+        window.close();
+    }
     sf::Texture texture_start, texture_about, texture_exit;
     texture_start.loadFromFile("Assets/images/main_menu_images/start_game.png");
     texture_about.loadFromFile("Assets/images/main_menu_images/about.png");
