@@ -24,7 +24,7 @@ If a player is forced to draw and has no cards in their deck, it is refreshed by
 
 ## Card types
 ### Units
-Units can move on the grid and engage in combat with others; Their main parameter is **combat power**. This card type is essential for gaining advantage and scoring points.
+Units can move on the grid and engage in combat with others; Their main parameter is **combat power**. This card type is essential for controlling the field and scoring points.
 
 ### Contracts
 Contracts boost your income for a certain number of turns, yielding more credits than you spend on them in long-term perspective. 
