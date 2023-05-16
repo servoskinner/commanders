@@ -1,6 +1,13 @@
 .vs
+.vscode
 *.dll
+build
+test
 x64
 CppProperties.json
 SFML-2.5.1
-x64
+makefile
+Makefile
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
