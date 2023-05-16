@@ -16,7 +16,7 @@ void main_menu(sf::RenderWindow & window) {
     texture_about.loadFromFile("Assets/images/main_menu_images/about.png");
     texture_exit.loadFromFile("Assets/images/main_menu_images/exit.png");
     texture_menu_background.loadFromFile("Assets/images/main_menu_images/background.png");
-    texture_about_bg.loadFromFile("Assets/images/main_menu_images/about_authors.jpg");
+    texture_about_bg.loadFromFile("Assets/images/main_menu_images/about_authors_1.png");
 
 
     sf::Sprite tx_menu_start(texture_start), tx_menu_about(texture_about), tx_menu_exit(texture_exit), 
@@ -29,7 +29,7 @@ void main_menu(sf::RenderWindow & window) {
     tx_menu_about.setPosition(100, 90);
     tx_menu_exit.setPosition(100, 150);
     tx_menu_bg.setPosition(825, 70);
-    tx_about_bg.setPosition(320, 100);
+    tx_about_bg.setPosition(0, 0);
 
 
     //tx_menu_start.scale(sf::Vector2f(1.2, 1.2));
@@ -41,6 +41,7 @@ void main_menu(sf::RenderWindow & window) {
     //// menu ////
 
     while (isMenu) {
+
         tx_menu_start.setColor(sf::Color::White);
         tx_menu_about.setColor(sf::Color::White);
         tx_menu_exit.setColor(sf::Color::White);
@@ -61,7 +62,7 @@ void main_menu(sf::RenderWindow & window) {
                     
                     window.draw(tx_about_bg);
                     window.display();
-                    window.clear(sf::Color(183, 71, 96));
+                    //window.clear(sf::Color(183, 71, 96));
                 }
             }
 
@@ -80,6 +81,7 @@ void main_menu(sf::RenderWindow & window) {
 }
 
 
+/*
 void game_menu(sf::RenderWindow& window) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -104,10 +106,9 @@ void game_menu(sf::RenderWindow& window) {
 
 
 }
+*/
 
-
-int main()
-{
+int main() {
     sf::Event event;
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Corporate Wars", sf::Style::Fullscreen);
 
@@ -133,9 +134,9 @@ int main()
     
         
 
-    main_menu(window); // вызов меню
+    //main_menu(window); // вызов меню
 
-    //window.setFramerateLimit(60);
+    window.setFramerateLimit(60);
 
     //creating time
     //sf::Clock clock();
