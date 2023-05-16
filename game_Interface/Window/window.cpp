@@ -81,7 +81,6 @@ void main_menu(sf::RenderWindow & window) {
 }
 
 
-/*
 void game_menu(sf::RenderWindow& window) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -97,31 +96,26 @@ void game_menu(sf::RenderWindow& window) {
     sf::Sprite tx_clicked_button(clicked_three_dots_button);
 
     while (isGame) {
-
         if (sf::IntRect(1737, 0, 183, 156).contains(sf::Mouse::getPosition(window))) { tx_clicked_button.setColor(sf::Color::Yellow); }
-
-
-
     }
-
-
 }
-*/
 
 int main() {
     sf::Event event;
-    sf::RenderWindow window(sf::VideoMode(1920, 1080), "Corporate Wars", sf::Style::Fullscreen);
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "Corporate Wars", sf::Style::Default);
 
-    //setting icon
+    //////////// SETTING ICON ///////////////////
+    
     //do not use icon12.png
     sf::Image icon; // create image object
     if (!icon.loadFromFile("Assets/images/icon.png")) {
         return 1;
     }
     window.setIcon(976, 976, icon.getPixelsPtr());
+    ///////////////////////////////////////////////
 
 
-    /*
+    /////////// SOUND //////////
     sf::Music soundtrack;
     if (!soundtrack.openFromFile("Assets/sounds/cw_sound.ogg")) {
         return -1;
@@ -130,8 +124,8 @@ int main() {
      
     if (soundtrack.getStatus() != sf::Music::Status::Playing) {
         soundtrack.play();
-    }*/
-    
+    }
+    /////////////////////////////
         
 
     //main_menu(window); // вызов меню
@@ -142,13 +136,14 @@ int main() {
     //sf::Clock clock();
 
 
-    //creating game background
+    ////////////// CREATING GAME BACKGROUND ////////////////////
     sf::Image game_background_image;
     game_background_image.loadFromFile("Assets/images/game_process_images/game_background_image_final.png");
     sf::Texture game_background;
     game_background.loadFromImage(game_background_image);
     sf::Sprite s_game_background;
     s_game_background.setTexture(game_background);
+    ////////////////////////////////////////////////////////////
 
 
     while (window.isOpen())
