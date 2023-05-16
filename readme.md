@@ -23,14 +23,12 @@ You draw a total of **6 cards**, including your first draw, at the beginning of 
 If a player is forced to draw and has no cards in their deck, it is refreshed by shuffling that player's *discard*. If both are empty, the draw is skipped.
 
 ## Card types
-### Units
-Units can move on the grid and engage in combat with others; Their main parameter is **combat power**. This card type is essential for controlling the field and scoring points.
 
-### Contracts
-Contracts boost your income for a certain number of turns, yielding more credits than you spend on them in long-term perspective. 
+- **Units** can move on the grid and engage in combat with others; Their main parameter is **combat power**. This card type is essential for controlling the field and scoring points.
 
-### Tactics 
-Tactics allow you to perform a certain action to gain quick advantage. They cannot be placed on board and are discarded immediately after being played.
+- **Contracts** boost your income for a certain number of turns, yielding more credits than you spend on them in long-term perspective. 
+
+- **Tactics** allow you to perform a certain action to gain quick advantage. They cannot be placed on board and are discarded immediately after being played.
 
 ## Actions
 ### Deploy card
@@ -39,8 +37,8 @@ In order to put a card in play, you must have sufficient *credits* to pay its co
 Units can be played on either:
 - *Your deploy zone*: six tiles adjacent to the border on your side of the grid.
 - Any tile that is not in opponent's deploy zone, that has:
--- At least one *Friendly* unit on *adjacent* tiles (4-neighbourhood)
--- *No enemy units* on *surrounding* tiles (8-neighbourhood)
+  - At least one *Friendly* unit on *adjacent* tiles (4-neighbourhood)
+  - *No enemy units* on *surrounding* tiles (8-neighbourhood)
 
 ### Move
 Units can move on any *adjacent* tile (one tile in any direction, *except for diagonals*) **once** per turn and **before** attacking.
