@@ -3,7 +3,7 @@
 ## Overview
 
 This is an alpha version of Corporate Wars, a strategic card game.
-Pass-and-play two-player mode with standard is currently the only available and decks cannot be modified yet.
+Pass-and-play two-player mode with standard rules is currently the only one available and decks cannot be modified yet.
 
 ## Build guide
 
