@@ -116,6 +116,7 @@ int main() {
 
 
     /////////// SOUND //////////
+    /*
     sf::Music soundtrack;
     if (!soundtrack.openFromFile("Assets/sounds/cw_sound.ogg")) {
         return -1;
@@ -125,6 +126,7 @@ int main() {
     if (soundtrack.getStatus() != sf::Music::Status::Playing) {
         soundtrack.play();
     }
+    */
     /////////////////////////////
         
 
