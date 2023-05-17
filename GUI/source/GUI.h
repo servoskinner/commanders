@@ -10,14 +10,32 @@
 //#include "gameLogic.h"
 
 #define WINDOW_HEADER   "Corporate Wars alpha"
-#define WINDOW_WIDTH    800
-#define WINDOW_HEIGHT   450
-#define GRID_WIDTH      8
-#define GRID_HEIGHT     6
-#define CARD_WIDTH    55
-#define CARD_HEIGHT   55
-#define GRID_MARGIN_HOR 177
-#define GRID_MARGIN_VER 37
+
+#define WINDOW_WIDTH        800
+#define WINDOW_HEIGHT       450
+#define GRID_WIDTH          8
+#define GRID_HEIGHT         6
+
+#define CARD_WIDTH          55
+#define CARD_HEIGHT         55
+
+#define GRID_MARGIN_HOR     177
+#define GRID_MARGIN_VER     37
+
+#define PASSBTN_UPPERLEFT_X 640
+#define PASSBTN_WIDTH       120
+#define PASSBTN_UPPERLEFT_Y 345
+#define PASSBTN_HEIGHT      55
+
+#define MENUBTN_UPPERLEFT_X 720
+#define MENUBTN_WIDTH       56
+#define MENUBTN_UPPERLEFT_Y 26
+#define MENUBTN_HEIGHT      54
+
+#define HAND_AREA_WIDTH     400
+#define HAND_AREA_Y         380
+#define HAND_AREA_X         400
+#define HAND_MAX_SPACING    (CARD_WIDTH + 6)
 
 struct cardVisualizer
 {
@@ -25,12 +43,20 @@ struct cardVisualizer
     sf::Text name;
     sf::Text power;
     sf::Sprite sprite;
+    sf::RectangleShape hitbox;
 
     void draw(sf::RenderWindow& window)
     {
         window.draw(sprite);
         window.draw(name);
         window.draw(power);
+    }
+    void setPosition(int x, int y)
+    {
+        sprite.setPosition(x, y);
+        name.setPosition(x, y);
+        power.setPosition(x + 39, y + 36);
+        hitbox.setPosition(x, y);
     }
 };
 
@@ -49,6 +75,11 @@ class GUI
     bool checkPassHit(); // Check whether the pass button was pressed.
     int checkCardHit(); // Check whether a card was pressed.
     bool checkMenuHit(); // Check if the menu button was pressed.
+    bool isActive() { return window.isOpen();}
+
+    void clear();
+    void pushHand();
+    void updateCompactPositions(); // Update everything that is placed in a compact manner, such as contracts and player hand
 
     protected:
     sf::RenderWindow window;
@@ -67,7 +98,9 @@ class GUI
     std::vector<sf::Texture> cardTextures; // card ids correspond to indices
 
     sf::Sprite background;
-    sf::Sprite selector;
+    //sf::Sprite selector;
+    sf::RectangleShape passHitbox;
+    sf::RectangleShape menuHitbox;
     // Grid visualizer
     std::vector<std::vector<cardVisualizer>> grid;
     std::vector<cardVisualizer> hand;
@@ -81,8 +114,6 @@ class GUI
     sf::Text playerDiscardText; //players[id].discardSize
     sf::Text leftPointsText; //players[0].points
     sf::Text rightPointsText; //players[1].points
-
-    void updateCompactPositions(); // Update everything that is placed in a compact manner, such as contracts and player hand
 
     inline void resize(sf::Sprite& sprite, int sizeX, int sizeY) // Resize a sprite by setting new dimensions in pixels.
     {
