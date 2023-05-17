@@ -19,10 +19,16 @@ int main()
             {   
                 gui.pushHand();
                 gui.updateCompactPositions();
+                gui.playerFunds++;
+                gui.updateText();
             }
 
             if(gui.checkMenuHit())
+            {
                 gui.clear();
+                gui.playerDiscardSize++;
+                gui.updateText();
+            }
         }
     }
 }

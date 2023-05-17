@@ -62,13 +62,15 @@ GUI::GUI() : window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Corporate Wars 
     leftPointsText.setPosition(343, 1);
     rightPointsText.setPosition(429, 1);
 
-    oppHandText.setString("-1");
-    oppCreditsText.setString("-1");
-    playerCreditsText.setString("0");
-    playerDeckText.setString("0");
-    playerDiscardText.setString("0");
-    leftPointsText.setString("8");
-    rightPointsText.setString("8");
+    opponentHandSize = 0;
+    opponentFunds = 0;
+    playerFunds = 0;
+    playerDeckSize = 0;
+    playerDiscardSize = 0;
+    leftPoints = 0;
+    rightPoints = 0;
+
+    updateText();
     
     // Set up sprites
     background = sf::Sprite(backgroundTexture);
@@ -231,6 +233,17 @@ void GUI::updateCompactPositions()
     for(int i = 0; i < hand.size(); i++)
         hand[i].setPosition(HAND_AREA_X - spacing*hand.size()/2 + i*spacing, 
                             HAND_AREA_Y);
+}
+
+void GUI::updateText()
+{
+    oppHandText.setString(std::to_string(opponentHandSize));
+    oppCreditsText.setString(std::to_string(opponentFunds));
+    playerCreditsText.setString(std::to_string(playerFunds));
+    playerDeckText.setString(std::to_string(playerDeckSize));
+    playerDiscardText.setString(std::to_string(playerDiscardSize));
+    leftPointsText.setString(std::to_string(leftPoints));
+    rightPointsText.setString(std::to_string(rightPoints));
 }
 
 void GUI::pushHand()

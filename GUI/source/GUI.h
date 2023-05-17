@@ -9,7 +9,7 @@
 
 //#include "gameLogic.h"
 
-#define WINDOW_HEADER   "Corporate Wars alpha"
+#define WINDOW_HEADER       "Corporate Wars alpha"
 
 #define WINDOW_WIDTH        800
 #define WINDOW_HEIGHT       450
@@ -80,6 +80,16 @@ class GUI
     void clear();
     void pushHand();
     void updateCompactPositions(); // Update everything that is placed in a compact manner, such as contracts and player hand
+
+    // Info for indicator rendering
+    int opponentHandSize;
+    int opponentFunds;
+    int playerFunds;
+    int playerDeckSize;
+    int playerDiscardSize;
+    int leftPoints;
+    int rightPoints;
+    void updateText();
 
     protected:
     sf::RenderWindow window;
