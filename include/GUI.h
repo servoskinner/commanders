@@ -7,6 +7,9 @@
 #include <string>
 #include <array>
 
+#include <thread>
+#include <mutex>
+
 //#include "gameLogic.h"
 
 #define WINDOW_HEADER       "Corporate Wars alpha"
@@ -32,7 +35,7 @@
 #define MENUBTN_UPPERLEFT_Y 26
 #define MENUBTN_HEIGHT      54
 
-#define HAND_AREA_WIDTH     400
+#define HAND_AREA_WIDTH     440
 #define HAND_AREA_Y         380
 #define HAND_AREA_X         400
 #define HAND_MAX_SPACING    (CARD_WIDTH + 6)

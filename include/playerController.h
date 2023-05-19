@@ -63,3 +63,9 @@ class TerminalControl : public PlayerController
     void higlightTileLight(std::string &buffer, int width, int height, int x, int y);
     void higlightTileFunky(std::string &buffer, int width, int height, int x, int y);
 };
+
+class GUIControl : public PlayerController
+{
+
+
+};

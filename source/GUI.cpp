@@ -183,8 +183,8 @@ std::array<int, 2> GUI::checkGridHit() // Checks whether a tile was pressed. Ret
     if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
     {   // Detect grid button activation
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-        for (unsigned int i = 0; i < GRID_HEIGHT; ++i)
-            for (unsigned int j = 0; j < GRID_WIDTH; ++j)
+        for (int i = 0; i < GRID_HEIGHT; ++i)
+            for (int j = 0; j < GRID_WIDTH; ++j)
                 if (grid[i][j].hitbox.getGlobalBounds().contains(mousePos.x, mousePos.y)) 
                     return {i, j};
     }
