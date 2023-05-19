@@ -22,6 +22,12 @@
 #define CARD_WIDTH          55
 #define CARD_HEIGHT         55
 
+#define CARD_BORDER_MARGIN  3
+#define TILE_HITBOX_MARGIN  0
+
+#define RAND_ANGLE_RANGE    3
+#define RAND_POSITION_RANGE 1
+
 #define GRID_MARGIN_HOR     177
 #define GRID_MARGIN_VER     37
 
@@ -40,6 +46,13 @@
 #define HAND_AREA_X         400
 #define HAND_MAX_SPACING    (CARD_WIDTH + 6)
 
+#define CARD_POWER_OFFSET_X 39
+#define CARD_POWER_OFFSET_Y 36
+
+#define CARD_NAME_OFFSET_X  0
+#define CARD_NAME_OFFSET_Y  0
+
+
 struct cardVisualizer
 {
     bool enabled;
@@ -54,12 +67,19 @@ struct cardVisualizer
         window.draw(name);
         window.draw(power);
     }
-    void setPosition(int x, int y)
+    void setPosition(float x, float y)
     {
         sprite.setPosition(x, y);
-        name.setPosition(x, y);
-        power.setPosition(x + 39, y + 36);
+        name.setPosition(x + CARD_NAME_OFFSET_X, y + CARD_NAME_OFFSET_Y);
+        power.setPosition(x + CARD_POWER_OFFSET_X, y + CARD_POWER_OFFSET_Y);
         hitbox.setPosition(x, y);
+    }
+    void setPosition(sf::Vector2f vec)
+    {
+        sprite.setPosition(vec);
+        name.setPosition(vec.x + CARD_NAME_OFFSET_X, vec.y + CARD_NAME_OFFSET_Y);
+        power.setPosition(vec.x + CARD_POWER_OFFSET_X, vec.y + CARD_POWER_OFFSET_Y);
+        hitbox.setPosition(vec);
     }
 };
 
@@ -128,13 +148,13 @@ class GUI
     sf::Text leftPointsText; //players[0].points
     sf::Text rightPointsText; //players[1].points
 
-    inline void resize(sf::Sprite& sprite, int sizeX, int sizeY) // Resize a sprite by setting new dimensions in pixels.
+    inline void resize(sf::Sprite& sprite, float sizeX, float sizeY) // Resize a sprite by setting new dimensions in pixels.
     {
         if(sprite.getTexture() == nullptr) //add warning
             return;
         
-        float scaleX = float(sizeX) / sprite.getTexture()->getSize().x;
-        float scaleY = float(sizeY) / sprite.getTexture()->getSize().y;
+        float scaleX = sizeX / sprite.getTexture()->getSize().x;
+        float scaleY = sizeY / sprite.getTexture()->getSize().y;
 
         sprite.setScale(scaleX, scaleY);
     }

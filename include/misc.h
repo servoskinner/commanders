@@ -28,3 +28,14 @@ bool vectorPopIndex(std::vector<Type>& vec, const int& index) //Remove element w
     return true;
 }
 
+template <typename Type>
+Type constrain(const Type& arg, const Type& lowbound, const Type& upbound)
+{
+    if(arg > upbound)
+        return upbound;
+    if(arg < lowbound)
+        return lowbound;
+        
+    return arg;
+}
+

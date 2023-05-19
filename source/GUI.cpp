@@ -6,8 +6,11 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <random>
+#include <cmath>
 
 #include "GUI.h"
+#include "misc.h"
 
 GUI::GUI() : window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Corporate Wars alpha",
                             sf::Style::Titlebar | sf::Style::Close)
@@ -106,7 +109,8 @@ GUI::GUI() : window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Corporate Wars 
             tile.name.setFillColor(sf::Color::Black);
             tile.power.setFillColor(sf::Color::Black);
 
-            tile.setPosition(GRID_MARGIN_HOR + j * CARD_WIDTH, GRID_MARGIN_VER + i * CARD_HEIGHT);
+            tile.setPosition(GRID_MARGIN_HOR + j * CARD_WIDTH + CARD_BORDER_MARGIN, 
+                             GRID_MARGIN_VER + i * CARD_HEIGHT + CARD_BORDER_MARGIN);
         }
 }
 
@@ -155,13 +159,42 @@ void GUI::clear() // Set all tile sprites as inactive
 //     //void renderCard(CardInfo card); // Enable tile visualizer and draw the card;
 void GUI::renderCard(int x, int y) // TEMP - renders frog for demonstrational purposes. REPLACE ASAP!!!
 {
+    // Rotation randomizer
+    static std::random_device randDevice;
+    static std::mt19937 randGenerator(randDevice());
+    // Adjust for standard deviation
+    static std::normal_distribution<float> randAngle(0, RAND_ANGLE_RANGE / 2.0f);
+    static std::normal_distribution<float> randPosition(0, RAND_POSITION_RANGE / 2.0f);
+
     std::cout << "loaded" << std::endl;
 
     cardVisualizer& tile = grid[x][y];
     tile.enabled = true;
     
     tile.sprite.setTexture(selectorTexture);
-    resize(tile.sprite, CARD_WIDTH, CARD_HEIGHT);
+    resize(tile.sprite, CARD_WIDTH - CARD_BORDER_MARGIN * 2, CARD_HEIGHT - CARD_BORDER_MARGIN * 2);
+
+    // Randomize rotation
+    float angle = constrain<float>(randAngle(randGenerator), -RAND_ANGLE_RANGE, RAND_ANGLE_RANGE);
+    
+    tile.sprite.setRotation(angle);
+    // Adjust for pivot being the top left corner
+    // Reset position
+    tile.setPosition(GRID_MARGIN_HOR + y * CARD_WIDTH + CARD_BORDER_MARGIN, 
+                     GRID_MARGIN_VER + x * CARD_HEIGHT + CARD_BORDER_MARGIN);
+
+    sf::Vector2f origin = tile.sprite.getPosition();
+    const float leverage = static_cast<float>(std::sqrt(std::pow(CARD_HEIGHT / 2 - CARD_BORDER_MARGIN, 2) +
+                                                  std::pow(CARD_WIDTH / 2 - CARD_BORDER_MARGIN, 2))); // Pythagorean
+    // First degree Taylor approx
+    const float inv_sqrt_2 = 0.707f;
+    const float deg_to_rad = 0.0175f;
+    sf::Vector2f delta = {inv_sqrt_2*leverage*angle*deg_to_rad, -inv_sqrt_2*leverage*angle*deg_to_rad};
+    //Randomize position
+    delta.x += constrain<float>(randPosition(randGenerator), -RAND_POSITION_RANGE, RAND_POSITION_RANGE);
+    delta.y += constrain<float>(randPosition(randGenerator), -RAND_POSITION_RANGE, RAND_POSITION_RANGE);
+
+    tile.setPosition(origin + delta);
     
     tile.name.setString("frog");
     tile.power.setString("2");
