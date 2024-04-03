@@ -7,18 +7,31 @@ Pass-and-play two-player mode is currently the only way to play the game and dec
 
 ## Plans that span centuries
 Text-based interface
+
 Basic combat and movement
+
 Card deployment and decks
+
 Basic trigger-event mechanics and Tactic cards
+
 --- **WE ARE HERE** --- 
+
 Use less and better pointers
+
 TUI overhaul using ncurses
+
 Client-server support
+
 LAN multiplayer
+
 Graphic interface
+
 Deck editor
+
 Advanced card mechanics
+
 Basic parametrized AI
+
 ???
 
 ## Build guide
