@@ -1,38 +1,55 @@
-# Corporate wars
+# Futureshock
 
 ## Overview
 
-This is an alpha version of Corporate Wars, a strategic card game.
-Pass-and-play two-player mode with standard rules is currently the only one available and decks cannot be modified yet.
+This is an alpha version of Futureshock(formerly Corporate Wars), a strategic card game.
+Pass-and-play two-player mode is currently the only way to play the game and decks cannot be modified yet.
+
+## Plans that span centuries
+Text-based interface
+Basic combat and movement
+Card deployment and decks
+Basic trigger-event mechanics and Tactic cards
+--- **WE ARE HERE** --- 
+Use less and better pointers
+TUI overhaul using ncurses
+Client-server support
+LAN multiplayer
+Graphic interface
+Deck editor
+Advanced card mechanics
+Basic parametrized AI
+???
 
 ## Build guide
 
 Console TUI edition
-- Generate a makefile: ```cmake -G "Unix Makefiles"``` ("MinGW Makefiles" or "NMake Makefiles" for Windows)
-- Run ```make test``` to build and launch the application. (Windows: mingw32-make, nmake)
-- Run the application once it's been built: ```./test```
+- Generate a  makefile: ```cmake -G "Unix Makefiles"``` for linux, ```MinGW Makefiles``` or ```NMake Makefiles``` for Windows)
+- Run ```make test``` to build and launch the application. (For Windows use ```mingw32-make``` or ```nmake``` depending on your previous choice)
+- Run the application once it has been compiled: ```./test```
 
-# Rules
+# Foundational rules
 ## Win condition
-Take control of **capture zone** - the 2-tile wide, 6-tile long area in the middle of grid, in order to earn points; The first player to score *10* points wins.
-Points are given to a player at the beginning of their turn if they have more units placed within the capture zone than the opponent.
+Take control of **capture zone** - 2-tile wide, 6-tile long area in the middle of playing field, in order to earn points; The first player to score *10* points wins.
+Points are awarded to players at the beginning of their respective turns if they have more units placed within the capture zone than their opponents.
 
-## Resources
-You draw a total of **6 cards**, including your first draw, at the beginning of round. Every time a player's turn starts, they draw **one card**, gain basic income of **2 credits** and extra **1 credit** for each **contract** they have in play.
+## Resource management
+Players start the game with **6 cards**. At the beginning of their turn, players draw **one card**, gain basic income of **2 credits**, then gain **1 credit** for each **contract** they have in play.
 
-If a player is forced to draw and has no cards in their deck, it is refreshed by shuffling that player's *discard*. If both are empty, the draw is skipped.
+If player has to draw one or more cards but has no cards left in their deck, it is refreshed by shuffling that player's *discard pile*. If both are empty (e.g. when all cards owned by the player are either on the field or in hand), the action is skipped.
 
 ## Card types
+Each card belongs to one of three types. 
 
 - **Units** can move on the grid and engage in combat with others; Their main parameter is **combat power**. This card type is essential for controlling the field and scoring points.
 
-- **Contracts** boost your income for a certain number of turns, yielding more credits than you spend on them in long-term perspective. 
+- **Contracts** boost your income for a certain number of turns and provide other advantages, yielding more credits than you spend on them in long-term perspective. 
 
-- **Tactics** allow you to perform a certain action to gain quick advantage. They cannot be placed on board and are discarded immediately after being played.
+- **Tactics** allow you to perform a certain action to gain immediate advantage. They cannot be placed on board and are discarded immediately after their effect is resolved.
 
 ## Actions
 ### Deploy card
-In order to put a card in play, you must have sufficient *credits* to pay its cost. Units require a vacant tile to be deployed, while Contracts and Tactics don't.
+In order to play a card, you must have sufficient *credits* to pay its cost. *Units* require an unoccupied tile to be deployed, while *Contracts* and *Tactics* don't.
 
 Units can be played on either:
 - *Your deploy zone*: six tiles adjacent to the border on your side of the grid.
@@ -41,15 +58,18 @@ Units can be played on either:
   - *No enemy units* on *surrounding* tiles (8-neighbourhood)
 
 ### Move
-Units can move on any *adjacent* tile (one tile in any direction, *except for diagonals*) **once** per turn and **before** attacking.
+Units can move to any *adjacent* tile (also known as *4-neighbourhood*: up, down, left, right, but *not diagonally*) **once** per turn and **before** attacking.
+A player can make two controlled adjacent units exchange places, if they both are eligible to move. (*NOT IMPLEMENTED YET*)
 
 ### Attack
-Units can attack any target on *surrounding* tiles (3x3 region with the card in its center) and only **once** per turn.
+Units can attack any target on *surrounding* tiles (known as *8-neighbourhood*: neighbouring tiles in all directions, *including diagonals*) and only **once** per turn.
 
-When combat between two units is resolved, the one with **least** combat power is *destroyed*, while the **other** has its power value *reduced* by that of former. The defending unit is marked as *Overwhelmed* until the beginning of its owner's turn.
+In combat, the unit with **least** combat power is *destroyed*, while the other has the first's power subtracted from its own. The defending unit is marked as **Overwhelmed** until the beginning of its owner's turn - this makes it more vulnerable to subsequent attacks *(see below)*
 
-**Advantage** is a frequently used mechanic that makes units inflict bonus damage *before* the resolution of combat. If one or both units engaged in a fight have this property, the one with **least** advantage is dealt the difference in both units' advantage values before basic combat rules are applied. Units that do not have advantage as basic abitily are treated as if they have 0 as its value.
+**Advantage** is a frequently used mechanic that makes units inflict bonus damage *before* the resolution of combat. If one or both units engaged in a fight have nonzero advantage, the one with **least** advantage is dealt the difference in both units' advantage values before basic combat rules are resolved. Units that do not have advantage as basic abitily are treated as if they have 0 as its value.
 
-If a unit that has already been marked as *Overwhelmed* is attacked, the attacker gains **1** advantage bonus that wears off after the combat, meaning that attacking a single target with multiple units yields you extra difference in combat power.
+If a unit that has already been marked as *Overwhelmed* is attacked, the attacker gains **1 bonus advantage** until end of combat. This makes attacking with multiple units simultaneously, starting with the weakest ones, the most favorable strategy.
 
+## Deck design
 
+it should have more than around 30 cards and copies will be limited or something, and it will be really hard to build a crappy one because i don't want people to gravitate towards three and a half best-performing decks like they do in m:tg or hearthstone
