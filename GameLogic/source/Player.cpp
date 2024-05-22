@@ -5,7 +5,7 @@
 
 Player::Player(int playerid) : id(playerid)
 {
-    std::cout << " created player " << this << " with ID " << id << std::endl;
+    std::cout << "created player with ID " << id << " at " << this <<  std::endl;
 
     funds = 0;
     points = 0;

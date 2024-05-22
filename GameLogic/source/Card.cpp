@@ -15,7 +15,7 @@ Card::Card(int nid)
     cost = 0;
 
     type = Card::UNIT;
-    status = Card::UNDEFINED;
+    status = Card::UNDEFINED; 
     x = -1, y = -1;
 
     name = "unknown";

@@ -3,14 +3,14 @@
 
 #include "gameLogic.h"
 
-Deck::Deck(const std::vector<Card> &cards) : roster(0), library(0), discard(0)
+Deck::Deck(const std::vector<Card> &cards) : all(0), library(0), discard(0)
 {
-    roster = cards;
+    all = cards;
 
-    for(Card& card : roster)
+    for(Card& card : all)
     {   
         card.status = Card::DECK;
-        library.push_back(&card);
+        library.push_back(std::ref(card));
     }
 }
 
@@ -21,8 +21,8 @@ void Deck::shuffle()
 
     for (int i = library.size() - 1; i > 0; --i)
     {
-        std::uniform_int_distribution<> dis(0, i);
-        int j = dis(gen);
+        std::uniform_int_distribution<>distrib(0, i);
+        int j = distrib(gen);
         std::swap(library[i], library[j]);
     }
 }
@@ -30,19 +30,19 @@ void Deck::shuffle()
 void Deck::refresh()
 {
     library.insert(library.end(), discard.begin(), discard.end()); // Move discard to library
-    discard = std::vector<Card *>(0);
+    discard = std::vector<card_ref>(0);
 
-    for (Card *cptr : library)
-        cptr->status = Card::DECK;
+    for (card_ref cref : library)
+        cref->get().status = Card::DECK;
 
     shuffle();
 }
 
-Deck::Deck(const Deck &original) : roster(0), library(0), discard(0)
+Deck::Deck(const Deck &original) : all(0), library(0), discard(0)
 {
-    roster = original.roster;
+    all = original.all;
 
-    for(Card& card : roster)
+    for(Card& card : all)
     {   
         card.status = Card::DECK;
         library.push_back(&card);
@@ -54,9 +54,9 @@ Deck &Deck::operator=(const Deck &original)
     library = std::vector<Card *>(0);
     discard = std::vector<Card *>(0);
 
-    roster = original.roster;
+    all = original.all;
 
-    for(Card& card : roster)
+    for(Card& card : all)
     {   
         card.status = Card::DECK;
         library.push_back(&card);

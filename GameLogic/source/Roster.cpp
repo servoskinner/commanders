@@ -105,13 +105,13 @@ Roster::Roster() : cards(TOTAL_CARDS_IN_GAME)
 }
 
 template <int quantity>
-void abilityDrawCards(GameMaster& gm, Card& activator)
+void abilityDrawCards(Game_master& gm, Card& activator)
 {
     for(int i = 0; i < quantity; i++)
         gm.forceDraw(activator.ownerId);
 }
 template <int quantity>
-void abilityGainCredits(GameMaster& gm, Card& activator)
+void abilityGainCredits(Game_master& gm, Card& activator)
 {
     gm.players[activator.ownerId].funds += quantity;
 }

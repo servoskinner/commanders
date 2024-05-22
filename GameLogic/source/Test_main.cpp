@@ -100,7 +100,7 @@ int main()
     std::vector<PlayerController*> controllers = {&TC1, &TC2};
     std::vector<Deck*> decks = {&deck1, &deck2};
 
-    GameMaster gm(controllers, decks, roster);
+    Game_master gm(controllers, decks, roster);
 
     while(gm.mainLoop());
     

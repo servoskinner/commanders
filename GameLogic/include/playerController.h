@@ -8,10 +8,11 @@
 #include "gameLogic.h"
 #include "playerController.h"
 
-class PlayerController;
-class TerminalControl;
+class Player_controller;
+class CLI_control;
+class TCP_control;
 
-typedef std::shared_ptr<PlayerController> ControllerPtr;
+typedef std::shared_ptr<Player_controller> ControllerPtr;
 
 struct PlayerAction
 {
@@ -26,17 +27,17 @@ struct PlayerAction
     }
 };
 
-class PlayerController //Abstract player interface class (slave of GameMaster)
+class Player_controller //Abstract player interface class (slave of GameMaster)
 {
     public:
-    GameMaster* master;
+    Game_master* master;
     int id;
     
     inline int getId() { return id;}
 
-    std::vector<CardInfo> activeCards;
-    std::vector<CardInfo> hand;
-    std::vector<PlayerInfo> players;
+    std::vector<Card_info> activeCards;
+    std::vector<Card_info> hand;
+    std::vector<Player_info> players;
 
     virtual PlayerAction getAction() = 0;
     virtual void applyUpdates() = 0;
@@ -46,7 +47,7 @@ class PlayerController //Abstract player interface class (slave of GameMaster)
     //virtual std::vector<int> choosePlayer() = 0;
 };
 
-class TerminalControl : public PlayerController
+class CLI_control : public Player_controller
 {
     public:
 
@@ -54,7 +55,7 @@ class TerminalControl : public PlayerController
     void handleControllerEvent(int errorCode) override;
     void applyUpdates() override;
 
-    TerminalControl() = default;
+    CLI_control() = default;
 
     private:
     void printUI();
@@ -62,4 +63,18 @@ class TerminalControl : public PlayerController
     void higlightTileBold(std::string &buffer, int width, int height, int x, int y);
     void higlightTileLight(std::string &buffer, int width, int height, int x, int y);
     void higlightTileFunky(std::string &buffer, int width, int height, int x, int y);
+};
+
+class TCP_control : public Player_controller
+{
+    public:
+
+    PlayerAction getAction() override;
+    void handleControllerEvent(int errorCode) override;
+    void applyUpdates() override;
+
+    TCP_control() = default;
+
+    private:
+    
 };

@@ -3,8 +3,9 @@
 template <int quantity>
 void abilityDrawCards(GameMaster& gm, Card& activator)
 {
-    for(int i = 0; i < quantity; i++)
+    for(int i = 0; i < quantity; i++) {
         gm.forceDraw(activator.ownerId);
+    }
 }
 
 template <int quantity>
