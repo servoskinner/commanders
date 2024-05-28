@@ -3,14 +3,12 @@
 
 #include "gameLogic.h"
 
-Deck::Deck(const std::vector<Card> &cards) : all(0), library(0), discard(0)
+Deck::Deck(const std::vector<Card> &cards) : all(cards), library(), discard()
 {
-    all = cards;
-
     for(Card& card : all)
     {   
         card.status = Card::DECK;
-        library.push_back(std::ref(card));
+        library.emplace_back(std::ref(card));
     }
 }
 
@@ -30,36 +28,34 @@ void Deck::shuffle()
 void Deck::refresh()
 {
     library.insert(library.end(), discard.begin(), discard.end()); // Move discard to library
-    discard = std::vector<card_ref>(0);
+    discard = std::vector<card_ref>();
 
     for (card_ref cref : library)
-        cref->get().status = Card::DECK;
+        cref.get().status = Card::DECK;
 
     shuffle();
 }
 
-Deck::Deck(const Deck &original) : all(0), library(0), discard(0)
+Deck::Deck(const Deck &original) : all(original.all), library(), discard()
 {
-    all = original.all;
-
     for(Card& card : all)
     {   
         card.status = Card::DECK;
-        library.push_back(&card);
+        library.emplace_back(std::ref(card));
     }
 }
 
 Deck &Deck::operator=(const Deck &original)
 {
-    library = std::vector<Card *>(0);
-    discard = std::vector<Card *>(0);
+    library = std::vector<card_ref>();
+    discard = std::vector<card_ref>();
 
     all = original.all;
 
     for(Card& card : all)
     {   
         card.status = Card::DECK;
-        library.push_back(&card);
+        library.emplace_back(std::ref(card));
     }
 
     return *this;

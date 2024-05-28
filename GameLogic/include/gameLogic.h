@@ -9,8 +9,8 @@
 #define GRID_WIDTH 		8
 #define GRID_HEIGHT 	6
 
-#define FUNDS_DECAY 			1
-#define BASIC_INCOME 			2
+#define BASIC_INCOME 			1
+#define BONUS_IF_ZERO_INCOME    1
 #define STARTING_HAND_SIZE 		4
 #define POINTS_REQ_FOR_VICTORY 	10
 
@@ -28,8 +28,6 @@ struct Player_info;
 
 // Pointer type re-definition for clarity
 typedef std::reference_wrapper<Game_master> master_ref;
-typedef std::reference_wrapper<Player_controller> pctrl_ref;
-
 typedef std::reference_wrapper<Player> player_ref;
 typedef std::reference_wrapper<Deck> deck_ref;
 typedef std::reference_wrapper<Card> card_ref;
@@ -39,23 +37,23 @@ typedef std::reference_wrapper<Tile> tile_ref;
 
 //Card abilities
 template <int quantity>
-void abilityDrawCards(Game_master &gm, Card &activator);
+void ability_draw(Game_master &gm, Card &activator);
 template <int quantity>
-void abilityGainCredits(Game_master &gm, Card &activator);
+void ability_gain_credits(Game_master &gm, Card &activator);
 
 class Game_master
 {
 public: // _____________________________________________________________________________
     Game_master(const std::vector<pctrl_ref> &controllers, const std::vector<deck_ref> &ndecks);
 
-    bool mainLoop(); // Process player inputs and update status for everyone.
-    void endTurn();  // Pass the turn to next player and process the necessary triggers.
+    bool game_loop(); // Process player inputs and update status for everyone.
+    void end_turn();  // Pass the turn to next player and process the necessary triggers.
 
     int getTurn() { return turn; }
-    int getTurnAbsolute() { return turnAbsolute; }
+    int get_absolute_turn() { return turnAbsolute; }
 
-    int getGridWidth() { return grid[0].size(); }
-    int getGridHeight() { return grid.size(); }
+    int get_grid_width() { return grid[0].size(); }
+    int get_grid_height() { return grid.size(); }
 
     enum eventCodes
     {
@@ -89,48 +87,48 @@ protected: // __________________________________________________________________
 
     std::vector<Player> players;
     std::vector<deck_ref> decks;
-    std::vector<pctrl_ref> playerControllers; // entities that provide player inputs.
+    std::vector<pctrl_ref> player_controllers; // entities that provide player inputs.
                                               // E.G. User, AIs, network-connected players
     // Playing field
     std::vector<std::vector<Tile>> grid; // The playing field. (0,0) is top left corner; X axis is vertical, Y is horizontal.
-    std::vector<card_ref> activeCards;   // Cards that are currently on the playing field.
+    std::vector<card_ref> active_cards;   // Cards that are currently on the playing field.
 
-    int processAction(const PlayerAction &action);
+    int resolve_action(const Order &action);
 
-    void updateStatus(int playerId);
-    bool checkDominance(int playerId);
+    void update_status(int playerId);
+    bool check_dominance(int playerId);
 
     int turn;
     int turnAbsolute;
 
-    bool enableGameLoop;
+    bool game_is_on;
 
     // Cards
-    bool deployCard(Card &card, std::optional<tile_ref> targer);         // Place a card in play.
-    bool moveCard(Card &card, const int &direction);   // Move a card in specified direction.
-    void destroyCard(Card &card);                      // Remove a card from play and discard it.
-    bool attackWith(Card &card, const int &direction); // Resolve an attack from one tile to another.
+    bool deploy_card(Card &card, std::optional<tile_ref> targer);         // Place a card in play.
+    bool resolve_movement(Card &card, const int &direction);   // Move a card in specified direction.
+    void resolve_destruction(Card &card);                      // Remove a card from play and discard it.
+    bool resolve_attack(Card &card, const int &direction); // Resolve an attack from one tile to another.
 
-    int ResolveCombat(Card &attacker, Card &defender); // Resolve combat between two units.
+    int resolve_combat(Card &attacker, Card &defender); // Resolve combat between two units.
     enum combatOutcome
     {
-        WIN,
-        TIE,
-        LOSE
+        DEFENDER_DEAD,
+        BOTH_DEAD,
+        ATTACKER_DEAD
     };
     // Tiles
-    std::vector<std::optional<tile_ref>> getAdjacentTiles(const Tile &tile);
-    std::vector<std::optional<tile_ref>> getSurroundingTiles(const Tile &tile);
+    std::vector<std::optional<tile_ref>> get_4neighbors(const Tile &tile);
+    std::vector<std::optional<tile_ref>> get_8neighbors(const Tile &tile);
     // Players
-    bool forceDraw(int playerId);                             // Returns whether deck is empty or not
+    bool resolve_draw(int playerId);                             // Returns whether deck is empty or not
     bool discard(int playerId, int handIndex);                // Returns whether discarding this card was possible
-    bool playCard(int playerId, int handIndex, std::optional<tile_ref> target); // Perform rule checks and deploy card
+    bool play_card(int playerId, int handIndex, std::optional<tile_ref> target); // Perform rule checks and deploy card
 
 public: // Card abitities
     template <int quantity>
-    friend void abilityDrawCards(Game_master &gm, Card &activator);
+    friend void ability_draw(Game_master &gm, Card &activator);
     template <int quantity>
-    friend void abilityGainCredits(Game_master &gm, Card &activator);
+    friend void ability_gain_credits(Game_master &gm, Card &activator);
 };
 
 class Player
@@ -147,11 +145,11 @@ public: // _____________________________________________________________________
     Player_info getInfo(Deck &deck);
 
     // Event triggers
-    //  std::vector<std::function<void(Game_master&)>> onTurnStart;
-    //  std::vector<std::function<void(Game_master&)>> onTurnEnd;
-    //  std::vector<std::function<void(Game_master&, Card&)>> onDraw;  // Card& drawn
-    //  std::vector<std::function<void(Game_master&, Card&)>> onPlay; // Card& played
-    //  std::vector<std::function<void(Game_master&, Card&)>> onCommandAbilityActivate; //Card& target
+    //  std::vector<std::function<void(Game_master&)>> trig_turn_start;
+    //  std::vector<std::function<void(Game_master&)>> trig_turn_end;
+    //  std::vector<std::function<void(Game_master&, Card&)>> trig_draw;  // Card& drawn
+    //  std::vector<std::function<void(Game_master&, Card&)>> trig_play; // Card& played
+    //  std::vector<std::function<void(Game_master&, Card&)>> trig_order_given; //Card& target, int order
     //...
 };
 
@@ -162,9 +160,9 @@ struct Player_info
     int points;
     int funds;
 
-    int deckSize;
-    int discardSize;
-    int handSize;
+    int deck_size;
+    int discard_size;
+    int hand_size;
 };
 
 class Deck
@@ -185,12 +183,12 @@ public: // _____________________________________________________________________
 class Tile
 {
 public: // _____________________________________________________________________________
-    Tile(int nx = -1, int ny = -1, int ntype = NORMAL) : x(nx), y(ny), type(ntype), card(nullptr) {}
+    Tile(int nx = -1, int ny = -1, int ntype = NORMAL) : x(nx), y(ny), type(ntype), card() {}
 
     int x, y;
     int type;
 
-    enum tileTypes
+    enum tile_types
     {
         CAPTUREZONE = -2,
         NORMAL = -1
@@ -202,12 +200,13 @@ public: // _____________________________________________________________________
 class Card
 {
 public: // _____________________________________________________________________________
-    Card(int nid = -1);
+    Card(int gid = -1, int mid = -1);
     Card& operator=(const Card& other);
 
     // Identification
-    int ownerId;
-    int id;
+    int owner_id;
+    int global_id;
+    int match_id;
 
     enum cardType
     {
@@ -226,7 +225,7 @@ public: // _____________________________________________________________________
     };
     int status;
 
-    Card_info getInfo();
+    Card_info get_info();
     // UI parameters
     std::string name;
     std::string text;
@@ -238,39 +237,42 @@ public: // _____________________________________________________________________
     int value;
     int advantage;
     // Status effects
-    bool canAttack;
-    bool canMove;
-    bool isOverwhelmed;
+    bool can_attack;
+    bool can_move;
+    bool is_overwhelmed;
 
     // Event triggers
-    std::vector<std::function<void(Game_master &, Card &)>> onAbilityActivate;
-    std::vector<std::function<void(Game_master &, Card &)>> onPlay;
-    std::vector<std::function<void(Game_master &, Card &)>> onDeath;
+    std::vector<std::function<void(Game_master &, Card &)>> trig_ability;
+    std::vector<std::function<void(Game_master &, Card &)>> trig_played;
+    std::vector<std::function<void(Game_master &, Card &)>> trig_destroyed;
 
-    // std::vector<std::function<void(Game_master&, Card&)>> onTurnStart;
-    // std::vector<std::function<void(Game_master&, Card&)>> onTurnEnd;
+    // std::vector<std::function<void(Game_master&, Card&)>> trig_turn_start;
+    // std::vector<std::function<void(Game_master&, Card&)>> trig_turn_end;
 
-    // std::vector<std::function<void(Tile&)>> onMove; // Tile& destination
-    // std::vector<std::function<void(Tile&, int)>> onAttack; // Tile& target, int damageDone
-    // std::vector<std::function<void(Game_master&, Card&, Card&)>> onKill; // Card& target
-    // std::vector<std::function<void(Card&, int)>> onReceiveDamage; // Card& damagedBy, int damageSustained
+    // std::vector<std::function<void(Tile&)>> trig_moved; // Tile& destination
+    // std::vector<std::function<void(Tile&, int)>> trig_attacks; // Tile& target, int damageDone
+    // std::vector<std::function<void(Game_master&, Card&, Card&)>> trig_destroyed_other; // Card& target
+    // std::vector<std::function<void(Card&, int)>> trig_attacked; // Card& damaged_by, int damage_sustained
     //...
 };
 
 struct Card_info // Out of game context info tag 
 {
-    int ownerId;
+    int global_id;
+    int match_id;
+    int owner_id;
+    int x, y;
 
+    bool can_attack;
+    bool can_move;
+    bool is_overwhelmed;
+
+    // the following are irrelevant and must be removed:
     std::string name;
     std::string text;
 
-    int x, y;
     int value;
     int cost;
     int advantage;
     int type;
-
-    bool canAttack;
-    bool canMove;
-    bool isOverwhelmed;
 };

@@ -1,10 +1,10 @@
 #include "Roster.h"
 #include "gameLogic.h"
 
-Roster::Roster() : cards(TOTAL_CARDS_IN_GAME)
+Roster::Roster() // instantiate all cards in game 
 {
     for(int i = 0; i < TOTAL_CARDS_IN_GAME; i++)
-        cards[i].id = i;
+        cards[i].global_id = i;
     //______________________________
     cards[BOUNTYHUNTER].name = "Small-Time Merc";
     cards[BOUNTYHUNTER].type = Card::UNIT;
@@ -66,7 +66,7 @@ Roster::Roster() : cards(TOTAL_CARDS_IN_GAME)
     //______________________________
     cards[FISSION].name = "Nuclear Fission";
     cards[FISSION].type = Card::CONTRACT;
-    cards[FISSION].text = "Get raw energy from almost thin air.";
+    cards[FISSION].text = "Get pure energy from thin air.";
 
     cards[FISSION].cost = 5;
     cards[FISSION].value = 10;
@@ -77,7 +77,7 @@ Roster::Roster() : cards(TOTAL_CARDS_IN_GAME)
 
     cards[UNITANK].cost = 4;
     cards[UNITANK].value = 3;
-    cards[UNITANK].onDeath.push_back(abilityGainCredits<3>);
+    cards[UNITANK].trig_destroyed.push_back(ability_gain_credits<3>);
     //______________________________
     cards[BIOWEAPONRD].name = "Bioweapons R&D";
     cards[BIOWEAPONRD].type = Card::CONTRACT;
@@ -85,7 +85,7 @@ Roster::Roster() : cards(TOTAL_CARDS_IN_GAME)
 
     cards[BIOWEAPONRD].cost = 3;
     cards[BIOWEAPONRD].value = 4;
-    cards[BIOWEAPONRD].onDeath.push_back(abilityDrawCards<1>);
+    cards[BIOWEAPONRD].trig_destroyed.push_back(ability_draw<1>);
     //______________________________
     cards[BARGAIN].name = "Bargain";
     cards[BARGAIN].type = Card::TACTIC;
@@ -93,7 +93,7 @@ Roster::Roster() : cards(TOTAL_CARDS_IN_GAME)
 
     cards[BARGAIN].cost = 3;
     cards[BARGAIN].value = -1;
-    cards[BARGAIN].onPlay.push_back(abilityGainCredits<5>);
+    cards[BARGAIN].trig_played.push_back(ability_gain_credits<5>);
     //______________________________
     cards[LOGISTICS].name = "Gray Logistics";
     cards[LOGISTICS].type = Card::TACTIC;
@@ -101,17 +101,22 @@ Roster::Roster() : cards(TOTAL_CARDS_IN_GAME)
 
     cards[LOGISTICS].cost = 2;
     cards[LOGISTICS].value = -1;
-    cards[LOGISTICS].onPlay.push_back(abilityDrawCards<2>);
+    cards[LOGISTICS].trig_played.push_back(ability_draw<2>);
+}
+Roster& Roster::get() // Get active singleton instance of Roster;
+{
+    static std::unique_ptr<Roster> instance{new Roster};
+    return *instance;
 }
 
 template <int quantity>
-void abilityDrawCards(Game_master& gm, Card& activator)
+void ability_draw(Game_master& gm, Card& activator)
 {
     for(int i = 0; i < quantity; i++)
-        gm.forceDraw(activator.ownerId);
+        gm.resolve_draw(activator.owner_id);
 }
 template <int quantity>
-void abilityGainCredits(Game_master& gm, Card& activator)
+void ability_gain_credits(Game_master& gm, Card& activator)
 {
-    gm.players[activator.ownerId].funds += quantity;
+    gm.players[activator.owner_id].funds += quantity;
 }

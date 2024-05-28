@@ -11,17 +11,17 @@ Player::Player(int playerid) : id(playerid)
     points = 0;
 }
 
-PlayerInfo Player::getInfo(Deck& deck)
+Player_info Player::getInfo(Deck& deck)
 {
-    PlayerInfo info;
+    Player_info info;
 
     info.id = id;
     info.funds = funds;
     info.points = points;
 
-    info.deckSize = deck.library.size();
-    info.discardSize = deck.discard.size();
-    info.handSize = hand.size();
+    info.deck_size = deck.library.size();
+    info.discard_size = deck.discard.size();
+    info.hand_size = hand.size();
 
     return info;
 }

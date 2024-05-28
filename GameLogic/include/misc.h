@@ -2,13 +2,21 @@
 
 #include <algorithm>
 #include <vector>
+#include <functional>
 
-template <typename Type>
-bool vectorPop(std::vector<Type>& vec, const Type& key) //Remove element with target value from a vector
+template <typename Type, typename Keytype>
+bool pop_element(std::vector<Type>& vec, const Keytype& key, \
+                 const std::function<bool(const Type&, const Keytype&)> compare = \
+                 [](const Type& left, const Keytype& right){ return left == right; }) 
+                 // Remove element that matches comparison criterion from a vector (== by default).
+                 // Returns TRUE if element was found and destroyed and FALSE otherwise
+
+                 // CAUTION: mind the order of Type and Keytype. don't repeat my mistakes
+                 // (this function is sharty killing vantablack brimstone, 'thon users rejoice)
 {
-    //find first pointer that points to object that is equal to key.
+    // Find first iter that points to object that yields true when compared against key..
     for(auto iter = vec.begin(); iter != vec.end(); iter++)
-        if(*iter == key)
+        if(compare(*iter, key))
         {
             vec.erase(iter);
             return true;
@@ -18,7 +26,7 @@ bool vectorPop(std::vector<Type>& vec, const Type& key) //Remove element with ta
 }
 
 template <typename Type>
-bool vectorPopIndex(std::vector<Type>& vec, const int& index) //Remove element with target index from a vector
+bool pop_index(std::vector<Type>& vec, const int& index) //Remove element with target index from a vector
 {
     if(index >= vec.size() || index < 0) return false;
 

@@ -5,10 +5,11 @@
 
 #include "misc.h"
 
-Card::Card(int nid)
+Card::Card(int gid, int mid)
 {
-    id = nid;
-    ownerId = -1;
+    match_id = mid;
+    global_id = gid;
+    owner_id = -1;
 
     value = 0;
     advantage = 0;
@@ -21,9 +22,9 @@ Card::Card(int nid)
     name = "unknown";
     text = "";
 
-    canAttack = false;
-    canMove = false;
-    isOverwhelmed = false;
+    can_attack = false;
+    can_move = false;
+    is_overwhelmed = false;
 }
 
 Card& Card::operator=(const Card& other)
@@ -41,18 +42,22 @@ Card& Card::operator=(const Card& other)
     value = other.value;
     advantage = other.advantage;
     
-    onAbilityActivate = other.onAbilityActivate;
-    onPlay = other.onPlay;
-    onDeath = other.onDeath;
+    trig_ability = other.trig_ability;
+    trig_played = other.trig_played;
+    trig_destroyed = other.trig_destroyed;
 
     return *this;
 }
 
-CardInfo Card::getInfo()
+Card_info Card::get_info()
 {
-    CardInfo info;
+    Card_info info;
 
-    info.ownerId = ownerId;
+    info.owner_id = owner_id;
+    info.global_id = global_id;
+    info.match_id = match_id;
+
+    // these can be stored on player's side
     info.name = name;
     info.text = text;
 
@@ -62,9 +67,9 @@ CardInfo Card::getInfo()
     info.advantage = advantage;
     info.type = type;
 
-    info.canAttack = canAttack;
-    info.canMove = canMove;
-    info.isOverwhelmed = isOverwhelmed;
+    info.can_attack = can_attack;
+    info.can_move = can_move;
+    info.is_overwhelmed = is_overwhelmed;
 
     return info;
 }

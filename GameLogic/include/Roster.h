@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "gameLogic.h"
 
@@ -10,8 +11,8 @@
 class Roster // All available cards will be listed here along with IDs.
 {
 public:
-    Roster();
-    const Card& getOrigin(int index) { return cards[index]; }
+    inline const Card& get_card_instance(int index) { return cards[index]; }
+    static Roster& get();
 
     enum cardIds
     {
@@ -31,5 +32,11 @@ public:
     };
 
 private:
-    std::vector<Card> cards;
+    Roster();
+    static std::unique_ptr<Roster> instance{new Roster};
+
+    Roster(const Roster&) = delete;
+    Roster& operator=(const Roster&) = delete;
+
+    std::array<Card, TOTAL_CARDS_IN_GAME> cards;
 };

@@ -8,13 +8,13 @@
 #define TILE_WIDTH	6
 #define TILE_HEIGHT	6
 
-void TerminalControl::printUI()
+void CLI_control::render_UI()
 {
    // GRID _________________________________________
     int width, height;
 
-    height = master->getGridHeight();
-    width = master->getGridWidth();
+    height = master->get_grid_height();
+    width = master->get_grid_width();
 
      //draw the empty field
      std::string buffer = ".";
@@ -42,18 +42,18 @@ void TerminalControl::printUI()
      // Highlight deploy zones
      for(int i = 0; i < height; i++)
      {
-         higlightTileLight(buffer, width, height, i, 0);
-         higlightTileLight(buffer, width, height, i, width - 1);
+         highlight_tile_subtle(buffer, width, height, i, 0);
+         highlight_tile_subtle(buffer, width, height, i, width - 1);
      }
 
      // Render Units
-   for(CardInfo card : activeCards)
+   for(Card_info card : active_cards)
       if(card.type == Card::UNIT)
       {
          if(card.y == 3 || card.y == 4) //in capture zone
-            higlightTileFunky(buffer, width, height, card.x, card.y);
+            highlight_tile_funky(buffer, width, height, card.x, card.y);
          else
-            higlightTileBold(buffer, width, height, card.x, card.y);
+            highlight_tile_bold(buffer, width, height, card.x, card.y);
 
          // Name
          for(int bias = 1; bias < (TILE_WIDTH+1) && bias < card.name.size() + 1; bias++)
@@ -77,12 +77,12 @@ void TerminalControl::printUI()
             	   + card.y*(TILE_WIDTH+1) + 1] = (std::to_string(card.advantage / 10))[0];
          }
          // Overwhelmed indicator
-         if(card.isOverwhelmed)
+         if(card.is_overwhelmed)
             buffer[(card.x*(TILE_HEIGHT+1) + 2)*(width*(TILE_WIDTH+1) + 2) \
             	   + card.y*(TILE_WIDTH+1) + TILE_WIDTH] = '!';
          // Ability exhaustion
-         if(!card.canMove)
-            if(!card.canAttack)
+         if(!card.can_move)
+            if(!card.can_attack)
                buffer[(card.x*(TILE_HEIGHT+1) + 2)*(width*(TILE_WIDTH+1) + 2) \
                		  + card.y*(TILE_WIDTH+1) + 1] = 'X';
             else
@@ -91,15 +91,15 @@ void TerminalControl::printUI()
       }
    std::cout << buffer << std::endl;
 
-   std::cout << "Turn " << master->getTurnAbsolute()+1 << "\n";
-   std::cout << "P1: $" << players[0].funds << "       " << players[0].points << " DP       " << players[0].handSize << " in hand\n";
-   std::cout << "P2: $" << players[1].funds << "       " << players[1].points << " DP       " << players[1].handSize << " in hand\n";
+   std::cout << "Turn " << master->get_absolute_turn()+1 << "\n";
+   std::cout << "P1: $" << players[0].funds << "       " << players[0].points << " DP       " << players[0].hand_size << " in hand\n";
+   std::cout << "P2: $" << players[1].funds << "       " << players[1].points << " DP       " << players[1].hand_size << " in hand\n";
 
    // HAND __________________________________________
    
    std::cout << "HAND: " << hand.size() \
-               << "/??    DECK: " << players[id].deckSize \
-               << "    DISCARD: " << players[id].discardSize << "\n";
+               << "/??    DECK: " << players[id].deck_size \
+               << "    DISCARD: " << players[id].discard_size << "\n";
    std::cout << "HAND:____________________________\n";
    std::cout << "YOU HAVE $" << players[id].funds << ":\n\n";
 
@@ -113,17 +113,17 @@ void TerminalControl::printUI()
    std::cout << "CONTRACTS:_______________________\n";
    
    // CONTRACTS _____________________________________
-   for(CardInfo card : activeCards)
-      if(card.type == Card::CONTRACT && card.ownerId == id)
+   for(Card_info card : active_cards)
+      if(card.type == Card::CONTRACT && card.owner_id == id)
             std::cout << card.name << " (" << card.value << ")\n";
 
    std::cout << std::endl;
 
 };
 
-PlayerAction TerminalControl::getAction()
+Order CLI_control::get_action()
 {
-   PlayerAction action = {};
+   Order action = {};
    std::string buffer;
 
 while(true)
@@ -141,12 +141,12 @@ while(true)
       switch (buffer[0])
       {
       case 'p': case 'P': //Pass
-         action.type = PlayerAction::PASS;
+         action.type = Order::PASS;
          return action;
          break;
 
       case 'm': case 'M': //Move
-         action.type = PlayerAction::MOVE;
+         action.type = Order::MOVE;
          std::cout << "SPECIFY RECEIVER COORDINATES:" << std::endl;
          std::cin >> action.args[0] >> action.args[1];
          std::cout << "SPECIFY DESTINATION COORDINATES:" << std::endl;
@@ -155,7 +155,7 @@ while(true)
          break;
 
       case 'a': case 'A': //Attack
-         action.type = PlayerAction::ATTACK;
+         action.type = Order::ATTACK;
          std::cout << "SPECIFY RECEIVER COORDINATES:" << std::endl;
          std::cin >> action.args[0] >> action.args[1];
          std::cout << "SPECIFY TARGET COORDINATES:" << std::endl;
@@ -164,7 +164,7 @@ while(true)
          break;
 
       case 'd': case 'D': //Deploy
-         action.type = PlayerAction::PLAY;
+         action.type = Order::PLAY;
          std::cout << "SPECIFY CARD NO.:" << std::endl;
          std::cin >> action.args[0];
          if(action.args[0] >= 0 && action.args[0] < hand.size() && hand[action.args[0]].type == Card::UNIT)
@@ -183,7 +183,7 @@ while(true)
    }
 }
 
-void TerminalControl::handleControllerEvent(int errorCode)
+void CLI_control::handle_controller_event(int errorCode)
 {
    //enum invalidAction {NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
    switch (errorCode)
@@ -239,13 +239,13 @@ void TerminalControl::handleControllerEvent(int errorCode)
 
 }
 
-void TerminalControl::applyUpdates()
+void CLI_control::apply_updates()
 {
    if(master->getTurn() == id)
-      printUI();
+      render_UI();
 }
 
-void TerminalControl::higlightTileBold(std::string &buffer, int width, int height, int x, int y)
+void CLI_control::highlight_tile_bold(std::string &buffer, int width, int height, int x, int y)
 {
     // corners
     buffer[x*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '+';
@@ -268,7 +268,7 @@ void TerminalControl::higlightTileBold(std::string &buffer, int width, int heigh
     }
 }
 
-void TerminalControl::higlightTileLight(std::string &buffer, int width, int height, int x, int y)
+void CLI_control::highlight_tile_subtle(std::string &buffer, int width, int height, int x, int y)
 {
 	// corners
     buffer[x*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '+';
@@ -291,7 +291,7 @@ void TerminalControl::higlightTileLight(std::string &buffer, int width, int heig
     // }
 }
 
-void TerminalControl::higlightTileFunky(std::string &buffer, int width, int height, int x, int y)
+void CLI_control::highlight_tile_funky(std::string &buffer, int width, int height, int x, int y)
 {
 	// corners
     buffer[x*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '%';
@@ -313,3 +313,16 @@ void TerminalControl::higlightTileFunky(std::string &buffer, int width, int heig
        buffer[(x+1)*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1) + bias] = '%'; 
     }
 }
+
+/*
+
+CONTROLS TODO
+tab - toggle hand
+shift - see additional game data
+wasd - move cursor 
+
+rclick deployed cards - see descriptions
+
+scroll card descriptions
+
+*/
