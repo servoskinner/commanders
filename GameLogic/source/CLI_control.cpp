@@ -5,8 +5,8 @@
 #include "game_logic.hpp"
 #include "player_controller.hpp"
 
-#define TILE_WIDTH	6
-#define TILE_HEIGHT	6
+#define TILE_WIDTH_CHARS	6
+#define TILE_HEIGHT_CHARS	6
 
 void CLI_control::render_UI()
 {
@@ -20,21 +20,21 @@ void CLI_control::render_UI()
      std::string buffer = ".";
 
      for(int i = 0; i < width; i++)
-        buffer.append(std::string(TILE_WIDTH, ' ').append("."));  //first divider line
+        buffer.append(std::string(TILE_WIDTH_CHARS, ' ').append("."));  //first divider line
 
      buffer.append("\n");
 
      for(int j = 0; j < height; j++)
      {
         //empty spaces
-        for(int i = 0; i < TILE_HEIGHT; i++)
-            buffer.append(std::string(width*(TILE_WIDTH+1), ' ').append(" \n"));  
+        for(int i = 0; i < TILE_HEIGHT_CHARS; i++)
+            buffer.append(std::string(width*(TILE_WIDTH_CHARS+1), ' ').append(" \n"));  
 
         //divider
         buffer.append(".");
 
         for(int i = 0; i < width; i++)
-        buffer.append(std::string(TILE_WIDTH, ' ').append("."));
+        buffer.append(std::string(TILE_WIDTH_CHARS, ' ').append("."));
 
         buffer.append("\n");
      }
@@ -42,8 +42,8 @@ void CLI_control::render_UI()
      // Highlight deploy zones
      for(int i = 0; i < height; i++)
      {
-         highlight_tile_subtle(buffer, width, height, i, 0);
-         highlight_tile_subtle(buffer, width, height, i, width - 1);
+         highlight_tile_subtle(buffer, width, i, 0);
+         highlight_tile_subtle(buffer, width, i, width - 1);
      }
 
      // Render Units
@@ -51,43 +51,43 @@ void CLI_control::render_UI()
       if(card.type == Card::UNIT)
       {
          if(card.y == 3 || card.y == 4) //in capture zone
-            highlight_tile_funky(buffer, width, height, card.x, card.y);
+            highlight_tile_funky(buffer, width, card.x, card.y);
          else
-            highlight_tile_bold(buffer, width, height, card.x, card.y);
+            highlight_tile_bold(buffer, width, card.x, card.y);
 
          // Name
-         for(int bias = 1; bias < (TILE_WIDTH+1) && bias < card.name.size() + 1; bias++)
-            buffer[(card.x*(TILE_HEIGHT+1) + 1)*(width*(TILE_WIDTH+1) + 2) \
-            	   + card.y*(TILE_WIDTH+1) + bias] = card.name[bias-1];
+         for(int bias = 1; bias < (TILE_WIDTH_CHARS+1) && bias < card.name.size() + 1; bias++)
+            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 1)*(width*(TILE_WIDTH_CHARS+1) + 2) \
+            	   + card.y*(TILE_WIDTH_CHARS+1) + bias] = card.name[bias-1];
 
-         for(int bias = card.name.size() + 1; bias < (TILE_WIDTH+1); bias++)
-            buffer[(card.x*(TILE_HEIGHT+1) + 1)*(width*(TILE_WIDTH+1) + 2) \
-            	   + card.y*(TILE_WIDTH+1) + bias] = '_';
+         for(int bias = card.name.size() + 1; bias < (TILE_WIDTH_CHARS+1); bias++)
+            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 1)*(width*(TILE_WIDTH_CHARS+1) + 2) \
+            	   + card.y*(TILE_WIDTH_CHARS+1) + bias] = '_';
          // Value
-         buffer[(card.x*(TILE_HEIGHT+1) + TILE_HEIGHT)*(width*(TILE_WIDTH+1) + 2) \
-         		+ card.y*(TILE_WIDTH+1) + TILE_WIDTH] = (std::to_string(card.value % 10))[0];
-         buffer[(card.x*(TILE_HEIGHT+1) + TILE_HEIGHT)*(width*(TILE_WIDTH+1) + 2) \
-         		+ card.y*(TILE_WIDTH+1) + TILE_WIDTH-1] = (std::to_string(card.value / 10))[0];
+         buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(width*(TILE_WIDTH_CHARS+1) + 2) \
+         		+ card.y*(TILE_WIDTH_CHARS+1) + TILE_WIDTH_CHARS] = (std::to_string(card.value % 10))[0];
+         buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(width*(TILE_WIDTH_CHARS+1) + 2) \
+         		+ card.y*(TILE_WIDTH_CHARS+1) + TILE_WIDTH_CHARS-1] = (std::to_string(card.value / 10))[0];
          // Advantage points (if there is any)
          if(card.advantage > 0)
          {
-            buffer[(card.x*(TILE_HEIGHT+1) + TILE_HEIGHT)*(width*(TILE_WIDTH+1) + 2) \
-                   + card.y*(TILE_WIDTH+1) + 2] = (std::to_string(card.advantage % 10))[0];
-            buffer[(card.x*(TILE_HEIGHT+1) + TILE_HEIGHT)*(width*(TILE_WIDTH+1) + 2) \
-            	   + card.y*(TILE_WIDTH+1) + 1] = (std::to_string(card.advantage / 10))[0];
+            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(width*(TILE_WIDTH_CHARS+1) + 2) \
+                   + card.y*(TILE_WIDTH_CHARS+1) + 2] = (std::to_string(card.advantage % 10))[0];
+            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(width*(TILE_WIDTH_CHARS+1) + 2) \
+            	   + card.y*(TILE_WIDTH_CHARS+1) + 1] = (std::to_string(card.advantage / 10))[0];
          }
          // Overwhelmed indicator
          if(card.is_overwhelmed)
-            buffer[(card.x*(TILE_HEIGHT+1) + 2)*(width*(TILE_WIDTH+1) + 2) \
-            	   + card.y*(TILE_WIDTH+1) + TILE_WIDTH] = '!';
+            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 2)*(width*(TILE_WIDTH_CHARS+1) + 2) \
+            	   + card.y*(TILE_WIDTH_CHARS+1) + TILE_WIDTH_CHARS] = '!';
          // Ability exhaustion
          if(!card.can_move)
             if(!card.can_attack)
-               buffer[(card.x*(TILE_HEIGHT+1) + 2)*(width*(TILE_WIDTH+1) + 2) \
-               		  + card.y*(TILE_WIDTH+1) + 1] = 'X';
+               buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 2)*(width*(TILE_WIDTH_CHARS+1) + 2) \
+               		  + card.y*(TILE_WIDTH_CHARS+1) + 1] = 'X';
             else
-               buffer[(card.x*(TILE_HEIGHT+1) + 2)*(width*(TILE_WIDTH+1) + 2) \
-               		  + card.y*(TILE_WIDTH+1) + 1] = '~';
+               buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 2)*(width*(TILE_WIDTH_CHARS+1) + 2) \
+               		  + card.y*(TILE_WIDTH_CHARS+1) + 1] = '~';
       }
    std::cout << buffer << std::endl;
 
@@ -245,42 +245,42 @@ void CLI_control::apply_updates()
       render_UI();
 }
 
-void CLI_control::highlight_tile_bold(std::string &buffer, int width, int height, int x, int y)
+void CLI_control::highlight_tile_bold(std::string &buffer, int g_width, int x, int y)
 {
     // corners
-    buffer[x*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '+';
-    buffer[(x+1)*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '+';
-    buffer[x*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + (y+1)*(TILE_WIDTH+1)] = '+';
-    buffer[(x+1)*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + (y+1)*(TILE_WIDTH+1)] = '+';
+    buffer[x*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1)] = '+';
+    buffer[(x+1)*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1)] = '+';
+    buffer[x*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + (y+1)*(TILE_WIDTH_CHARS+1)] = '+';
+    buffer[(x+1)*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + (y+1)*(TILE_WIDTH_CHARS+1)] = '+';
 
     // vertical border
-    for(int bias = 1; bias < (TILE_HEIGHT+1); bias++)
+    for(int bias = 1; bias < (TILE_HEIGHT_CHARS+1); bias++)
     {
-       buffer[(x*(TILE_HEIGHT+1) + bias)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '|';
-       buffer[(x*(TILE_HEIGHT+1) + bias)*(width*(TILE_WIDTH+1) + 2) + (y+1)*(TILE_WIDTH+1)] = '|'; 
+       buffer[(x*(TILE_HEIGHT_CHARS+1) + bias)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1)] = '|';
+       buffer[(x*(TILE_HEIGHT_CHARS+1) + bias)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + (y+1)*(TILE_WIDTH_CHARS+1)] = '|'; 
     }
 
     // horizontal border
-    for(int bias = 1; bias < (TILE_WIDTH+1); bias++)
+    for(int bias = 1; bias < (TILE_WIDTH_CHARS+1); bias++)
     {
-       buffer[x*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1) + bias] = '-';
-       buffer[(x+1)*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1) + bias] = '-'; 
+       buffer[x*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1) + bias] = '-';
+       buffer[(x+1)*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1) + bias] = '-'; 
     }
 }
 
-void CLI_control::highlight_tile_subtle(std::string &buffer, int width, int height, int x, int y)
+void CLI_control::highlight_tile_subtle(std::string &buffer, int g_width, int x, int y)
 {
 	// corners
-    buffer[x*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '+';
-    buffer[(x+1)*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '+';
-    buffer[x*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + (y+1)*(TILE_WIDTH+1)] = '+';
-    buffer[(x+1)*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + (y+1)*(TILE_WIDTH+1)] = '+';
+    buffer[x*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1)] = '+';
+    buffer[(x+1)*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1)] = '+';
+    buffer[x*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + (y+1)*(TILE_WIDTH_CHARS+1)] = '+';
+    buffer[(x+1)*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + (y+1)*(TILE_WIDTH_CHARS+1)] = '+';
 
     // vertical border
-    for(int bias = 1; bias < (TILE_HEIGHT+1); bias++)
+    for(int bias = 1; bias < (TILE_HEIGHT_CHARS+1); bias++)
     {
-       buffer[(x*(TILE_HEIGHT+1) + bias)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '.';
-       buffer[(x*(TILE_HEIGHT+1) + bias)*(width*(TILE_WIDTH+1) + 2) + (y+1)*(TILE_WIDTH+1)] = '.'; 
+       buffer[(x*(TILE_HEIGHT_CHARS+1) + bias)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1)] = '.';
+       buffer[(x*(TILE_HEIGHT_CHARS+1) + bias)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + (y+1)*(TILE_WIDTH_CHARS+1)] = '.'; 
     }
 
     // horizontal border
@@ -291,26 +291,26 @@ void CLI_control::highlight_tile_subtle(std::string &buffer, int width, int heig
     // }
 }
 
-void CLI_control::highlight_tile_funky(std::string &buffer, int width, int height, int x, int y)
+void CLI_control::highlight_tile_funky(std::string &buffer, int g_width, int x, int y)
 {
 	// corners
-    buffer[x*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '%';
-    buffer[(x+1)*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '%';
-    buffer[x*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + (y+1)*(TILE_WIDTH+1)] = '%';
-    buffer[(x+1)*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + (y+1)*(TILE_WIDTH+1)] = '%';
+    buffer[x*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1)] = '%';
+    buffer[(x+1)*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1)] = '%';
+    buffer[x*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + (y+1)*(TILE_WIDTH_CHARS+1)] = '%';
+    buffer[(x+1)*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + (y+1)*(TILE_WIDTH_CHARS+1)] = '%';
 
     // vertical border
-    for(int bias = 1; bias < (TILE_HEIGHT+1); bias++)
+    for(int bias = 1; bias < (TILE_HEIGHT_CHARS+1); bias++)
     {
-       buffer[(x*(TILE_HEIGHT+1) + bias)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1)] = '%';
-       buffer[(x*(TILE_HEIGHT+1) + bias)*(width*(TILE_WIDTH+1) + 2) + (y+1)*(TILE_WIDTH+1)] = '%'; 
+       buffer[(x*(TILE_HEIGHT_CHARS+1) + bias)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1)] = '%';
+       buffer[(x*(TILE_HEIGHT_CHARS+1) + bias)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + (y+1)*(TILE_WIDTH_CHARS+1)] = '%'; 
     }
 
     // horizontal border
-    for(int bias = 1; bias < (TILE_WIDTH+1); bias++)
+    for(int bias = 1; bias < (TILE_WIDTH_CHARS+1); bias++)
     {
-       buffer[x*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1) + bias] = '%';
-       buffer[(x+1)*(TILE_HEIGHT+1)*(width*(TILE_WIDTH+1) + 2) + y*(TILE_WIDTH+1) + bias] = '%'; 
+       buffer[x*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1) + bias] = '%';
+       buffer[(x+1)*(TILE_HEIGHT_CHARS+1)*(g_width*(TILE_WIDTH_CHARS+1) + 2) + y*(TILE_WIDTH_CHARS+1) + bias] = '%'; 
     }
 }
 

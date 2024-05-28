@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <ncurses.h>
 
 #include "game_logic.hpp"
 
@@ -60,9 +61,28 @@ class CLI_control : public Player_controller
     private:
     void render_UI();
 
-    void highlight_tile_bold(std::string &buffer, int width, int height, int x, int y);
-    void highlight_tile_subtle(std::string &buffer, int width, int height, int x, int y);
-    void highlight_tile_funky(std::string &buffer, int width, int height, int x, int y);
+    void highlight_tile_bold(std::string &buffer, int g_width, int x, int y);
+    void highlight_tile_subtle(std::string &buffer, int g_width, int x, int y);
+    void highlight_tile_funky(std::string &buffer, int g_width, int x, int y);
+};
+
+class ncurses_control : public Player_controller
+{
+    public:
+
+    Order get_action() override;
+    void handle_controller_event(int errorCode) override;
+    void apply_updates() override;
+
+    ncurses_control();
+    ~ncurses_control();
+
+    private:
+    void render_UI();
+
+    void highlight_tile_bold(std::string &buffer, int g_width, int x, int y);
+    void highlight_tile_subtle(std::string &buffer, int g_width, int x, int y);
+    void highlight_tile_funky(std::string &buffer, int g_width, int x, int y);
 };
 
 class TCP_control : public Player_controller
