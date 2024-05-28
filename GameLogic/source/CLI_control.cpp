@@ -2,8 +2,8 @@
 #include <string>
 #include <vector>
 
-#include "gameLogic.h"
-#include "playerController.h"
+#include "game_logic.hpp"
+#include "player_controller.hpp"
 
 #define TILE_WIDTH	6
 #define TILE_HEIGHT	6

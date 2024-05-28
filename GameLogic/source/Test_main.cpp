@@ -1,6 +1,6 @@
-#include "gameLogic.h"
-#include "playerController.h"
-#include "Roster.h"
+#include "game_logic.hpp"
+#include "player_controller.hpp"
+#include "roster.hpp"
 
 #include <iostream>
 

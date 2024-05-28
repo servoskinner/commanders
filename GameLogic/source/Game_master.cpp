@@ -1,6 +1,6 @@
-#include "gameLogic.h"
-#include "misc.h"
-#include "Roster.h"
+#include "game_logic.hpp"
+#include "misc.hpp"
+#include "roster.hpp"
 
 #include <stdexcept>
 #include <iostream>

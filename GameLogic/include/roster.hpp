@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-#include "gameLogic.h"
+#include "game_logic.hpp"
 
 #define TOTAL_CARDS_IN_GAME 20
 
@@ -33,7 +33,6 @@ public:
 
 private:
     Roster();
-    static std::unique_ptr<Roster> instance{new Roster};
 
     Roster(const Roster&) = delete;
     Roster& operator=(const Roster&) = delete;

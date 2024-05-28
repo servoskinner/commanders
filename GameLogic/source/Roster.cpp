@@ -1,5 +1,5 @@
-#include "Roster.h"
-#include "gameLogic.h"
+#include "roster.hpp"
+#include "game_logic.hpp"
 
 Roster::Roster() // instantiate all cards in game 
 {

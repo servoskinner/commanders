@@ -1,4 +1,4 @@
-#include "gameLogic.h"
+#include "game_logic.hpp"
 
 #include <stdexcept>
 #include <iostream>

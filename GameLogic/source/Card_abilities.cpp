@@ -1,4 +1,4 @@
-#include "gameLogic.h"
+#include "game_logic.hpp"
 
 template <int quantity>
 void ability_draw(Game_master& gm, Card& activator)

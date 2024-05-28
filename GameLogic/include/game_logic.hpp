@@ -33,7 +33,7 @@ typedef std::reference_wrapper<Deck> deck_ref;
 typedef std::reference_wrapper<Card> card_ref;
 typedef std::reference_wrapper<Tile> tile_ref;
 
-#include "playerController.h"
+#include "player_controller.hpp"
 
 //Card abilities
 template <int quantity>

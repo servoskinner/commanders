@@ -23,7 +23,7 @@ find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 # Creates an executable target named "corporatewars" based on the source files listed in the SOURCES variable.
 add_executable(corporatewars ${SOURCES})
 # Creates another executable target named "test" by adding additional source files to the already specified SOURCES variable.
-add_executable(test ${SOURCES} GameLogic/source/TerminalControl.cpp GameLogic/source/Test_main.cpp)
+add_executable(test ${SOURCES} GameLogic/source/CLI_control.cpp GameLogic/source/Test_main.cpp)
 
 # Links the "corporatewars" executable target with the SFML libraries.
 target_link_libraries(corporatewars sfml-system sfml-window sfml-graphics sfml-network sfml-audio)

@@ -6,8 +6,7 @@
 #include <memory>
 #include <optional>
 
-#include "gameLogic.h"
-#include "playerController.h"
+#include "game_logic.hpp"
 
 class Player_controller;
 class CLI_control;

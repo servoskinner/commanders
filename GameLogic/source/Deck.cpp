@@ -1,7 +1,7 @@
 #include <vector>
 #include <random>
 
-#include "gameLogic.h"
+#include "game_logic.hpp"
 
 Deck::Deck(const std::vector<Card> &cards) : all(cards), library(), discard()
 {
