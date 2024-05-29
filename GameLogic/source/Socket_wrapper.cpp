@@ -1,24 +1,23 @@
 #include "networking.hpp"
 
-Socket_wrapper::Socket_wrapper(u_short n_port)
+Socket_wrapper::Socket_wrapper(u_short port)
 {
     socket_fdesc = socket(AF_INET, SOCK_DGRAM, 0);
     if(socket_fdesc < 0)
     {
         throw std::runtime_error("Socket_wrapper: Failed to create socket");
     }
-    receiver_addr = {};
+    destinations = {};
     sender_addr = {}; 
 
     sender_addr.sin_family = AF_INET;
     sender_addr.sin_addr.s_addr = INADDR_ANY;
-    sender_addr.sin_port = htons(n_port);
-    port = n_port;
+    sender_addr.sin_port = htons(port);
+    own_port = port;
 
-    receiver_addr.sin_family = AF_INET;
     // prevent blocking when receiving message
     int flags = fcntl(socket_fdesc, F_GETFL, 0); // get flags
-    fcntl(socket_fdesc, F_SETFL, flags | O_NONBLOCK); // set updated flags
+    fcntl(socket_fdesc, F_SETFL, flags | O_NONBLOCK ); // set updated flags
 
     bool bind_successful = bind(socket_fdesc, (sockaddr*)&sender_addr, sizeof(sender_addr)) >= 0;
     if(!bind_successful)
@@ -32,39 +31,59 @@ Socket_wrapper::~Socket_wrapper()
     close(socket_fdesc);
 }
 
-const inline bool Socket_wrapper::is_bound()
+inline const u_short Socket_wrapper::get_port()
 {
-    return bound;
+    return own_port;
 }
 
-void Socket_wrapper::bind_destination(u_short d_port, const std::string& d_address)
+inline const bool Socket_wrapper::enable_broadcast()
 {
-    receiver_addr.sin_port = htons(d_port);
-    receiver_addr.sin_addr.s_addr = inet_addr(d_address.c_str());
-    bound = true;
+    int flag_value = 1;
+    return setsockopt(socket_fdesc, SOL_SOCKET, SO_BROADCAST, &flag_value, sizeof(flag_value)) >= 0;
 }
 
-void Socket_wrapper::unbind()
+const bool Socket_wrapper::send(const std::vector<char>& msg, int dest_id)
 {
-    receiver_addr = {};
-    bound = false;
-}
-
-const bool Socket_wrapper::send(const std::vector<char>& msg)
-{
-    if (!bound)
+    if(destinations.size() >= dest_id)
     {
-        return false;
+        throw std::runtime_error("Socket_wrapper::send(): Destination index out of range");
     }
     char buffer[SOCKET_BUFFER_SIZE];
     std::copy(msg.begin(), msg.end(), buffer);
+    sockaddr_in receiver_addr = {};
+
+    receiver_addr.sin_port = htons(destinations[dest_id].port);
+    receiver_addr.sin_addr.s_addr = destinations[dest_id].address;
+    receiver_addr.sin_family = AF_INET;
 
     int bytes_sent = sendto(socket_fdesc, buffer, msg.size(), 0, \
                             (sockaddr*)&receiver_addr, sizeof(receiver_addr));
+
     return bytes_sent == msg.size();
 }
 
-const std::vector<char> Socket_wrapper::receive()
+const bool Socket_wrapper::send_all(const std::vector<char>& msg)
+{
+    char buffer[SOCKET_BUFFER_SIZE];
+    std::copy(msg.begin(), msg.end(), buffer);
+    sockaddr_in receiver_addr = {};
+    receiver_addr.sin_family = AF_INET;
+
+    bool success = true;
+    for(Socket_info dest : destinations)
+    {
+        receiver_addr.sin_port = htons(dest.port);
+        receiver_addr.sin_addr.s_addr = dest.address;
+
+        int bytes_sent = sendto(socket_fdesc, buffer, msg.size(), 0, \
+                                (sockaddr*)&receiver_addr, sizeof(receiver_addr));
+
+        success = success && bytes_sent == msg.size();
+    }
+    return success;
+}
+
+const Socket_inbound_message Socket_wrapper::receive()
 {
     sockaddr_in inbound_addr;
     socklen_t inbound_addr_len = sizeof(inbound_addr);
@@ -80,7 +99,9 @@ const std::vector<char> Socket_wrapper::receive()
     }
     else if (!(errno == EWOULDBLOCK || errno == EAGAIN))
     {
-        std::clog << "WARNING: Socket_wrapper (port " << port << ") failed to receive message: errno #" << errno << std::endl;
-    } 
-    return msg;
+        std::clog << "WARNING: Socket_wrapper (port " << own_port << ") failed to receive message: errno #" << errno << std::endl;
+    }
+    
+    Socket_inbound_message inbound_message = {{inbound_addr.sin_port, inbound_addr.sin_addr.s_addr}, msg};
+    return inbound_message;
 }

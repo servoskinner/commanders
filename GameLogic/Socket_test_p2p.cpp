@@ -8,11 +8,19 @@ int main()
 
     std::cout << "Enter user port: " << std::flush;
     std::cin >> user_port;
-    std::cout << "Enter peer port: " << std::flush;
-    std::cin >> peer_port;
 
     Socket_wrapper socket_self(user_port);
-    socket_self.bind_destination(peer_port);
+
+    std::cout << "Enter peer port(s): " << std::flush;
+    while(true)
+    {
+        std::cin >> peer_port;
+        if(peer_port == 0)
+        {
+            break;
+        }
+        socket_self.destinations.push_back({peer_port, "127.0.0.1"});
+    }
 
     std::string username;
     std::cout << "enter username: " << std::flush;
@@ -33,12 +41,12 @@ int main()
         if(user_input.size() > 0)
         {
             user_input = "<" + username + ">: " + user_input;
-            socket_self.send(std::vector<char>(user_input.begin(), user_input.end()));
+            socket_self.send_all(std::vector<char>(user_input.begin(), user_input.end()));
         }
         // read incoming messages
         while(true)
         {
-            std::vector<char> msg = socket_self.receive();
+            std::vector<char> msg = socket_self.receive().msg;
             if (msg.size() == 0)
             {
                 break;

@@ -23,18 +23,18 @@ find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 # Creates executables based on the source files listed in the SOURCES variable.
 add_executable(src ${SOURCES})
 add_executable(cli_test ${SOURCES} GameLogic/Test_main.cpp)
-add_executable(net_test GameLogic/Socket_test.cpp GameLogic/source/Socket_wrapper.cpp)
+add_executable(socket_test_p2p GameLogic/Socket_test_p2p.cpp GameLogic/source/Socket_wrapper.cpp)
 
 # Links the "corporatewars" executable target with the SFML libraries.
 target_link_libraries(src sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 
 # Sets properties for the "test" target, specifically setting the output name of the executable to "test".
 set_target_properties(cli_test PROPERTIES OUTPUT_NAME "test")
-set_target_properties(net_test PROPERTIES OUTPUT_NAME "socket_test")
+set_target_properties(socket_test_p2p PROPERTIES OUTPUT_NAME "socket_test_p2p")
 
 # Adds a preprocessor definition called TESTING for the "test" target, which is only visible when compiling this target.
 target_compile_definitions(cli_test PRIVATE TESTING)
-target_compile_definitions(net_test PRIVATE TESTING)
+target_compile_definitions(socket_test_p2p PRIVATE TESTING)
 
 # Sets the directory where CMake will place all runtime targets (executables) after building, relative to the binary directory of the project.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
