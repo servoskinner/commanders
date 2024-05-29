@@ -6,33 +6,22 @@
 #include <memory>
 #include <optional>
 #include <ncurses.h>
+#include <queue>
 
 #include "game_logic.hpp"
 
 class Player_controller;
 class CLI_control;
-class Network_control;
+class Server_interf_control;
 
 typedef std::reference_wrapper<Player_controller> pctrl_ref;
 
-struct Order // Compact data structure that represents the player's in-game actions.
-{
-    char type;
-    enum order_type {NOTHING, PASS, SURRENDER, PLAY, MOVE, ATTACK, CHOICE};
-    char args[255];
-
-    Order()
-    {
-        type = NOTHING;
-        std::fill_n(args, 64, -1);
-    }
-};
-
-class Player_controller //Abstract player interface class (slave of GameMaster)
+class Player_controller // Abstract player interface class (slave of GameMaster)
 {
     public:
-    Game_master* master;
     int id;
+
+    std::string name;
     
     inline int getId() { return id;}
 
@@ -40,9 +29,9 @@ class Player_controller //Abstract player interface class (slave of GameMaster)
     std::vector<Card_info> hand;
     std::vector<Player_info> players;
 
-    virtual Order get_action() = 0;
+    virtual std::vector<int> get_action() = 0;
     virtual void apply_updates() = 0;
-    virtual void handle_controller_event(int eventCode) = 0;
+    virtual void process_event(std::vector<int> event) = 0;
     //virtual std::vector<int> chooseTile() = 0;
     //virtual std::vector<int> chooseContract() = 0;
     //virtual std::vector<int> choosePlayer() = 0;
@@ -51,9 +40,10 @@ class Player_controller //Abstract player interface class (slave of GameMaster)
 class CLI_control : public Player_controller
 {
     public:
+    master_ref master;
 
-    Order get_action() override;
-    void handle_controller_event(int errorCode) override;
+    std::vector<int> get_action() override;
+    void process_event(std::vector<int> event) override;
     void apply_updates() override;
 
     CLI_control() = default;
@@ -70,8 +60,8 @@ class ncurses_control : public Player_controller
 {
     public:
 
-    Order get_action() override;
-    void handle_controller_event(int errorCode) override;
+    std::vector<int> get_action() override;
+    void process_event(std::vector<int> event) override;
     void apply_updates() override;
 
     ncurses_control();
@@ -85,16 +75,20 @@ class ncurses_control : public Player_controller
     void highlight_tile_funky(std::string &buffer, int g_width, int x, int y);
 };
 
-class Network_control : public Player_controller
+class Server_interf_control : public Player_controller
 {
     public:
+    // Server-side interface 
+    void pass_inbound_message(std::vector<char> msg);
+    std::vector<char> get_outbound_message();
+    // Master-side interface
+    void process_event(std::vector<int> event) override;
+    std::vector<int> get_action() override;
 
-    Order get_action() override;
-    void handle_controller_event(int errorCode) override;
     void apply_updates() override;
 
-    Network_control() = default;
+    Server_interf_control() = default;
 
     private:
-    
+    std::queue<std::vector<char>> inbound_msgs, outbound_msgs;
 };

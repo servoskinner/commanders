@@ -45,7 +45,6 @@ Game_master::Game_master(const std::vector<pctrl_ref>& controllers, \
         players.emplace_back(playerid);
 
         controllers[playerid].get().id = playerid;
-        controllers[playerid].get().master = this;
 
         for(Card& card : decks[playerid].get().all) {
             card.owner_id = playerid;
@@ -72,6 +71,19 @@ Game_master::Game_master(const std::vector<pctrl_ref>& controllers, \
     end_turn(); // end -1st turn
 }
 
+inline const void Game_master::broadcast_event(const std::vector<int>& event)
+{
+    for(pctrl_ref pctrl : player_controllers)
+    {
+        pctrl.get().process_event(event);
+    }
+}
+
+inline const void Game_master::send_event(const std::vector<int>& event, int player_id)
+{
+    player_controllers[player_id].get().process_event(event);
+}
+
 bool Game_master::game_loop() 
 {
     // Send game status updates to every player
@@ -81,12 +93,8 @@ bool Game_master::game_loop()
         player_controllers[id].get().apply_updates();
     }
     
-    Order action = player_controllers[turn].get().get_action();
-    int actionVerdict = resolve_action(action);
-
-    if(actionVerdict != Game_master::NONE) { // Invalid action received;
-        player_controllers[turn].get().handle_controller_event(actionVerdict);
-    }
+    std::vector<int> action = player_controllers[turn].get().get_action();
+    resolve_action(action);
 
     return game_is_on;
 }
@@ -105,7 +113,7 @@ void Game_master::end_turn()
     players[turn].funds += BASIC_INCOME;
     // Draw a card, fire event if both discard and deck are exhausted
     if(!resolve_draw(turn)) {
-        player_controllers[turn].get().handle_controller_event(DECK_NOREFRESH);
+        broadcast_event({Game_master::HAPPENING, Game_master::PLAYER_DECK_NOREFRESH, turn});
     }
 	// Check if player should gain victory points
     if(check_dominance(turn))
@@ -116,9 +124,7 @@ void Game_master::end_turn()
         {
             game_is_on = false;
             // Notify everyone that game ended
-            for(int i = 0; i < player_controllers.size(); i++) {
-                player_controllers[i].get().handle_controller_event(i == turn ? Game_master::GAME_WIN : Game_master::GAME_LOSE);
-			}
+            broadcast_event({Game_master::GAME_ENDED, turn});
         }
     }
 
@@ -143,84 +149,114 @@ void Game_master::end_turn()
     }
 };
 
-int Game_master::resolve_action(const Order& action)
+bool Game_master::resolve_action(const std::vector<int> &action)
 {
     int delta_x, delta_y; // Relative target postition for attacking and moving.
     int direction = -1; // Direction of attack or movement.
+    char action_type = action[0];
 
-    switch(action.type)
+    switch(action_type)
     {
 
         //  PASS  _________________________________________________
 
-        case Order::PASS:
+        case Game_master::PASS:
         // self-explanatory
-        end_turn();
-        return Game_master::NONE; // Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
+        send_event({Game_master::ORDER_CONFIRM}, turn);
+        end_turn(); 
+        return true;
+        // Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
         break;
 
         //  MOVE  _________________________________________________
 
-        case Order::MOVE:
+        case Game_master::MOVE:
         {
 
             // check whether all arguments are present
-            if(action.args[0] < 0 || action.args[1] < 0 || action.args[2] < 0 || action.args[3] < 0) {
-                return Game_master::ACT_INVARGS;
+            if(action[1] < 0 || action[2] < 0 || action[3] < 0 || action[4] < 0) {
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_INVARGS}, turn);
+                return false;
 			}
             // check for out-of-bounds arguments
-            if(action.args[0] >= grid.size() || action.args[1] >= grid[0].size() || \
-            action.args[2] >= grid.size() || action.args[3] >= grid[0].size()) {
-                return Game_master::ACT_INVARGS;
+            if(action[1] >= grid.size() || action[2] >= grid[0].size() || \
+            action[3] >= grid.size() || action[4] >= grid[0].size()) 
+            {
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_INVARGS}, turn);
+                return false;
 			}
                 // determine direction and check if it is invalid
-                delta_x = action.args[2] - action.args[0];
-                delta_y = action.args[3] - action.args[1];
+                delta_x = action[3] - action[1];
+                delta_y = action[4] - action[2];
                         // valid
                 if     (delta_x ==  1 && delta_y ==  0)    direction = Game_master::DOWN;
                 else if(delta_x == -1 && delta_y ==  0)    direction = Game_master::UP; 
                 else if(delta_x ==  0 && delta_y ==  1)    direction = Game_master::RIGHT;
                 else if(delta_x ==  0 && delta_y == -1)    direction = Game_master::LEFT;
                 else    //invalid
-                return Game_master::ACT_INVARGS;
+                {
+                    send_event({Game_master::ORDER_INVALID, Game_master::ORD_INVARGS}, turn);
+                    return false;
+                }
 
             // check that an unit was selected
-            if(!grid[action.args[0]][action.args[1]].card.has_value())       { return Game_master::ACT_NOSELECT; 	}
+            if(!grid[action[1]][action[2]].card.has_value())       
+            { 
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_NOSELECT}, turn);
+                return false;	
+            }
             // check that target tile is vacant
-            if(grid[action.args[2]][action.args[3]].card.has_value())       { return Game_master::ACT_NOTARGET; 	}
+            if(grid[action[3]][action[4]].card.has_value())       
+            { 
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_NOTARGET}, turn);
+                return false;	
+            }
             // check ownership permissions
-            if(grid[action.args[0]][action.args[1]].card->get().owner_id != turn) { return Game_master::ACT_PERMISSION; }
+            if(grid[action[1]][action[2]].card->get().owner_id != turn) 
+            { 
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_PERMISSION}, turn);
+                return false;
+            }
             // check if ability was exhausted
-            if(!grid[action.args[0]][action.args[1]].card->get().can_move)        { return Game_master::ACT_EXHAUSTED; 	}
+            if(!grid[action[1]][action[2]].card->get().can_move)        
+            { 
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_EXHAUSTED}, turn);
+                return false;
+            }
 
             // exec order
 
-            if(!resolve_movement(grid[action.args[0]][action.args[1]].card.value(), direction)) {
-                return Game_master::UNKNOWN;
+            if(!resolve_movement(grid[action[1]][action[2]].card.value(), direction)) {
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_UNKNOWN}, turn);
+                return false;
             }
 
             std::cout << "Executing..." << std::endl;
-            return Game_master::NONE;
+            send_event({Game_master::ORDER_CONFIRM}, turn);
+            return true;
         }
         break;
         
         //  ATTACK  _________________________________________________
 
-        case Order::ATTACK:
+        case Game_master::ATTACK:
         {
 
             // ensure all arguments are present
-            if(action.args[0] < 0 || action.args[1] < 0 || action.args[2] < 0 || action.args[3] < 0) {
-                return Game_master::ACT_INVARGS;
+            if(action.size() != 5) {
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_INVARGS}, turn);
+                return false;
 			}
             // check for out-of-bounds arguments
-            if(action.args[0] >= grid.size() || action.args[1] >= grid[0].size() || \
-            action.args[2] >= grid.size() || action.args[3] >= grid[0].size()) {
-                return Game_master::ACT_INVARGS;
+            if(action[1] >= grid.size() || action[2] >= grid[0].size() || \
+            action[3] >= grid.size() || action[4] >= grid[0].size()) 
+            {
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_INVARGS}, turn);
+                return false;
 			}
             // determine direction and check if it is invalid
-                delta_x = action.args[2] - action.args[0];
-                delta_y = action.args[3] - action.args[1];
+                delta_x = action[3] - action[1];
+                delta_y = action[4] - action[2];
                         // valid adjacent
                 if     (delta_x ==  1 && delta_y ==  0) { direction = Game_master::DOWN; 		}
                 else if(delta_x == -1 && delta_y ==  0) { direction = Game_master::UP; 		    }
@@ -232,65 +268,92 @@ int Game_master::resolve_action(const Order& action)
                 else if(delta_x == -1 && delta_y ==  1) { direction = Game_master::UPRIGHT;	    }
                 else if(delta_x == -1 && delta_y == -1) { direction = Game_master::UPLEFT;		}
                 else    //invalid
-                return Game_master::ACT_INVARGS;
+                {
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_INVARGS}, turn);
+                return false;
+                }
 
             // check that unit was selected
-            if(!grid[action.args[0]][action.args[1]].card.has_value())       { return Game_master::ACT_NOSELECT; 	}
+            if(!grid[action[1]][action[2]].card.has_value())
+            { 
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_NOSELECT}, turn);
+                return false;	
+            }
             // check target legality
-            if(!grid[action.args[2]][action.args[3]].card.has_value())       { return Game_master::ACT_NOTARGET; 	}
+            if(!grid[action[3]][action[4]].card.has_value()) 
+            { 
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_NOTARGET}, turn);
+                return false; 	
+            }
             // check ownership permissions
-            if(grid[action.args[0]][action.args[1]].card->get().owner_id != turn) { return Game_master::ACT_PERMISSION; }
+            if(grid[action[1]][action[2]].card->get().owner_id != turn) 
+            { 
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_PERMISSION}, turn);
+                return false;
+            }
             // check if ability was exhausted
-            if(!grid[action.args[0]][action.args[1]].card->get().can_attack)      { return Game_master::ACT_EXHAUSTED; 	}
+            if(!grid[action[1]][action[2]].card->get().can_attack)      
+            { 
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_EXHAUSTED}, turn);
+                return false; 	
+            }
 
             // process order
-            if(!resolve_attack(grid[action.args[0]][action.args[1]].card.value(), direction)) {
-            	return Game_master::UNKNOWN;
+            if(!resolve_attack(grid[action[1]][action[2]].card.value(), direction)) {
+            	send_event({Game_master::ORDER_INVALID, Game_master::ORD_UNKNOWN}, turn);
+                return false;
 			}
-            std::cout << "Executing..." << std::endl;
-            return Game_master::NONE;
+            send_event({Game_master::ORDER_CONFIRM}, turn);
+            return true;
         }
         break;
 
         //  PLAY  _________________________________________________
 
-        case Order::PLAY:
+        case Game_master::PLAY:
         {
         
-            if(action.args[0] < 0 || action.args[0] >= players[turn].hand.size()) {                
-            	return Game_master::ACT_INVARGS;
+            if(action[1] < 0 || action[1] >= players[turn].hand.size()) {                
+            	send_event({Game_master::ORDER_INVALID, Game_master::ORD_INVARGS}, turn);
+                return false;
 			}
             // Check for out-of-bounds arguments for unit deployment
             std::optional<tile_ref> deploySite; // Get tile reference for unit deployment
-            if(players[turn].hand[action.args[0]].get().type == Card::UNIT)
+            if(players[turn].hand[action[1]].get().type == Card::UNIT)
             {
-                if(action.args[1] < 0 || action.args[2] < 0) {
-                    return Game_master::ACT_INVARGS;
+                if(action[2] < 0 || action[3] < 0) {
+                    send_event({Game_master::ORDER_INVALID, Game_master::ORD_INVARGS}, turn);
+                    return false;
                 }
-                if(action.args[1] >= grid.size() || action.args[2] >= grid[0].size()) {
-                    return Game_master::ACT_INVARGS;
+                if(action[2] >= grid.size() || action[3] >= grid[0].size()) {
+                    send_event({Game_master::ORDER_INVALID, Game_master::ORD_NOFUNDS}, turn);
+                    return false;
 				}
-                deploySite = std::ref(grid[action.args[1]][action.args[2]]);
+                deploySite = std::ref(grid[action[2]][action[3]]);
             }
             // Ensure player has sufficient money
-            if(players[turn].hand[action.args[0]].get().cost > players[turn].funds) {
-                return Game_master::ACT_NOFUNDS;
+            if(players[turn].hand[action[1]].get().cost > players[turn].funds) {
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_NOFUNDS}, turn);
+                return false;
 			}
             // Finally, perform the action and check for proper execution.
-            if(!play_card(turn, action.args[0], deploySite)) {
-                return Game_master::ACT_NOTARGET;
+            if(!play_card(turn, action[1], deploySite)) {
+                send_event({Game_master::ORDER_INVALID, Game_master::ORD_NOTARGET}, turn);
+                return false;
 			}
-            return Game_master::NONE; // Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
+            send_event({Game_master::ORDER_CONFIRM}, turn); 
+            return true; // Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
         }
         break;
 
         //  INVALID  _________________________________________________
-
         default:
-            return Game_master::ACT_INVTYPE;
+            send_event({Game_master::ORDER_INVALID, Game_master::ORD_INVTYPE}, turn);
+            return false;
         break;
     }
-    return Game_master::ACT_INVTYPE;
+    send_event({Game_master::ORDER_INVALID, Game_master::ORD_INVTYPE}, turn);
+    return false;
 }
 
 void Game_master::update_status(int player_id)
@@ -349,7 +412,7 @@ bool Game_master::deploy_card(Card& card, std::optional<tile_ref> target)
         card.status = Card::IN_PLAY;
         active_cards.push_back(std::ref(card));
     }
-
+    broadcast_event({Game_master::HAPPENING, Game_master::DEPLOYED, card.match_id, card.x, card.y});
     // Fire trig_played events
     for(const auto& event_played : card.trig_played) {
         event_played(*this, card);
@@ -382,6 +445,7 @@ bool Game_master::resolve_movement(Card& card, const int& direction)
     card.y = options[direction]->get().y;
 
     card.can_move = false;
+    broadcast_event({Game_master::HAPPENING, Game_master::MOVED, card.match_id, direction});
 
     return true;
 }
@@ -402,6 +466,7 @@ void Game_master::resolve_destruction(Card& card)
         if(card.status != Card::IN_PLAY)
             std::clog << "WARNING: killing card that was not \"in play\"" << std::endl;
     }
+    broadcast_event({Game_master::HAPPENING, Game_master::DESTROYED, card.match_id});
 
     // Fire death events
     for(const auto& deathEvent : card.trig_destroyed)
@@ -512,20 +577,23 @@ std::vector<std::optional<tile_ref>> Game_master::get_8neighbors(const Tile& til
     return res;
 }
 
-bool Game_master::resolve_draw(int playerId)
+bool Game_master::resolve_draw(int player_id)
 {
-    if(decks[playerId].get().library.size() == 0)
-        if(decks[playerId].get().discard.size() == 0)
+    if(decks[player_id].get().library.size() == 0)
+        if(decks[player_id].get().discard.size() == 0)
             return false;
         else
-            decks[playerId].get().refresh();
+            decks[player_id].get().refresh();
+            broadcast_event({Game_master::HAPPENING, Game_master::PLAYER_DECK_REFRESH, player_id});
 
-    if(decks[playerId].get().library.back().get().status != Card::DECK)
+    if(decks[player_id].get().library.back().get().status != Card::DECK)
         std::clog << "Warning: drawing card that has not been marked as \"In deck\"" << std::endl;
 
-    players[playerId].hand.push_back(decks[playerId].get().library.back());
-    decks[playerId].get().library.back().get().status = Card::HAND;
-    decks[playerId].get().library.pop_back();
+    players[player_id].hand.push_back(decks[player_id].get().library.back());
+    decks[player_id].get().library.back().get().status = Card::HAND;
+    decks[player_id].get().library.pop_back();
+    // send updates to player controllers
+    broadcast_event({Game_master::HAPPENING, Game_master::PLAYER_DRAWS, player_id});
 
     return true;
 }
@@ -535,12 +603,15 @@ bool Game_master::discard(int player_id, int hand_index)
     if(player_id < 0 || player_id >= players.size()) throw std::out_of_range("playerId out of range");
     if(hand_index < 0 || hand_index >= players[player_id].hand.size()) throw std::out_of_range("handIndex out of range");
 
-    if(players[player_id].hand[hand_index].get().status != Card::HAND)
+    card_ref card_to_discard = players[player_id].hand[hand_index];
+    if(card_to_discard.get().status != Card::HAND)
         std::clog << "Warning: discarding card that has not been marked as \"In hand\"" << std::endl;
 
-    decks[player_id].get().discard.push_back(players[player_id].hand[hand_index]);
-    players[player_id].hand[hand_index].get().status = Card::DISCARD;
+    decks[player_id].get().discard.push_back(card_to_discard);
+    card_to_discard.get().status = Card::DISCARD;
     pop_index(players[player_id].hand, hand_index);
+    // send updates to controllers
+    broadcast_event({Game_master::HAPPENING, Game_master::PLAYER_DISCARDS, player_id, card_to_discard.get().match_id});
 
     return true;
 }
@@ -573,14 +644,14 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<tile_re
                    tptr->get().card->get().owner_id == player_id)
                     nearFriendly = true;
 
-            if(!nearFriendly) return Game_master::ACT_NOTARGET;
+            if(!nearFriendly) return Game_master::ORD_NOTARGET;
 
             // Check if there are no enemies on surrounding tiles
             for(std::optional<tile_ref> tptr : get_8neighbors(target.value()))
                 if(tptr.has_value() && \
                    tptr->get().card.has_value() && 
                    tptr->get().card->get().owner_id != player_id)
-                    return Game_master::ACT_NOTARGET;
+                    return Game_master::ORD_NOTARGET;
         }
     }
 

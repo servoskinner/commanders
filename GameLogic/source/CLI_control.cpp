@@ -13,8 +13,8 @@ void CLI_control::render_UI()
    // GRID _________________________________________
     int width, height;
 
-    height = master->get_grid_height();
-    width = master->get_grid_width();
+    height = master.get().get_grid_height();
+    width = master.get().get_grid_width();
 
      //draw the empty field
      std::string buffer = ".";
@@ -91,7 +91,7 @@ void CLI_control::render_UI()
       }
    std::cout << buffer << std::endl;
 
-   std::cout << "Turn " << master->get_absolute_turn()+1 << "\n";
+   std::cout << "Turn " << master.get().get_absolute_turn()+1 << "\n";
    std::cout << "P1: $" << players[0].funds << "       " << players[0].points << " DP       " << players[0].hand_size << " in hand\n";
    std::cout << "P2: $" << players[1].funds << "       " << players[1].points << " DP       " << players[1].hand_size << " in hand\n";
 
@@ -121,9 +121,9 @@ void CLI_control::render_UI()
 
 };
 
-Order CLI_control::get_action()
+std::vector<char> CLI_control::get_action()
 {
-   Order action = {};
+   std::vector<char> action = {};
    std::string buffer;
 
 while(true)
@@ -141,36 +141,39 @@ while(true)
       switch (buffer[0])
       {
       case 'p': case 'P': //Pass
-         action.type = Order::PASS;
+         action.push_back(Game_master::PASS);
          return action;
          break;
 
       case 'm': case 'M': //Move
-         action.type = Order::MOVE;
+         action.resize(5);
+         action[0] = Game_master::MOVE;
          std::cout << "SPECIFY RECEIVER COORDINATES:" << std::endl;
-         std::cin >> action.args[0] >> action.args[1];
+         std::cin >> action[1] >> action[2];
          std::cout << "SPECIFY DESTINATION COORDINATES:" << std::endl;
-         std::cin >> action.args[2] >> action.args[3];
+         std::cin >> action[3] >> action[4];
          return action;
          break;
 
       case 'a': case 'A': //Attack
-         action.type = Order::ATTACK;
+         action.resize(5);
+         action[0] = Game_master::ATTACK;
          std::cout << "SPECIFY RECEIVER COORDINATES:" << std::endl;
-         std::cin >> action.args[0] >> action.args[1];
+         std::cin >> action[1] >> action[2];
          std::cout << "SPECIFY TARGET COORDINATES:" << std::endl;
-         std::cin >> action.args[2] >> action.args[3];
+         std::cin >> action[3] >> action[4];
          return action;
          break;
 
       case 'd': case 'D': //Deploy
-         action.type = Order::PLAY;
+         action.resize(4);
+         action[0] = Game_master::PLAY;
          std::cout << "SPECIFY CARD NO.:" << std::endl;
-         std::cin >> action.args[0];
-         if(action.args[0] >= 0 && action.args[0] < hand.size() && hand[action.args[0]].type == Card::UNIT)
+         std::cin >> action[1];
+         if(action[1] >= 0 && action[1] < hand.size() && hand[action[1]].type == Card::UNIT)
          {
             std::cout << "SPECIFY DEPLOYMENT COORDINATES:" << std::endl;
-            std::cin >> action.args[1] >> action.args[2];
+            std::cin >> action[2] >> action[3];
          }
          return action;
          break;
@@ -183,52 +186,41 @@ while(true)
    }
 }
 
-void CLI_control::handle_controller_event(int errorCode)
+void CLI_control::process_event(std::vector<char> event)
 {
-   //enum invalidAction {NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
-   switch (errorCode)
+   if(event.size() >= 2 && event[0] == Game_master::ORDER_INVALID)
    {
-   case Game_master::NONE:
-      std::cout << "\nSomething happened...\n" << std::endl;
-      break;
-
-   case Game_master::GAME_WIN:
-      std::cout << "\nVICTORY! Another successful takeover.\n" << std::endl;
-      break;
-
-   case Game_master::GAME_LOSE:
-      std::cout << "\nYOU FAILED!\n" << std::endl;
-      break;
-   
-   case Game_master::ACT_INVTYPE:
+   switch (event[1])
+   {   
+   case Game_master::ORD_INVTYPE:
       std::cout << "\nInvalid command type...\n" << std::endl;
       break;
 
-   case Game_master::ACT_INVARGS:
+   case Game_master::ORD_INVARGS:
       std::cout << "\nInvalid argument(s)...\n" << std::endl;
       break;
 
-   case Game_master::ACT_PERMISSION:
+   case Game_master::ORD_PERMISSION:
       std::cout << "\nYou don't have permission...\n" << std::endl;
       break;
 
-   case Game_master::ACT_NOSELECT:
+   case Game_master::ORD_NOSELECT:
       std::cout << "\nNo unit has been selected...\n" << std::endl;
       break;
 
-   case Game_master::ACT_NOTARGET:
+   case Game_master::ORD_NOTARGET:
       std::cout << "\nNo target has been specified...\n" << std::endl;
       break;
 
-   case Game_master::ACT_EXHAUSTED:
+   case Game_master::ORD_EXHAUSTED:
       std::cout << "\nOption exhausted...\n" << std::endl;
       break;
    
-   case Game_master::ACT_NOFUNDS:
+   case Game_master::ORD_NOFUNDS:
       std::cout << "\nInsufficient funds...\n" << std::endl;
       break;
 
-   case Game_master::UNKNOWN:
+   case Game_master::ORD_UNKNOWN:
       std::cout << "\nAn unknown error occurred...\n" << std::endl;
       break;
 
@@ -236,12 +228,17 @@ void CLI_control::handle_controller_event(int errorCode)
       std::cout << "\nAn even less known error occurred...\n" << std::endl;
       break;
    }
+   }
 
-}
+   if (event.size() >= 1 && event[0] == Game_master::HAPPENING)
+   {
+      // todo
+   }
+}  
 
 void CLI_control::apply_updates()
 {
-   if(master->getTurn() == id)
+   if(master.get().getTurn() == id)
       render_UI();
 }
 
