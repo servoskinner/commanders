@@ -11,15 +11,15 @@
 
 class Player_controller;
 class CLI_control;
-class TCP_control;
+class Network_control;
 
 typedef std::reference_wrapper<Player_controller> pctrl_ref;
 
-struct Order
+struct Order // Compact data structure that represents the player's in-game actions.
 {
-    int type;
-    enum PlayerActionType {NOTHING, PASS, SURRENDER, PLAY, MOVE, ATTACK};
-    int args[64];
+    char type;
+    enum order_type {NOTHING, PASS, SURRENDER, PLAY, MOVE, ATTACK, CHOICE};
+    char args[255];
 
     Order()
     {
@@ -85,7 +85,7 @@ class ncurses_control : public Player_controller
     void highlight_tile_funky(std::string &buffer, int g_width, int x, int y);
 };
 
-class TCP_control : public Player_controller
+class Network_control : public Player_controller
 {
     public:
 
@@ -93,7 +93,7 @@ class TCP_control : public Player_controller
     void handle_controller_event(int errorCode) override;
     void apply_updates() override;
 
-    TCP_control() = default;
+    Network_control() = default;
 
     private:
     
