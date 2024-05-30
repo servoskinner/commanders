@@ -15,10 +15,10 @@
 #define POINTS_REQ_FOR_VICTORY 	10
 
 class Game_master; // Basically, a singular game session.
-class Player;      // A player in context of game. Does not generate any input.
-class Deck;        // A card pool that can be used by players.
-class Card;        // A card in any state, with gameplay parameters.
-class Tile;        // An area that cards can be placed onto.
+class Player;     // A player in context of game. Does not generate any input.
+class Deck;       // A card pool that can be used by players.
+class Card;       // A card in any state, with gameplay parameters.
+class Tile;       // An area that cards can be placed onto.
 
 class Roster;
 
@@ -55,47 +55,20 @@ public: // _____________________________________________________________________
     int get_grid_width() { return grid[0].size(); }
     int get_grid_height() { return grid.size(); }
 
-    enum order_type 
+    enum eventCodes
     {
-        NOTHING, 
-        PASS, 
-        SURRENDER, 
-        PLAY, 
-        MOVE, 
-        ATTACK, 
-        CHOICE
-    };
-    enum event_types
-    {
-        ORDER_CONFIRM,
-        ORDER_INVALID,
-        BOARD_UPDATE,
-        HAPPENING,
-        TURN_PASS,
-        GAME_ENDED,
-    };
-    enum invalid_event_codes
-    {
-        ORD_UNKNOWN,
-        ORD_INVTYPE,
-        ORD_INVARGS,
-        ORD_NOSELECT,
-        ORD_NOTARGET,
-        ORD_PERMISSION,
-        ORD_NOFUNDS,
-        ORD_EXHAUSTED,
-    };
-    enum update_event_codes
-    {
-        DEPLOYED,
-        MOVED,
-        ATTACKED,
-        DESTROYED,
-        PLAYER_DRAWS,
-        PLAYER_GAINS_FUNDS,
-        PLAYER_DECK_REFRESH,
-        PLAYER_DECK_NOREFRESH,
-        PLAYER_DISCARDS
+        NONE,
+        UNKNOWN,
+        GAME_WIN,
+        GAME_LOSE,
+        ACT_INVTYPE,
+        ACT_INVARGS,
+        ACT_PERMISSION,
+        ACT_NOSELECT,
+        ACT_NOTARGET,
+        ACT_EXHAUSTED,
+        ACT_NOFUNDS,
+        DECK_NOREFRESH
     };
     enum nearbyTiles
     {
@@ -120,9 +93,7 @@ protected: // __________________________________________________________________
     std::vector<std::vector<Tile>> grid; // The playing field. (0,0) is top left corner; X axis is vertical, Y is horizontal.
     std::vector<card_ref> active_cards;   // Cards that are currently on the playing field.
 
-    bool resolve_action(const std::vector<int> &action);
-    inline const void broadcast_event(const std::vector<int> &event);
-    inline const void send_event(const std::vector<int> &event, int player_id);
+    int resolve_action(const Order &action);
 
     void update_status(int playerId);
     bool check_dominance(int playerId);

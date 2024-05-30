@@ -7,8 +7,8 @@
 int main()
 {
     Roster& roster = Roster::get();
-    Server_interf_control TC1;
-    Server_interf_control TC2;
+    Network_control TC1;
+    Network_control TC2;
 
     Deck deck1({
         roster.get_card_instance(Roster::BOUNTYHUNTER),
