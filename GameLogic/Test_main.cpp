@@ -1,108 +1,53 @@
-#include "game_logic.hpp"
-#include "player_controller.hpp"
-#include "roster.hpp"
+#include "Card_index.hpp"
+#include "Commander.hpp"
+#include "Game_master.hpp"
 
 #include <iostream>
+#include <vector>
 
 int main()
 {
-    Roster& roster = Roster::get();
-    CLI_control TC1;
-    CLI_control TC2;
+    std::vector<int> deck1 =
+    {
+        BOUNTYHUNTER,
+        BOUNTYHUNTER,
+        HENCHMAN,
+        HENCHMAN,
+        COMMANDO,
+        OPPRESSOR,
+        MAIMBOT,
+        MAIMBOT,
+        GUNKFOOD,
+        GUNKFOOD,
+        MACHINEPARTS,
+        FISSION
+    };
+    std::vector<int> deck2 =
+    {
+        BOUNTYHUNTER,
+        BOUNTYHUNTER,
+        HENCHMAN,
+        HENCHMAN,
+        COMMANDO,
+        OPPRESSOR,
+        MAIMBOT,
+        MAIMBOT,
+        GUNKFOOD,
+        GUNKFOOD,
+        MACHINEPARTS,
+        FISSION
+    };
 
-    Deck deck1({
-        roster.get_card_instance(Roster::BOUNTYHUNTER),
-        roster.get_card_instance(Roster::BOUNTYHUNTER),
-        roster.get_card_instance(Roster::BOUNTYHUNTER),
-        roster.get_card_instance(Roster::BOUNTYHUNTER),
-        roster.get_card_instance(Roster::BOUNTYHUNTER),
-        roster.get_card_instance(Roster::HENCHMAN),
-        roster.get_card_instance(Roster::HENCHMAN),
-        roster.get_card_instance(Roster::HENCHMAN),
-        roster.get_card_instance(Roster::HENCHMAN),
-        roster.get_card_instance(Roster::HENCHMAN),
-        roster.get_card_instance(Roster::COMMANDO),
-        roster.get_card_instance(Roster::COMMANDO),
-        roster.get_card_instance(Roster::COMMANDO),
-        roster.get_card_instance(Roster::COMMANDO),
-        roster.get_card_instance(Roster::MAIMBOT),
-        roster.get_card_instance(Roster::MAIMBOT),
-        roster.get_card_instance(Roster::MAIMBOT),
-        roster.get_card_instance(Roster::MAIMBOT),
-        roster.get_card_instance(Roster::ARCHON),
-        roster.get_card_instance(Roster::ARCHON),
-        roster.get_card_instance(Roster::OPPRESSOR),
-        roster.get_card_instance(Roster::OPPRESSOR),
-        roster.get_card_instance(Roster::GUNKFOOD),
-        roster.get_card_instance(Roster::GUNKFOOD),
-        roster.get_card_instance(Roster::GUNKFOOD),
-        roster.get_card_instance(Roster::MACHINEPARTS),
-        roster.get_card_instance(Roster::MACHINEPARTS),
-        roster.get_card_instance(Roster::MACHINEPARTS),
-        roster.get_card_instance(Roster::FISSION),
-        roster.get_card_instance(Roster::FISSION),
-        roster.get_card_instance(Roster::LOGISTICS),
-        roster.get_card_instance(Roster::LOGISTICS),
-        roster.get_card_instance(Roster::LOGISTICS),
-        roster.get_card_instance(Roster::BARGAIN),
-        roster.get_card_instance(Roster::BARGAIN),
-        roster.get_card_instance(Roster::BIOWEAPONRD),
-        roster.get_card_instance(Roster::BIOWEAPONRD),
-        roster.get_card_instance(Roster::UNITANK),
-        roster.get_card_instance(Roster::UNITANK),
-        roster.get_card_instance(Roster::UNITANK)
-        });
+    CLI_commander cmd1, cmd2;
 
-    Deck deck2({
-        roster.get_card_instance(Roster::BOUNTYHUNTER),
-        roster.get_card_instance(Roster::BOUNTYHUNTER),
-        roster.get_card_instance(Roster::BOUNTYHUNTER),
-        roster.get_card_instance(Roster::BOUNTYHUNTER),
-        roster.get_card_instance(Roster::BOUNTYHUNTER),
-        roster.get_card_instance(Roster::HENCHMAN),
-        roster.get_card_instance(Roster::HENCHMAN),
-        roster.get_card_instance(Roster::HENCHMAN),
-        roster.get_card_instance(Roster::HENCHMAN),
-        roster.get_card_instance(Roster::HENCHMAN),
-        roster.get_card_instance(Roster::COMMANDO),
-        roster.get_card_instance(Roster::COMMANDO),
-        roster.get_card_instance(Roster::COMMANDO),
-        roster.get_card_instance(Roster::COMMANDO),
-        roster.get_card_instance(Roster::MAIMBOT),
-        roster.get_card_instance(Roster::MAIMBOT),
-        roster.get_card_instance(Roster::MAIMBOT),
-        roster.get_card_instance(Roster::MAIMBOT),
-        roster.get_card_instance(Roster::ARCHON),
-        roster.get_card_instance(Roster::ARCHON),
-        roster.get_card_instance(Roster::OPPRESSOR),
-        roster.get_card_instance(Roster::OPPRESSOR),
-        roster.get_card_instance(Roster::GUNKFOOD),
-        roster.get_card_instance(Roster::GUNKFOOD),
-        roster.get_card_instance(Roster::GUNKFOOD),
-        roster.get_card_instance(Roster::MACHINEPARTS),
-        roster.get_card_instance(Roster::MACHINEPARTS),
-        roster.get_card_instance(Roster::MACHINEPARTS),
-        roster.get_card_instance(Roster::FISSION),
-        roster.get_card_instance(Roster::FISSION),
-        roster.get_card_instance(Roster::LOGISTICS),
-        roster.get_card_instance(Roster::LOGISTICS),
-        roster.get_card_instance(Roster::LOGISTICS),
-        roster.get_card_instance(Roster::BARGAIN),
-        roster.get_card_instance(Roster::BARGAIN),
-        roster.get_card_instance(Roster::BIOWEAPONRD),
-        roster.get_card_instance(Roster::BIOWEAPONRD),
-        roster.get_card_instance(Roster::UNITANK),
-        roster.get_card_instance(Roster::UNITANK),
-        roster.get_card_instance(Roster::UNITANK)
-        });
+    std::vector<pctrl_ref> commander_refs = {std::ref(cmd1), std::ref(cmd2)};
+    std::vector<std::vector<int>> deck_images = {deck1, deck2};
 
-    std::vector<pctrl_ref> controllers = {std::ref(TC1), std::ref(TC2)};
-    std::vector<deck_ref> decks = {std::ref(deck1), std::ref(deck2)};
-    deck_ref deck = deck1;
-
-    Game_master gm(controllers, decks);
-
-    while(gm.game_loop());
+    Game_master gm(commander_refs, deck_images);
+    while(gm.game_loop())
+    {
+        std::cout << gm.get_turn() << std::endl;
+    }
     
     return 0;
 }

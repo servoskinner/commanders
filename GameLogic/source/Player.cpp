@@ -1,9 +1,10 @@
-#include "game_logic.hpp"
+#include "Game_master.hpp"
+#include "Commander.hpp"
 
 #include <stdexcept>
 #include <iostream>
 
-Player::Player(int playerid) : id(playerid)
+Game_master::Player::Player(int playerid) : id(playerid)
 {
     std::cout << "created player with ID " << id << " at " << this <<  std::endl;
 
@@ -11,9 +12,9 @@ Player::Player(int playerid) : id(playerid)
     points = 0;
 }
 
-Player_info Player::getInfo(Deck& deck)
+Commander::Player_info Game_master::Player::getInfo(Deck& deck)
 {
-    Player_info info;
+    Commander::Player_info info;
 
     info.id = id;
     info.funds = funds;

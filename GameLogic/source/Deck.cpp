@@ -1,18 +1,19 @@
 #include <vector>
 #include <random>
 
-#include "game_logic.hpp"
+#include "Card_generator.hpp"
+#include "Game_master.hpp"
 
-Deck::Deck(const std::vector<Card> &cards) : all(cards), library(), discard()
+Game_master::Deck::Deck(const std::vector<Card> &cards) : all(cards), library(), discard()
 {
     for(Card& card : all)
     {   
-        card.status = Card::DECK;
+        card.status = Card::CSTATUS_IN_DECK;
         library.emplace_back(std::ref(card));
     }
 }
 
-void Deck::shuffle()
+void Game_master::Deck::shuffle()
 {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -25,27 +26,37 @@ void Deck::shuffle()
     }
 }
 
-void Deck::refresh()
+void Game_master::Deck::refresh()
 {
     library.insert(library.end(), discard.begin(), discard.end()); // Move discard to library
     discard = std::vector<card_ref>();
 
     for (card_ref cref : library)
-        cref.get().status = Card::DECK;
+        cref.get().status = Card::CSTATUS_IN_DECK;
 
     shuffle();
 }
 
-Deck::Deck(const Deck &original) : all(original.all), library(), discard()
+Game_master::Deck::Deck(const Deck &original) : all(original.all), library(), discard()
 {
     for(Card& card : all)
     {   
-        card.status = Card::DECK;
+        card.status = Game_master::Card::CSTATUS_IN_DECK;
         library.emplace_back(std::ref(card));
     }
 }
 
-Deck &Deck::operator=(const Deck &original)
+Game_master::Deck::Deck(const std::vector<int> &deck_image) : all(0), library(), discard()
+{
+    Card_generator& card_generator = Card_generator::get(); 
+    for(int id : deck_image)
+    {   
+        all.emplace_back(card_generator.get_card_instance(id));
+        library.emplace_back(std::ref(all.back()));
+    }
+}
+
+Game_master::Deck &Game_master::Deck::operator=(const Deck &original)
 {
     library = std::vector<card_ref>();
     discard = std::vector<card_ref>();
@@ -54,7 +65,7 @@ Deck &Deck::operator=(const Deck &original)
 
     for(Card& card : all)
     {   
-        card.status = Card::DECK;
+        card.status = Card::CSTATUS_IN_DECK;
         library.emplace_back(std::ref(card));
     }
 

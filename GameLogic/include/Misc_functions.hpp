@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <functional>
+#include <string>
 
 template <typename Type, typename Keytype>
 bool pop_element(std::vector<Type>& vec, const Keytype& key, \
@@ -12,7 +13,6 @@ bool pop_element(std::vector<Type>& vec, const Keytype& key, \
                  // Returns TRUE if element was found and destroyed and FALSE otherwise
 
                  // CAUTION: mind the order of Type and Keytype. don't repeat my mistakes
-                 // (this function is sharty killing vantablack brimstone, 'thon users rejoice)
 {
     // Find first iter that points to object that yields true when compared against key..
     for(auto iter = vec.begin(); iter != vec.end(); iter++)
@@ -36,3 +36,4 @@ bool pop_index(std::vector<Type>& vec, const int& index) //Remove element with t
     return true;
 }
 
+std::vector<std::string> wrap_text(const std::string& text, int line_width); // Split text into lines to fit inside given line width.

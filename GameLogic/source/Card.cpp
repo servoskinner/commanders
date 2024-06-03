@@ -1,11 +1,12 @@
-#include "game_logic.hpp"
+#include "Game_master.hpp"
 
 #include <stdexcept>
 #include <iostream>
 
-#include "misc.hpp"
+#include "Misc_functions.hpp"
+class GameMaster;
 
-Card::Card(int gid, int mid)
+Game_master::Card::Card(int gid, int mid)
 {
     match_id = mid;
     global_id = gid;
@@ -15,53 +16,25 @@ Card::Card(int gid, int mid)
     advantage = 0;
     cost = 0;
 
-    type = Card::UNIT;
-    status = Card::UNDEFINED; 
+    type = CTYPE_UNIT;
+    status = Card::CSTATUS_UNDEFINED; 
     x = -1, y = -1;
-
-    name = "unknown";
-    text = "";
 
     can_attack = false;
     can_move = false;
     is_overwhelmed = false;
 }
 
-Card& Card::operator=(const Card& other)
+Commander::Card_info Game_master::Card::get_info()
 {
-    //Status, ID and ownerID stay the same;
-    type = other.type;
-
-    x = other.x;
-    y = other.y;
-
-    name = other.name;
-    text = other.text;
-
-    cost = other.cost;
-    value = other.value;
-    advantage = other.advantage;
-    
-    trig_ability = other.trig_ability;
-    trig_played = other.trig_played;
-    trig_destroyed = other.trig_destroyed;
-
-    return *this;
-}
-
-Card_info Card::get_info()
-{
-    Card_info info;
+    Commander::Card_info info;
 
     info.owner_id = owner_id;
     info.global_id = global_id;
     info.match_id = match_id;
 
-    // these can be stored on player's side
-    info.name = name;
-    info.text = text;
-
     info.x = x, info.y = y;
+
     info.value = value;
     info.cost = cost;
     info.advantage = advantage;
