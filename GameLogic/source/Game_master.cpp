@@ -20,7 +20,7 @@ Game_master::Game_master(const std::vector<pctrl_ref>& commanders_ref, \
     commanders = commanders_ref;
     for(const std::vector<int>& image : deck_images)
     {
-        decks.emplace_back(image);
+        decks.push_back(image);
     }
     // Build grid
     grid = std::vector<std::vector<Tile>>(GRID_HEIGHT, std::vector<Tile>(GRID_WIDTH));
@@ -84,7 +84,6 @@ bool Game_master::game_loop()
         update_status(id);
         commanders[id].get().apply_updates();
     }
-    
     Commander::Order action = commanders[turn].get().get_action();
     int action_verdict = exec_order(action);
 
@@ -121,7 +120,7 @@ void Game_master::end_turn()
     // Add basic income
     players[turn].funds += BASIC_INCOME;
     // Draw a card, fire event if both discard and deck are exhausted
-    if (!resolve_draw(turn)) 
+    if (!resolve_draw(turn)) // move this cond to resolve_draw
     {
         Commander::Event event;
         event.type = Commander::Event::EV_DECK_NOREFRESH;
@@ -143,7 +142,6 @@ void Game_master::end_turn()
             broadcast_event(event);
         }
     }
-
 
     for(card_ref cref : active_cards)
     {
@@ -322,17 +320,23 @@ void Game_master::update_status(int player_id)
     controller.get().turn = turn;
     controller.get().turn_absolute = turn_absolute;
     
-    controller.get().active_cards = std::vector<Commander::Card_info>(active_cards.size());
+    controller.get().active_cards.resize(active_cards.size());
     for(int i = 0; i < active_cards.size(); i++)
+    {
         controller.get().active_cards[i] = active_cards[i].get().get_info();
+    }
 
-    controller.get().hand = std::vector<Commander::Card_info>(players[player_id].hand.size());
+    controller.get().hand.resize(players[player_id].hand.size());
     for(int i = 0; i < players[player_id].hand.size(); i++)
+    {
         controller.get().hand[i] = players[player_id].hand[i].get().get_info();
+    }
 
-    controller.get().players = std::vector<Commander::Player_info>(players.size());
+    controller.get().players.resize(players.size());
     for(int i = 0; i < players.size(); i++)
-        controller.get().players[i] = players[i].getInfo(decks[i]);
+    {
+        controller.get().players[i] = players[i].get_info(decks[i]);
+    }
 }
 
 bool Game_master::check_dominance(int playerId)
@@ -390,7 +394,7 @@ bool Game_master::resolve_movement(Card& card, const int& direction)
     // Check if direction is valid
     if(direction < 0 || direction > 3) throw std::invalid_argument("invalid direction");
     if(!grid[card.x][card.y].card.has_value() || \
-        grid[card.x][card.y].card->get().match_id != card.match_id) throw std::runtime_error("Trying to move an off-grid card");
+        &grid[card.x][card.y].card->get() != &card) throw std::runtime_error("Trying to move an off-grid card");
 
     auto options = get_4neighbors(grid[card.x][card.y]);
 
@@ -418,10 +422,10 @@ void Game_master::resolve_destruction(Card& card)
         if(card.x > 0 && card.y > 0)
             grid[card.x][card.y].card.reset();
 
-        std::function<bool(const card_ref&, const Card&)> compare_match_ids = \
-            [](const card_ref& cr, const Card& c){ return cr.get().match_id == c.match_id; };
+        std::function<bool(const card_ref&, const Card&)> compare_origins = \
+            [](const card_ref& cr, const Card& c){ return &cr.get() == &c; };
             
-        if(!pop_element(active_cards, card, compare_match_ids))
+        if(!pop_element(active_cards, card, compare_origins))
             std::clog << "WARNING: killing card that was not in activeCards" << std::endl;
 
         if(card.status != Card::CSTATUS_IN_PLAY)
@@ -503,10 +507,10 @@ std::vector<std::optional<Game_master::tile_ref>> Game_master::get_4neighbors(co
 {
     std::vector<std::optional<Game_master::tile_ref>> res(4);
 
-    if(tile.x > 0)                           res[Tile::UP]    = std::ref(grid[tile.x-1][tile.y]);
-    if(tile.y < grid[0].size() - 1)          res[Tile::RIGHT] = std::ref(grid[tile.x][tile.y+1]);
-    if(tile.x < grid.size() - 1)             res[Tile::DOWN]  = std::ref(grid[tile.x+1][tile.y]);
-    if(tile.y > 0)                           res[Tile::LEFT]  = std::ref(grid[tile.x][tile.y-1]);
+    if(tile.x > 0)                  { res[Tile::UP]    = std::ref(grid[tile.x-1][tile.y]); }
+    if(tile.y < grid[0].size() - 1) { res[Tile::RIGHT] = std::ref(grid[tile.x][tile.y+1]); }
+    if(tile.x < grid.size() - 1)    { res[Tile::DOWN]  = std::ref(grid[tile.x+1][tile.y]); }
+    if(tile.y > 0)                  { res[Tile::LEFT]  = std::ref(grid[tile.x][tile.y-1]); }
 
     return res;
 }
@@ -519,38 +523,44 @@ std::vector<std::optional<Game_master::tile_ref>> Game_master::get_8neighbors(co
     {
         res[Tile::UP] = std::ref(grid[tile.x-1][tile.y]);
 
-        if(tile.y > 0)                        res[Tile::UPLEFT]    = std::ref(grid[tile.x-1][tile.y-1]);
-        if(tile.y < grid[0].size() - 1)       res[Tile::UPRIGHT]   = std::ref(grid[tile.x-1][tile.y+1]);
+        if(tile.y > 0)                  { res[Tile::UPLEFT]    = std::ref(grid[tile.x-1][tile.y-1]); }
+        if(tile.y < grid[0].size() - 1) { res[Tile::UPRIGHT]   = std::ref(grid[tile.x-1][tile.y+1]); }
     }
 
     if(tile.x < grid.size() - 1)
     {
         res[Tile::DOWN] = std::ref(grid[tile.x+1][tile.y]);
 
-        if(tile.y > 0)                        res[Tile::DOWNLEFT]  = std::ref(grid[tile.x+1][tile.y-1]);
-        if(tile.y < grid[0].size() - 1)       res[Tile::DOWNRIGHT] = std::ref(grid[tile.x+1][tile.y+1]);
+        if(tile.y > 0)                  { res[Tile::DOWNLEFT]  = std::ref(grid[tile.x+1][tile.y-1]); }
+        if(tile.y < grid[0].size() - 1) { res[Tile::DOWNRIGHT] = std::ref(grid[tile.x+1][tile.y+1]); }
     }
 
-    if(tile.y > 0)                            res[Tile::LEFT]      = std::ref(grid[tile.x][tile.y-1]);
-    if(tile.y < grid[0].size() - 1)           res[Tile::RIGHT]     = std::ref(grid[tile.x][tile.y+1]);
+    if(tile.y > 0)                      { res[Tile::LEFT]      = std::ref(grid[tile.x][tile.y-1]); }
+    if(tile.y < grid[0].size() - 1)     { res[Tile::RIGHT]     = std::ref(grid[tile.x][tile.y+1]); }
 
     return res;
 }
 
-bool Game_master::resolve_draw(int playerId)
+bool Game_master::resolve_draw(int player_id)
 {
-    if(decks[playerId].library.size() == 0)
-        if(decks[playerId].discard.size() == 0)
+    if(decks[player_id].library.size() == 0)
+    {
+        if(decks[player_id].discard.size() == 0)
+        {
             return false;
+        }
         else
-            decks[playerId].refresh();
-
-    if(decks[playerId].library.back().get().status != Card::CSTATUS_IN_DECK)
+        {
+            decks[player_id].refresh();
+        }
+    }
+    if(decks[player_id].library.back().get().status != Card::CSTATUS_IN_DECK)
+    {
         std::clog << "Warning: drawing card that has not been marked as \"In deck\"" << std::endl;
-
-    players[playerId].hand.push_back(decks[playerId].library.back());
-    decks[playerId].library.back().get().status = Card::CSTATUS_IN_HAND;
-    decks[playerId].library.pop_back();
+    }
+    players[player_id].hand.push_back(decks[player_id].library.back());
+    decks[player_id].library.back().get().status = Card::CSTATUS_IN_HAND;
+    decks[player_id].library.pop_back();
 
     return true;
 }

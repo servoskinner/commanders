@@ -1,6 +1,8 @@
 #include <vector>
 #include <random>
 
+#include <iostream> // dbg
+
 #include "Card_generator.hpp"
 #include "Game_master.hpp"
 
@@ -51,15 +53,16 @@ Game_master::Deck::Deck(const std::vector<int> &deck_image) : all(0), library(),
     Card_generator& card_generator = Card_generator::get(); 
     for(int id : deck_image)
     {   
-        all.emplace_back(card_generator.get_card_instance(id));
+        all.push_back(card_generator.get_card_instance(id));
+        all.back().status = Card::CSTATUS_IN_DECK;
         library.emplace_back(std::ref(all.back()));
     }
 }
 
 Game_master::Deck &Game_master::Deck::operator=(const Deck &original)
 {
-    library = std::vector<card_ref>();
-    discard = std::vector<card_ref>();
+    library = {};
+    discard = {};
 
     all = original.all;
 

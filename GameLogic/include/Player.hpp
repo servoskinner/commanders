@@ -12,7 +12,7 @@ class Game_master::Player
         int points; //"Dominance points" scored by the player. 10 are required to win the game;
         int funds;  // Funds used to play cards and fire abilities.
 
-        Commander::Player_info getInfo(Deck &deck);
+        Commander::Player_info get_info(Deck &deck);
 
         // Event triggers
         //  std::vector<std::function<void(Game_master&)>> trig_turn_start;

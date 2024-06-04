@@ -106,6 +106,7 @@ void CLI_commander::render_UI()
 
    for(int i=0; i<hand.size(); i++)
    {
+      std::cout << hand[i].global_id << std::endl;
       Description_generator::Card_descr original = desc_gen.get_card_instance(hand[i].global_id);
       std::cout  << "[" << i << "] $" << hand[i].cost << " " << original.name << " (";
       			 (hand[i].value >= 0 ? std::cout << hand[i].value : std::cout << "T") \

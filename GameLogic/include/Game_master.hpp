@@ -18,7 +18,6 @@
 #define STARTING_HAND_SIZE 		4
 #define POINTS_REQ_FOR_VICTORY 	10
 
-
 class Game_master
 {
 protected:
@@ -87,9 +86,11 @@ protected: // __________________________________________________________________
     bool resolve_draw(int playerId);                             // Returns whether deck is empty or not
     bool discard(int playerId, int handIndex);                // Returns whether discarding this card was possible
     bool play_card(int playerId, int handIndex, std::optional<tile_ref> target); // Perform rule checks and deploy card
+
 };
 
 #include "Card.hpp"
 #include "Deck.hpp"
 #include "Player.hpp"
 #include "Tile.hpp"
+#include "Card_mechanics.hpp"

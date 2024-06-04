@@ -5,7 +5,7 @@ class Game_master::Card
 {
 public: // _____________________________________________________________________________
     Card(int gid = -1, int mid = -1);
-    Card& operator=(const Card& other) = default;
+    Card& operator=(const Card& other);
 
     // Identification
     int owner_id;
@@ -34,7 +34,6 @@ public: // _____________________________________________________________________
     bool can_attack;
     bool can_move;
     bool is_overwhelmed;
-
     // Event triggers
     std::vector<std::function<void(void)>> trig_ability;
     std::vector<std::function<void(void)>> trig_played;

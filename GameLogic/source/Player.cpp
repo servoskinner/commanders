@@ -12,7 +12,7 @@ Game_master::Player::Player(int playerid) : id(playerid)
     points = 0;
 }
 
-Commander::Player_info Game_master::Player::getInfo(Deck& deck)
+Commander::Player_info Game_master::Player::get_info(Deck& deck)
 {
     Commander::Player_info info;
 

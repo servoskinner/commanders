@@ -46,3 +46,19 @@ Commander::Card_info Game_master::Card::get_info()
 
     return info;
 }
+
+Game_master::Card& Game_master::Card::operator=(const Game_master::Card& other)
+{
+    // keep match_id and abilities
+    global_id = other.global_id;
+    
+    cost = other.cost;
+    value = other.value;
+    advantage = other.advantage;
+
+    trig_ability = other.trig_ability;
+    trig_played = other.trig_played;
+    trig_destroyed = other.trig_destroyed;
+    
+    return *this;
+}
