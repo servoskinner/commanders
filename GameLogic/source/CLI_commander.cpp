@@ -2,9 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "Game_master.hpp"
-#include "Commander.hpp"
-#include "Description_generator.hpp"
+#include "CLI_commander.hpp"
 
 #define TILE_WIDTH_CHARS	6
 #define TILE_HEIGHT_CHARS	6
@@ -99,14 +97,13 @@ void CLI_commander::render_UI()
    // HAND __________________________________________
    
    std::cout << "HAND: " << hand.size() \
-               << "/??    DECK: " << players[id].deck_size \
+               << "/??    DECK: " << players[id].library_size \
                << "    DISCARD: " << players[id].discard_size << "\n";
    std::cout << "HAND:____________________________\n";
    std::cout << "YOU HAVE $" << players[id].funds << ":\n\n";
 
    for(int i=0; i<hand.size(); i++)
    {
-      std::cout << hand[i].global_id << std::endl;
       Description_generator::Card_descr original = desc_gen.get_card_instance(hand[i].global_id);
       std::cout  << "[" << i << "] $" << hand[i].cost << " " << original.name << " (";
       			 (hand[i].value >= 0 ? std::cout << hand[i].value : std::cout << "T") \
@@ -128,9 +125,9 @@ void CLI_commander::render_UI()
 
 };
 
-Commander::Order CLI_commander::get_action()
+Commander::Order CLI_commander::get_order()
 {
-   Order action = {};
+   Order order = {};
    std::string buffer;
 
 while(true)
@@ -148,42 +145,42 @@ while(true)
       switch (buffer[0])
       {
       case 'p': case 'P': //Pass
-         action.type = Order::ORD_PASS;
-         return action;
+         order.type = Order::ORD_PASS;
+         return order;
          break;
 
       case 'm': case 'M': //Move
-         action.args.resize(4);
-         action.type = Order::ORD_MOVE;
+         order.data.resize(4);
+         order.type = Order::ORD_MOVE;
          std::cout << "SPECIFY RECEIVER COORDINATES:" << std::endl;
-         std::cin >> action.args[0] >> action.args[1];
+         std::cin >> order.data[0] >> order.data[1];
          std::cout << "SPECIFY DESTINATION COORDINATES:" << std::endl;
-         std::cin >> action.args[2] >> action.args[3];
-         return action;
+         std::cin >> order.data[2] >> order.data[3];
+         return order;
          break;
 
       case 'a': case 'A': //Attack
-         action.args.resize(4);
-         action.type = Order::ORD_ATTACK;
+         order.data.resize(4);
+         order.type = Order::ORD_ATTACK;
          std::cout << "SPECIFY RECEIVER COORDINATES:" << std::endl;
-         std::cin >> action.args[0] >> action.args[1];
+         std::cin >> order.data[0] >> order.data[1];
          std::cout << "SPECIFY TARGET COORDINATES:" << std::endl;
-         std::cin >> action.args[2] >> action.args[3];
-         return action;
+         std::cin >> order.data[2] >> order.data[3];
+         return order;
          break;
 
       case 'd': case 'D': //Deploy
-         action.args.resize(1);
-         action.type = Order::ORD_PLAY;
+         order.data.resize(1);
+         order.type = Order::ORD_PLAY;
          std::cout << "SPECIFY CARD NO.:" << std::endl;
-         std::cin >> action.args[0];
-         if(action.args[0] >= 0 && action.args[0] < hand.size() && hand[action.args[0]].type == CTYPE_UNIT)
+         std::cin >> order.data[0];
+         if(order.data[0] >= 0 && order.data[0] < hand.size() && hand[order.data[0]].type == CTYPE_UNIT)
          {
-            action.args.resize(3);
+            order.data.resize(3);
             std::cout << "SPECIFY DEPLOYMENT COORDINATES:" << std::endl;
-            std::cin >> action.args[1] >> action.args[2];
+            std::cin >> order.data[1] >> order.data[2];
          }
-         return action;
+         return order;
          break;
       
       
@@ -194,7 +191,7 @@ while(true)
    }
 }
 
-void CLI_commander::handle_controller_event(const Event& event)
+void CLI_commander::process_event(const Event& event)
 {
    //enum invalidAction {INVORD_NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
    switch(event.type)

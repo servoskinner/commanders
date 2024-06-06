@@ -10,6 +10,7 @@ Game_master::Player::Player(int playerid) : id(playerid)
 
     funds = 0;
     points = 0;
+    is_active = true;
 }
 
 Commander::Player_info Game_master::Player::get_info(Deck& deck)
@@ -20,7 +21,8 @@ Commander::Player_info Game_master::Player::get_info(Deck& deck)
     info.funds = funds;
     info.points = points;
 
-    info.deck_size = deck.library.size();
+    info.deck_total_size = deck.all.size();
+    info.library_size = deck.library.size();
     info.discard_size = deck.discard.size();
     info.hand_size = hand.size();
 

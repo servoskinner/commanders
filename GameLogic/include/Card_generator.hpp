@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Game_master.hpp"
 #include <array>
 
@@ -12,7 +13,7 @@ private:
     Card_generator();
 
     Card_generator(const Card_generator&) = delete;
-    Card_generator& operator=(const Description_generator&) = delete;
+    Card_generator& operator=(const Card_generator&) = delete;
 
     std::array<Card, TOTAL_CARDS_IN_GAME> cards;
 };

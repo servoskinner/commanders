@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Game_master.hpp"
 
 class Game_master::Card
@@ -9,6 +10,7 @@ public: // _____________________________________________________________________
 
     // Identification
     int owner_id;
+    // int controller_id;
     int global_id;
     int match_id;
 

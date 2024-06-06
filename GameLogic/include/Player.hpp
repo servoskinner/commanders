@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Game_master.hpp"
 
 class Game_master::Player
@@ -7,6 +8,7 @@ class Game_master::Player
         Player(int playerid);
 
         const int id; // Unique player ID and turn no. on which it issues orders.
+        bool is_active;
         std::vector<card_ref> hand;
 
         int points; //"Dominance points" scored by the player. 10 are required to win the game;

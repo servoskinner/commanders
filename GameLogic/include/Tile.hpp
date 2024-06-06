@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Game_master.hpp"
 
 class Game_master::Tile
@@ -22,8 +23,13 @@ public: // _____________________________________________________________________
     };
     enum tile_types
     {
-        CAPTUREZONE = -2,
-        NORMAL = -1
+        NORMAL      = -1,
+        OBJECTIVE   = -2,
+        // Special terrain has too much impact on gameplay and its use is discouraged
+        OBSTACLE    = -3,
+        NO_DEPLOY   = -4,
+        TERR_ADV    = -5,
+        TERR_DISADV = -6
     }; // Non-negatives refer to deploy zones of players with same IDs
 
     std::optional<card_ref> card;

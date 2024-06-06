@@ -1,5 +1,5 @@
 #include "Card_index.hpp"
-#include "Commander.hpp"
+#include "CLI_commander.hpp"
 #include "Game_master.hpp"
 
 #include <iostream>
@@ -43,10 +43,12 @@ int main()
     std::vector<pctrl_ref> commander_refs = {std::ref(cmd1), std::ref(cmd2)};
     std::vector<std::vector<int>> deck_images = {deck1, deck2};
 
+    cmd1.apply_updates();
     Game_master gm(commander_refs, deck_images);
     while(gm.game_loop())
     {
-        std::cout << gm.get_turn() << std::endl;
+        cmd1.apply_updates();
+        cmd2.apply_updates();
     }
     
     return 0;

@@ -34,7 +34,8 @@ protected:
     typedef std::reference_wrapper<Game_master::Tile>   tile_ref;
 
 public: // _____________________________________________________________________________
-    Game_master(const std::vector<pctrl_ref>& controllers, const std::vector<std::vector<int>> &deck_images);
+    Game_master(const std::vector<pctrl_ref>& controllers, const std::vector<std::vector<int>> &deck_images,
+                const std::vector<std::vector<int>>& terrain = {});
 
     bool game_loop(); // Process player inputs and update status for everyone.
     void end_turn();  // Pass the turn to next player and process the necessary triggers.

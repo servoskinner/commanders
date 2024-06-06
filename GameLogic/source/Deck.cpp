@@ -22,7 +22,7 @@ void Game_master::Deck::shuffle()
 
     for (int i = library.size() - 1; i > 0; --i)
     {
-        std::uniform_int_distribution<>distrib(0, i);
+        std::uniform_int_distribution<> distrib(0, i);
         int j = distrib(gen);
         std::swap(library[i], library[j]);
     }

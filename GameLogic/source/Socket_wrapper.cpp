@@ -83,7 +83,7 @@ const bool Socket_wrapper::send_all(const std::vector<char>& msg)
     return success;
 }
 
-const Socket_inbound_message Socket_wrapper::receive()
+const Socket_wrapper::Socket_inbound_message Socket_wrapper::receive()
 {
     sockaddr_in inbound_addr;
     socklen_t inbound_addr_len = sizeof(inbound_addr);
@@ -104,4 +104,11 @@ const Socket_inbound_message Socket_wrapper::receive()
     
     Socket_inbound_message inbound_message = {{inbound_addr.sin_port, inbound_addr.sin_addr.s_addr}, msg};
     return inbound_message;
+}
+
+const std::string Socket_wrapper::Socket_info::addrstr()
+{
+    char bytes[3*4+4] = {};
+    inet_ntop(AF_INET, &address, bytes, 3*4+3);
+    return std::string(bytes);
 }

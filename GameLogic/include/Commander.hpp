@@ -5,10 +5,9 @@
 #include <functional>
 #include <memory>
 #include <optional>
-#include <ncurses.h>
-#include <queue>
+#include <stdexcept>
 
-#include "Description_generator.hpp"
+#include <cstring>
 
 class Commander;
 
@@ -21,17 +20,22 @@ typedef std::reference_wrapper<Commander> pctrl_ref;
 class Commander // Acts as an interface between the Game Master and whoever is providing the player input.
 {
 public:
-    struct Player_info
+    struct Player_info // Information about other players seen by everyone.
     {
         int id;
         int points;
         int funds;
 
-        int deck_size;
+        int deck_total_size;
+        int library_size;
         int discard_size;
         int hand_size;
+
+        Player_info() = default;
+        const std::vector<char> packed();
+        Player_info(const std::vector<char>& packed);
     };
-    struct Card_info // Out of game context info tag 
+    struct Card_info // Gameplay-wise card information excerpt
     {
         int global_id;
         int match_id;
@@ -47,8 +51,12 @@ public:
         int cost;
         int advantage;
         int type;
+
+        Card_info() = default; 
+        const std::vector<char> packed(); // Packs the structure to send it via network.
+        Card_info(const std::vector<char>& packed); // Unpacks the structure from byte sequence
     };
-    struct Order // Data structure that represents the player's in-game actions.
+    struct Commander_message // Data structure that represents the player's in-game actions.
     {
         int type;
         enum order_type 
@@ -74,13 +82,6 @@ public:
             INVORD_EXHAUSTED,
             INVORD_NOFUNDS
         };
-        std::vector<int> args;
-
-        Order() : type(ORD_NOTHING), args(0) {}
-    };
-    struct Event // Message describing a happening in game.
-    {
-        int type;
         enum event_type 
         {
             EV_DUMMY,
@@ -100,71 +101,22 @@ public:
         };
         std::vector<int> data;
 
-        Event() : type(EV_DUMMY), data(0) {}
+        Commander_message() : type(ORD_NOTHING), data(0) {}
+        const std::vector<char> packed();
+        Commander_message(const std::vector<char>& packed);
     };
+    typedef Commander_message Order;
+    typedef Commander_message Event; // Message describing a happening in game.
 
-    int id;
+    int id; // Associated player's unique identifier
 
     int grid_width, grid_height;         
     int turn, turn_absolute;     
 
     std::vector<Card_info>   active_cards;  // Cards placed on the battlefield and visible to everyone.
-    std::vector<Card_info>   hand;          // The associated player's hand.
+    std::vector<Card_info>   hand;          // Associated player's hand.
     std::vector<Player_info> players;       // Known data about other players: their funds, hand size, graveyard, etc.
 
-    virtual Order get_action() = 0;         // Called by the Game Master to receive player input.
-    virtual void apply_updates() = 0;       // Called by the Game Master after communicating data to the Controller
-    virtual void handle_controller_event(const Event& event) = 0;
-};
-
-class CLI_commander : public Commander
-{
-    public:
-
-    Order get_action() override;
-    void handle_controller_event(const Event& event) override;
-    void apply_updates() override;
-
-    CLI_commander();
-
-    private:
-    Description_generator& desc_gen;
-    void render_UI();
-
-    void highlight_tile_bold(std::string &buffer, int g_width, int x, int y);
-    void highlight_tile_subtle(std::string &buffer, int g_width, int x, int y);
-    void highlight_tile_funky(std::string &buffer, int g_width, int x, int y);
-};
-
-class NCurses_commander : public Commander
-{
-    public:
-
-    Order get_action() override;
-    void handle_controller_event(const Event& event) override;
-    void apply_updates() override;
-
-    NCurses_commander();
-    ~NCurses_commander();
-
-    private:
-    void render_UI();
-
-    void highlight_tile_bold(std::string &buffer, int g_width, int x, int y);
-    void highlight_tile_subtle(std::string &buffer, int g_width, int x, int y);
-    void highlight_tile_funky(std::string &buffer, int g_width, int x, int y);
-};
-
-class Network_commander : public Commander
-{
-    public:
-
-    Order get_action() override;
-    void handle_controller_event(const Event& event) override;
-    void apply_updates() override;
-
-    Network_commander() = default;
-
-    private:
-    
+    virtual Order get_order() = 0;         // Called by the Game Master to receive player input.
+    virtual void process_event(const Event& event) = 0; // Called by the Game Master to communicate a game event
 };

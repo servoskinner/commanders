@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Game_master.hpp"
 #include "Card_generator.hpp"
 
