@@ -5,7 +5,7 @@
 #include <optional>
 #include <memory>
 
-Game_master::Game_master(const std::vector<pctrl_ref>& commanders_ref, \
+Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
                          const std::vector<std::vector<int>>& deck_images,
                          const std::vector<std::vector<int>>& terrain) : card_generator(Game_master::Card_generator::get())
 {
@@ -130,7 +130,7 @@ bool Game_master::game_loop()
 
 inline void Game_master::broadcast_event(const Commander::Event& event)
 {
-    for (pctrl_ref pc : commanders)
+    for (commander_ref pc : commanders)
     {
         pc.get().process_event(event);
     }
@@ -349,7 +349,7 @@ int Game_master::exec_order(const Commander::Order& order)
 
 void Game_master::update_status(int player_id)
 {
-    pctrl_ref controller = commanders[player_id];
+    commander_ref controller = commanders[player_id];
 
     controller.get().turn = turn;
     controller.get().turn_absolute = turn_absolute;

@@ -40,7 +40,7 @@ int main()
 
     CLI_commander cmd1, cmd2;
 
-    std::vector<pctrl_ref> commander_refs = {std::ref(cmd1), std::ref(cmd2)};
+    std::vector<commander_ref> commander_refs = {std::ref(cmd1), std::ref(cmd2)};
     std::vector<std::vector<int>> deck_images = {deck1, deck2};
 
     cmd1.apply_updates();

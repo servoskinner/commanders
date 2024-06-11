@@ -15,7 +15,7 @@ class CLI_commander;
 class NCurses_commander;
 class Network_commander;
 
-typedef std::reference_wrapper<Commander> pctrl_ref;
+typedef std::reference_wrapper<Commander> commander_ref;
 
 class Commander // Acts as an interface between the Game Master and whoever is providing the player input.
 {

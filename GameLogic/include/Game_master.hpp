@@ -34,7 +34,7 @@ protected:
     typedef std::reference_wrapper<Game_master::Tile>   tile_ref;
 
 public: // _____________________________________________________________________________
-    Game_master(const std::vector<pctrl_ref>& controllers, const std::vector<std::vector<int>> &deck_images,
+    Game_master(const std::vector<commander_ref>& controllers, const std::vector<std::vector<int>> &deck_images,
                 const std::vector<std::vector<int>>& terrain = {});
 
     bool game_loop(); // Process player inputs and update status for everyone.
@@ -51,7 +51,7 @@ protected: // __________________________________________________________________
 
     std::vector<Player> players;
     std::vector<Deck> decks;
-    std::vector<pctrl_ref> commanders; // entities that provide player inputs.
+    std::vector<commander_ref> commanders; // entities that provide player inputs.
                                               // E.G. User, AIs, network-connected players
     // Playing field
     std::vector<std::vector<Tile>> grid; // The playing field. (0,0) is top left corner; X axis is vertical, Y is horizontal.
