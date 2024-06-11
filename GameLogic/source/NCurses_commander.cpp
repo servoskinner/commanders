@@ -16,6 +16,34 @@ NCurses_commander::NCurses_commander()
     init_pair(CPAIR_RED_HIGHLT,     COLOR_BRIGHT_WHITE, COLOR_RED);
     init_pair(CPAIR_MAGENTA_HIGHLT, COLOR_BRIGHT_WHITE, COLOR_BLACK);
     init_pair(CPAIR_YELLOW,         COLOR_BLACK,        COLOR_YELLOW);
+
+    grid_cell.set_corners('+');
+    grid_cell.set_borders(' ');
+    grid_cell.draw_filled = false;
+    grid_cell.set_color(CPAIR_ACCENT);
+
+    grid_border.tl_corner = ACS_ULCORNER;
+    grid_border.tr_corner = ACS_URCORNER;
+    grid_border.bl_corner = ACS_LLCORNER;
+    grid_border.br_corner = ACS_LRCORNER;
+    grid_border.h_border  = ACS_HLINE;
+    grid_border.v_border  = ACS_VLINE;
+    grid_border.draw_filled = false;
+    grid_border.set_color(CPAIR_ACCENT);
+
+    grid_highlight.set_all(' ');
+    grid_highlight.set_color(CPAIR_INVERTED);
+    grid_highlight.draw_filled = false;
+
+    grid_capture_area.set_all('.');
+    grid_capture_area.set_color(CPAIR_ACCENT);
+    grid_capture_area.draw_filled = false;
+
+    x_scale = 9;
+    y_scale = 5;
+
+    focus_group = FGROUP_FIELD; //temp, change to hand
+    focus_x = 0; focus_y = 0;
 }
 
 NCurses_commander::~NCurses_commander()
@@ -31,17 +59,37 @@ Commander::Order NCurses_commander::get_order()
 void NCurses_commander::process_event(const Commander::Event& event)
 {}
 
-int NCurses_commander::get_input()
+void NCurses_commander::apply_updates()
+{
+    int input = get_input();
+
+    if((input == 'w' || input == 'W') && focus_y != 0) {
+        focus_y--;
+    }
+    if((input == 'a' || input == 'A') && focus_x != 0) {
+        focus_x--;
+    }
+    if((input == 's' || input == 'S') && focus_y != grid_height-1) {
+        focus_y++;
+    }
+    if((input == 'd' || input == 'D') && focus_x != grid_width-1) {
+        focus_x++;
+    }
+
+    render_UI();
+}
+
+unsigned NCurses_commander::get_input()
 {
     timeout(0);
-    int ch = getch();
+    unsigned ch = getch();
     if (ch == ERR) {
         return 0;
     }
     return ch;
 }
 
-void NCurses_commander::apply_updates()
+void NCurses_commander::render_UI()
 {
     erase();
     x_term_size = getmaxx(stdscr);
@@ -50,8 +98,67 @@ void NCurses_commander::apply_updates()
     if (x_term_size < 0 || y_term_size < 0) {
         throw std::runtime_error("Screen not initialized");
     }
-    
+
+    // render_hand();
+    render_grid();
+
     refresh();
+}
+
+void NCurses_commander::render_grid()
+{
+    int grid_width_sym = grid_width*x_scale;
+    int grid_height_sym = grid_height*y_scale;
+
+    int grid_origin_x = (x_term_size - grid_width_sym) / 2;
+    if (grid_origin_x < 0) {
+        grid_origin_x = 0;
+    }
+    int grid_origin_y = Y_GRID_OFFSET;
+
+    grid_cell.width  = x_scale;
+    grid_cell.height = y_scale;
+
+    for (int x = 0; x < grid_width; x++) {
+        for (int y = 0; y < grid_height; y++) 
+        {
+            grid_cell.x = grid_origin_x + x*x_scale;
+            grid_cell.y = grid_origin_y + y*y_scale;
+            grid_cell.draw();
+        }
+    }
+    // change this dynamically:
+    grid_capture_area.x = grid_origin_x + 3*x_scale;
+    grid_capture_area.y = grid_origin_y;
+
+    grid_capture_area.width = 2*x_scale;
+    grid_capture_area.height = grid_height_sym;
+
+    grid_capture_area.draw();
+    // ___
+
+    grid_border.x = grid_origin_x;
+    grid_border.y = grid_origin_y;
+
+    grid_border.width = grid_width_sym;
+    grid_border.height = grid_height_sym;
+
+    //grid_border.draw();
+
+    if(focus_group == FGROUP_FIELD)
+    {
+
+        if(focus_x < 0 || focus_y < 0 || focus_x >= grid_width || focus_y >= grid_height) {
+            throw std::runtime_error("NCurses_commander: Invalid grid focus coordinates");
+        }
+        grid_highlight.width = x_scale;
+        grid_highlight.height = y_scale;
+
+        grid_highlight.x = grid_origin_x + focus_x*x_scale;
+        grid_highlight.y = grid_origin_y + focus_y*y_scale;
+
+        grid_highlight.draw();
+    }
 }
 
 void NCurses_commander::UI_Object::draw(int orig_y, int orig_x)
@@ -89,32 +196,12 @@ inline void NCurses_commander::Rect::set_corners(unsigned symbol)
     br_corner = symbol;
 } 
 
-    // class Card_sprite : UI_Object
-    // {
-    //     public:
-    //     Card_info card_info;
-    //     int x_scale = 10, y_scale = 5;
-    //     int x_grid = -1, y_grid = -1;
-
-    //     bool focused = false;
-
-    //     private:
-    //     virtual void draw_self(int y, int x) override;
-    //     Rect rect;
-    //     Text_box name;
-    //     Text_box value;
-    //     Text_box advantage;
-    // };
-    // class Card_sprite_extended : UI_Object
-    // {
-    //     public:
-    //     int x_scale = 18, y_scale = 7;
-
-    //     Description_generator::Card_descr card_descr;
-    //     //...
-    //     private:
-    //     virtual void draw_self(int y, int x) override;
-    // };
+inline void NCurses_commander::Rect::set_all(unsigned symbol)
+{
+    set_borders(symbol);
+    set_corners(symbol);
+    fill = symbol;
+} 
 
 void NCurses_commander::Rect::draw_self(int orig_y, int orig_x)
 {

@@ -5,6 +5,8 @@
 #include "Misc_functions.hpp"
 
 #include <ncurses.h>
+
+#include <optional>
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -42,30 +44,32 @@
 #define KEY_MWHEELDN    65
 #define KEY_MWHEELUP    66
 
+#define SYM_FILL        219
+
 #define Y_GRID_OFFSET 2
-#define X_GRID_OFFSET 16 
 
 class NCurses_commander : public Commander
 {
+    private: 
+    class UI_Object;
+
+    class Rect;
+    class Text_box;
+    class Card_sprite;
+    class Card_sprite_extended;
+
     public:
     int x_scale, y_scale;
+
+    NCurses_commander();
+    ~NCurses_commander();
 
     Order get_order() override;
     void process_event(const Event& event) override;
     void apply_updates();
 
-    NCurses_commander();
-    ~NCurses_commander();
-
     private:
     int x_term_size, y_term_size; //getmaxyx(stdscr, height, width);
-
-    enum focus_areas {
-        HAND,
-        FIELD,
-
-    };
-    int focus_x, focus_y, card_
 
     class UI_Object;
     typedef std::reference_wrapper<UI_Object> UIobj_ref;
@@ -97,6 +101,7 @@ class NCurses_commander : public Commander
         inline void set_color(int color);
         inline void set_corners(unsigned symbol);
         inline void set_borders(unsigned symbol);
+        inline void set_all(unsigned symbol);
 
         private:
         virtual void draw_self(int y, int x) override;
@@ -111,36 +116,58 @@ class NCurses_commander : public Commander
         private:
         virtual void draw_self(int y, int x) override;
     };
-    // class Card_sprite : public UI_Object
-    // {
-    //     public:
-    //     Card_info card_info;
-    //     int x_scale = 10, y_scale = 5;
-    //     int x_grid = -1, y_grid = -1;
+    class Card_sprite : public UI_Object
+    {
+        public:
+        Card_info card_info;
+        int x_scale = 10, y_scale = 5;
+        int x_grid = -1, y_grid = -1;
 
-    //     bool focused = false;
+        bool focused = false;
 
-    //     private:
-    //     virtual void draw_self(int y, int x) override;
-    //     Rect rect;
-    //     Text_box name;
-    //     Text_box value;
-    //     Text_box advantage;
-    // };
-    // class Card_sprite_extended : public UI_Object
-    // {
-    //     public:
-    //     int x_scale = 18, y_scale = 7;
+        private:
+        virtual void draw_self(int y, int x) override;
 
-    //     Description_generator::Card_descr card_descr;
-    //     //...
-    //     private:
-    //     virtual void draw_self(int y, int x) override;
-    // };
+        Rect rect;
+        Text_box name;
+    };
+    class Card_sprite_extended : public UI_Object
+    {
+        public:
+        int x_scale = 18, y_scale = 7;
+
+        Description_generator::Card_descr card_descr;
+        std::optional<Card_info> card_info;
+        //...
+        private:
+        virtual void draw_self(int y, int x) override;
+
+        Rect rect;
+        Text_box name, description, flavor_text;
+    };
+
+    enum focus_areas {
+        FGROUP_HAND,
+        FGROUP_FIELD,
+        FGROUP_GAME_INFO,
+        FGROUP_CONTROLS_INFO,
+        FGROUP_CHAT
+    };
+
+    int focus_group;
+    int focus_x, focus_y, focus_id;
+
+    Rect grid_cell;
+    Rect grid_border;
+    Rect grid_capture_area;
+    Rect grid_highlight;
 
     void render_UI();
-    void draw_card(const Card_info& c_info);
-    void draw_card_extended(int y, int x, const Card_info& c_info);
+    void render_hand();
+    void render_grid();
 
-    int get_input();
+    void change_focus_area(int focusarea);
+    void change_grid_focus(int x, int y);
+
+    unsigned get_input();
 };
