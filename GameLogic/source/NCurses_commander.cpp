@@ -32,15 +32,14 @@ NCurses_commander::NCurses_commander()
     grid_border.set_color(CPAIR_ACCENT);
 
     grid_highlight.set_all(' ');
-    grid_highlight.set_color(CPAIR_INVERTED);
     grid_highlight.draw_filled = false;
 
     grid_capture_area.set_all('.');
     grid_capture_area.set_color(CPAIR_ACCENT);
     grid_capture_area.draw_filled = false;
 
-    x_scale = 9;
-    y_scale = 5;
+    x_scale = 10;
+    y_scale = 4;
 
     focus_group = FGROUP_FIELD; //temp, change to hand
     focus_x = 0; focus_y = 0;
@@ -74,6 +73,16 @@ void NCurses_commander::apply_updates()
     }
     if((input == 'd' || input == 'D') && focus_x != grid_width-1) {
         focus_x++;
+    }
+    if (input == ' ') {
+        if (selected) {
+            selected = false;
+        }
+        else {
+        selection_x = focus_x;
+        selection_y = focus_y;
+        selected = true;
+        }
     }
 
     render_UI();
@@ -143,16 +152,27 @@ void NCurses_commander::render_grid()
     grid_border.width = grid_width_sym;
     grid_border.height = grid_height_sym;
 
-    //grid_border.draw();
+    grid_border.draw();
 
     if(focus_group == FGROUP_FIELD)
     {
-
         if(focus_x < 0 || focus_y < 0 || focus_x >= grid_width || focus_y >= grid_height) {
             throw std::runtime_error("NCurses_commander: Invalid grid focus coordinates");
         }
         grid_highlight.width = x_scale;
         grid_highlight.height = y_scale;
+
+        if (selected)
+        {
+            grid_highlight.set_color(CPAIR_RED_HIGHLT);
+
+            grid_highlight.x = grid_origin_x + selection_x*x_scale;
+            grid_highlight.y = grid_origin_y + selection_y*y_scale;
+
+            grid_highlight.draw();
+        }
+
+        grid_highlight.set_color(CPAIR_INVERTED);
 
         grid_highlight.x = grid_origin_x + focus_x*x_scale;
         grid_highlight.y = grid_origin_y + focus_y*y_scale;

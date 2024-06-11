@@ -156,6 +156,8 @@ class NCurses_commander : public Commander
 
     int focus_group;
     int focus_x, focus_y, focus_id;
+    bool selected;
+    int selection_x, selection_y;
 
     Rect grid_cell;
     Rect grid_border;
