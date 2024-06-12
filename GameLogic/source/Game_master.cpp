@@ -20,7 +20,7 @@ Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
     std::vector<std::vector<int>> n_terrain;
     if(terrain.size() == 0 || terrain[0].size() == 0)   // use default terrain
     {
-        n_terrain = std::vector<std::vector<int>>(GRID_HEIGHT, std::vector<int>(GRID_WIDTH, Tile::NORMAL));
+        n_terrain = {GRID_HEIGHT, std::vector<int>(GRID_WIDTH, Tile::NORMAL)};
         for(int row = 0; row < GRID_HEIGHT; row++) 
         {
         // Deploy zone
@@ -44,7 +44,7 @@ Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
         decks.push_back(image);
     }
     // Build grid
-    grid = std::vector<std::vector<Tile>>(GRID_HEIGHT, std::vector<Tile>(GRID_WIDTH));
+    grid = {GRID_HEIGHT, std::vector<Tile>(GRID_WIDTH)};
 
     for(int row = 0; row < GRID_HEIGHT; row++) {
         for(int column = 0; column < GRID_WIDTH; column ++) {

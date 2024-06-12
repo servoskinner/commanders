@@ -24,7 +24,8 @@ find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 add_executable(src ${SOURCES})
 
 add_executable(cli_test ${SOURCES} GameLogic/Test_main.cpp)
-add_executable(ncurses_test GameLogic/source/NCurses_commander.cpp GameLogic/source/Misc_functions.cpp GameLogic/Ncurses_test.cpp)
+add_executable(ncurses_test GameLogic/source/NCurses_commander.cpp GameLogic/source/Misc_functions.cpp 
+               GameLogic/source/Description_generator.cpp GameLogic/Ncurses_test.cpp)
 add_executable(socket_test_p2p GameLogic/Socket_test_p2p.cpp GameLogic/source/Socket_wrapper.cpp)
 
 # Links the "corporatewars" executable target with the SFML libraries.

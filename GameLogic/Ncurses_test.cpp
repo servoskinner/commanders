@@ -6,8 +6,10 @@ int main()
     commander.grid_height = 6;
     commander.grid_width = 8;
 
-    while (true)
+    bool is_running = true;
+    while (is_running)
     {
         commander.apply_updates();
+        is_running = commander.is_on();
     }
 }
