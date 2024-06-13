@@ -12,9 +12,6 @@
 #include <vector>
 #include <string>
 
-#define DEFAULT_UI_W_SCALE 5
-#define DEFAULT_UI_H_SCALE 2
-
 #define COLOR_BRIGHT_BLACK		8
 #define COLOR_BRIGHT_RED		9
 #define COLOR_BRIGHT_GREEN		10
@@ -33,16 +30,18 @@
 
 #define CPAIR_GRIDCURSOR        6
 #define CPAIR_GRIDSELECTION     7
-#define CPAIR_CARD_UNIT         8
-#define CPAIR_CARD_CONTRACT     9
-#define CPAIR_CARD_TACTIC       10   
-#define CPAIR_CARD_UNIT_INV     11
-#define CPAIR_CARD_CONTRACT_INV 12 
-#define CPAIR_CARD_TACTIC_INV   13
+#define CPAIR_GRIDCURSOR_OL     8
+#define CPAIR_CARD_UNIT         9
+#define CPAIR_CARD_CONTRACT     10
+#define CPAIR_CARD_TACTIC       11   
+#define CPAIR_CARD_UNIT_INV     12
+#define CPAIR_CARD_CONTRACT_INV 13 
+#define CPAIR_CARD_TACTIC_INV   14
 
-#define CPAIR_UNIT_VALUE        14
-#define CPAIR_UNIT_ADVANTAGE    15
-#define CPAIR_CONTRACT_VALUE    16
+#define CPAIR_UNIT_VALUE        15
+#define CPAIR_UNIT_ADVANTAGE    16
+#define CPAIR_CONTRACT_VALUE    17
+#define CPAIR_CARD_COST         18
 
 #define KEY_ESC         27
 #define KEY_TAB         9
@@ -58,9 +57,11 @@
 #define SYM_FILL        219
 
 #define XSCALE          10
-#define YSCALE          6     
+#define YSCALE          7  
+#define HAND_INACTIVE_CARD_WIDTH 2
 
 #define Y_GRID_OFFSET   2
+#define Y_HAND_OFFSET   1
 
 class NCurses_commander : public Commander
 {
@@ -107,7 +108,7 @@ class NCurses_commander : public Commander
         public:
         int width = 0, height = 0;
 
-        int border_color = 0, fill_color = 0;
+        int border_color = CPAIR_INVERTED, fill_color = CPAIR_INVERTED;
         unsigned tl_corner = ' ', tr_corner = ' ', bl_corner = ' ', br_corner = ' ';
         unsigned t_border = ' ', b_border = ' ', l_border = ' ', r_border = ' ';
         unsigned fill = ' ';
@@ -121,18 +122,18 @@ class NCurses_commander : public Commander
         inline void set_all(unsigned symbol);
 
         private:
-        virtual void draw_self(int y, int x) override;
+        virtual void draw_self(int orig_y, int orig_x) override;
     };
     class Text_box : public UI_Object
     {
         public:
         Text_box(std::string txt = "") : text(txt) {}
-        int color = 0;
+        int color = CPAIR_NORMAL;
         int width = 0, height = 0;
         std::string text;
 
         private:
-        virtual void draw_self(int y, int x) override;
+        virtual void draw_self(int orig_y, int orig_x) override;
     };
     class Scroll_box : public Text_box
     {
@@ -140,7 +141,7 @@ class NCurses_commander : public Commander
         bool from_bottom = false;
 
         private:
-        virtual void draw_self(int y, int x) override;
+        virtual void draw_self(int orig_y, int orig_x) override;
     };
     class Unit_sprite : public UI_Object
     {
@@ -150,13 +151,11 @@ class NCurses_commander : public Commander
         const inline Card_info get_card() { return card_info;}
         
         int x_scale = XSCALE, y_scale = YSCALE;
-        int x_grid = -1, y_grid = -1;
-
-        bool focused = false;
+        bool darken_name;
 
         private:
         Card_info card_info;
-        virtual void draw_self(int y, int x) override {}
+        virtual void draw_self(int y, int x) override;
 
         Rect rect;
         Text_box name, value, advantage, indicator;
@@ -165,13 +164,14 @@ class NCurses_commander : public Commander
     {
         public:
         Card_sprite(Description_generator::Card_descr c_descr = {});
-        Card_sprite(int id);
+        Card_sprite(Card_info c_info) : Card_sprite(Description_generator::get().get_card_instance(c_info.global_id)) { card_info = c_info;}
+        Card_sprite(int id) : Card_sprite(Description_generator::get().get_card_instance(id)) {}
 
         void set_desc(Description_generator::Card_descr c_descr);
-        void set_desc(int id);
+        void set_desc(int id) { set_desc(Description_generator::get().get_card_instance(id));};
         inline const Description_generator::Card_descr get_desc() { return card_descr;}
 
-        void set_card(Card_info card_info);
+        void set_card(Card_info c_info);
         inline const void reset_card() { card_info.reset();}
         inline const std::optional<Card_info> get_card() { return card_info;}
 
@@ -182,10 +182,10 @@ class NCurses_commander : public Commander
         Description_generator::Card_descr card_descr;
         std::optional<Card_info> card_info;
 
-        virtual void draw_self(int y, int x) override {}
+        virtual void draw_self(int orig_y, int orig_x) override;
 
         Rect rect;
-        Text_box name, value, ability_text, flavor_text;
+        Text_box name, cost, value, ability_text, flavor_text;
     };
 
     enum focus_areas {
@@ -197,7 +197,7 @@ class NCurses_commander : public Commander
     };
 
     int focus_group;
-    int focus_x, focus_y, focus_id;
+    int focus_x, focus_y, focus_hand_id;
     bool selected;
     int selection_x, selection_y;
 
@@ -207,6 +207,7 @@ class NCurses_commander : public Commander
     Rect grid_highlight;
 
     Rect hand_cards_left, hand_cards_right;
+    Text_box bottom_line;
 
     void render_UI();
     void render_hand();

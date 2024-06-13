@@ -1,10 +1,49 @@
 #include "NCurses_commander.hpp"
+#include "Card_index.hpp"
 
 int main()
 {
     NCurses_commander commander;
+    commander.id = 0;
     commander.grid_height = 6;
     commander.grid_width = 8;
+
+    Commander::Card_info merc;
+    merc.type = CTYPE_UNIT;
+    merc.global_id = BOUNTYHUNTER;
+    merc.value = 2;
+    merc.advantage = 0;
+    merc.x = 1;
+    merc.y = 2;
+    merc.owner_id = 1;
+
+    commander.active_cards.push_back(merc);
+    merc.y = 3;
+    merc.owner_id = 0;
+    commander.active_cards.push_back(merc);
+    commander.hand.push_back(merc);
+    merc.x = 2;
+    merc.y = 4;
+    merc.owner_id = 1;
+    commander.active_cards.push_back(merc);
+
+    merc.owner_id = 0;
+    merc.value = 3;
+    merc.advantage = 1;
+    merc.x = 5;
+    merc.y = 5;
+    merc.global_id = MAIMBOT;
+    commander.active_cards.push_back(merc);
+    commander.hand.push_back(merc);
+
+    merc.type = CTYPE_CONTRACT;
+    merc.global_id = FISSION;
+    commander.hand.push_back(merc);
+    merc.global_id = MACHINEPARTS;
+    commander.hand.push_back(merc);
+    merc.global_id = ARCHON;
+    merc.type = CTYPE_UNIT;
+    commander.hand.push_back(merc);
 
     bool is_running = true;
     while (is_running)

@@ -44,7 +44,7 @@ Description_generator::Description_generator() // instantiate all cards in game
     cards[ARCHON].name = "Omnitank";
     cards[ARCHON].type = CTYPE_UNIT;
     cards[ARCHON].flavor_text = "High-performance Death Mech. Banned in 43 countries.";
-    cards[ARCHON].flavor_text = "Advantage 1";
+    cards[ARCHON].ability_text = "Advantage 1";
 
     cards[ARCHON].cost = 7;
     cards[ARCHON].value = 5;

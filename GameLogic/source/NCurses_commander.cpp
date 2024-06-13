@@ -18,17 +18,21 @@ NCurses_commander::NCurses_commander()
     init_pair(CPAIR_HIGHLIT,        COLOR_BRIGHT_WHITE, COLOR_RED);
     init_pair(CPAIR_HIGHLIT_SUBTLE, COLOR_RED,          COLOR_BLACK);
 
-    init_pair(CPAIR_GRIDCURSOR,     COLOR_BRIGHT_WHITE, COLOR_BLACK);
-    init_pair(CPAIR_GRIDSELECTION,  COLOR_BRIGHT_WHITE, COLOR_BRIGHT_RED);
+    init_pair(CPAIR_GRIDCURSOR,     COLOR_BLACK,        COLOR_BRIGHT_BLUE);
+    init_pair(CPAIR_GRIDSELECTION,  COLOR_BLACK,        COLOR_BRIGHT_RED);
+    init_pair(CPAIR_GRIDCURSOR_OL,  COLOR_BLACK,        COLOR_BRIGHT_WHITE);
+
     init_pair(CPAIR_CARD_UNIT,      COLOR_BRIGHT_WHITE, COLOR_CYAN);
     init_pair(CPAIR_CARD_CONTRACT,  COLOR_BRIGHT_WHITE, COLOR_GREEN);
     init_pair(CPAIR_CARD_TACTIC,    COLOR_BRIGHT_WHITE, COLOR_MAGENTA);
-    init_pair(CPAIR_CARD_TACTIC_INV,    COLOR_CYAN,     COLOR_BLACK);
+    init_pair(CPAIR_CARD_UNIT_INV,    COLOR_CYAN,     COLOR_BLACK);
     init_pair(CPAIR_CARD_CONTRACT_INV,  COLOR_GREEN,    COLOR_BLACK);
     init_pair(CPAIR_CARD_TACTIC_INV,    COLOR_MAGENTA,  COLOR_BLACK);
-    init_pair(CPAIR_UNIT_VALUE,     COLOR_BRIGHT_RED,   COLOR_BLACK);
-    init_pair(CPAIR_UNIT_ADVANTAGE, COLOR_BRIGHT_CYAN,  COLOR_BLACK);
-    init_pair(CPAIR_CONTRACT_VALUE, COLOR_BRIGHT_GREEN, COLOR_BLACK);
+
+    init_pair(CPAIR_UNIT_VALUE,     COLOR_BLACK,        COLOR_BRIGHT_RED);
+    init_pair(CPAIR_UNIT_ADVANTAGE, COLOR_BLACK,        COLOR_BRIGHT_CYAN);
+    init_pair(CPAIR_CONTRACT_VALUE, COLOR_BLACK,        COLOR_BRIGHT_GREEN);
+    init_pair(CPAIR_CARD_COST,      COLOR_BLACK,        COLOR_YELLOW);
     
     // Stencil Rect used to render grid cells
     grid_cell.set_corners('+');
@@ -45,7 +49,10 @@ NCurses_commander::NCurses_commander()
     grid_border.draw_filled = false;
     grid_border.set_color(CPAIR_ACCENT);
     // Stencil for drawing cursor and selection
-    grid_highlight.set_all(' ');
+    grid_highlight.tl_corner = ACS_ULCORNER;
+    grid_highlight.tr_corner = ACS_URCORNER;
+    grid_highlight.bl_corner = ACS_LLCORNER;
+    grid_highlight.br_corner = ACS_LRCORNER;
     grid_highlight.draw_filled = false;
 
     grid_capture_area.set_vborders('.');
@@ -54,21 +61,24 @@ NCurses_commander::NCurses_commander()
     grid_capture_area.set_color(CPAIR_NORMAL);
     grid_capture_area.draw_filled = false;
     // stencils for drawing 
+    hand_cards_left.width = HAND_INACTIVE_CARD_WIDTH;
     hand_cards_left.tl_corner = ACS_ULCORNER;
     hand_cards_left.tr_corner = ACS_HLINE;
     hand_cards_left.bl_corner = ACS_LLCORNER;
     hand_cards_left.br_corner = ACS_HLINE;
-    hand_cards_left.b_border  = ACS_HLINE;
-    hand_cards_left.t_border  = ACS_HLINE;
     hand_cards_left.l_border  = ACS_VLINE;
+    hand_cards_left.set_hborders(ACS_HLINE);
 
+    hand_cards_right.width = HAND_INACTIVE_CARD_WIDTH;
     hand_cards_right.tl_corner = ACS_HLINE;
     hand_cards_right.tr_corner = ACS_URCORNER;
     hand_cards_right.bl_corner = ACS_HLINE;
     hand_cards_right.br_corner = ACS_LRCORNER;
-    hand_cards_right.b_border  = ACS_HLINE;
-    hand_cards_right.t_border  = ACS_HLINE;
     hand_cards_right.r_border  = ACS_VLINE;
+    hand_cards_right.set_hborders(ACS_HLINE);
+
+    bottom_line.x = 0;
+    bottom_line.color = CPAIR_ACCENT;
 
     x_scale = XSCALE;
     y_scale = YSCALE;
@@ -108,6 +118,16 @@ void NCurses_commander::apply_updates()
     if((input == 'd' || input == 'D') && focus_x != grid_width-1) {
         focus_x++;
     }
+    if((input == 'q' || input == 'Q') && focus_hand_id != 0) {
+        focus_hand_id--;
+    }
+    if(input == 'e' || input == 'E') {
+        focus_hand_id++;
+        if (focus_hand_id >= hand.size()) {
+            focus_hand_id = hand.size() - 1;
+        }
+
+    }
     if (input == ' ') {
         if (selected) {
             selected = false;
@@ -144,9 +164,11 @@ void NCurses_commander::render_UI()
     if (x_term_size < 0 || y_term_size < 0) {
         throw std::runtime_error("Screen not initialized");
     }
-
     render_grid();
     render_hand();
+
+    bottom_line.y = y_term_size-1;
+    bottom_line.draw();
 
     refresh();
 }
@@ -154,8 +176,8 @@ void NCurses_commander::render_UI()
 void NCurses_commander::render_grid()
 {
     // Get window params
-    int grid_width_sym = grid_width*x_scale;
-    int grid_height_sym = grid_height*y_scale;
+    int grid_width_sym = grid_width*(x_scale-1)+1;
+    int grid_height_sym = grid_height*(y_scale-1)+1;
 
     int grid_origin_x = (x_term_size - grid_width_sym) / 2;
     if (grid_origin_x < 0) {
@@ -170,8 +192,8 @@ void NCurses_commander::render_grid()
     for (int x = 0; x < grid_width; x++) {
         for (int y = 0; y < grid_height; y++) 
         {
-            grid_cell.x = grid_origin_x + x*x_scale;
-            grid_cell.y = grid_origin_y + y*y_scale;
+            grid_cell.x = grid_origin_x + x*(x_scale-1);
+            grid_cell.y = grid_origin_y + y*(y_scale-1);
             grid_cell.draw();
         }
     }
@@ -185,15 +207,28 @@ void NCurses_commander::render_grid()
     grid_border.draw();
     // Capture area highlight
     // change this dynamically:
-    grid_capture_area.x = grid_origin_x + 3*x_scale;
+    grid_capture_area.x = grid_origin_x + (grid_width / 2 - 1)*(x_scale-1);
     grid_capture_area.y = grid_origin_y;
 
-    grid_capture_area.width = 2*x_scale;
+    grid_capture_area.width = (2 + grid_width % 2)*(x_scale-1)+1;
     grid_capture_area.height = grid_height_sym;
 
     grid_capture_area.draw();
     // ___
-    // Rander cursors
+    // Render units on grid
+    Unit_sprite unit_stencil;
+    for (const Card_info& c_info : active_cards) {
+        if (c_info.type == CTYPE_UNIT)
+        {
+            unit_stencil.darken_name = !(c_info.owner_id == id);
+            unit_stencil.set_card(c_info);
+            unit_stencil.x = grid_origin_x + c_info.x*(x_scale-1);
+            unit_stencil.y = grid_origin_y + c_info.y*(y_scale-1);
+
+            unit_stencil.draw();
+        }
+    }
+    // Render cursors
     if(focus_group == FGROUP_FIELD)
     {
         if(focus_x < 0 || focus_y < 0 || focus_x >= grid_width || focus_y >= grid_height) {
@@ -206,16 +241,21 @@ void NCurses_commander::render_grid()
         {
             grid_highlight.set_color(CPAIR_GRIDSELECTION);
 
-            grid_highlight.x = grid_origin_x + selection_x*x_scale;
-            grid_highlight.y = grid_origin_y + selection_y*y_scale;
+            grid_highlight.x = grid_origin_x + selection_x*(x_scale-1);
+            grid_highlight.y = grid_origin_y + selection_y*(y_scale-1);
 
             grid_highlight.draw();
         }
         // Cursor
-        grid_highlight.set_color(CPAIR_INVERTED);
-
-        grid_highlight.x = grid_origin_x + focus_x*x_scale;
-        grid_highlight.y = grid_origin_y + focus_y*y_scale;
+        if (selected && focus_x == selection_x && focus_y == selection_y) {
+            grid_highlight.set_color(CPAIR_GRIDCURSOR_OL); // Overlaid cursor
+        }
+        else {
+            grid_highlight.set_color(CPAIR_GRIDCURSOR); // Normal cursor
+        }
+        
+        grid_highlight.x = grid_origin_x + focus_x*(x_scale-1);
+        grid_highlight.y = grid_origin_y + focus_y*(y_scale-1);
 
         grid_highlight.draw();
     }
@@ -223,19 +263,20 @@ void NCurses_commander::render_grid()
 
 void NCurses_commander::render_hand()
 {
-    int grid_width_sym = grid_width*x_scale;
-    int grid_height_sym = grid_height*y_scale;
+    int grid_width_sym = grid_width*(x_scale-1)+1;
+    int grid_height_sym = grid_height*(y_scale-1)+1;
 
     int hand_center_origin_x = x_term_size / 2 - x_scale;
-    int hand_center_origin_y = grid_height_sym + 2 + Y_GRID_OFFSET;
+    int hand_center_origin_y = grid_height_sym + Y_HAND_OFFSET + Y_GRID_OFFSET;
 
+    if (hand.size() == 0) {
         Rect empty_marker;
         Text_box empty_text = {"HAND IS EMPTY"};
         
         empty_marker.x = hand_center_origin_x;
         empty_marker.y = hand_center_origin_y;
         empty_marker.width = x_scale*2;
-        empty_marker.height = y_scale*2-1;
+        empty_marker.height = y_scale*2;
         empty_marker.set_all('.');
         empty_marker.draw_filled = false;
         empty_marker.set_color(CPAIR_ACCENT);
@@ -246,16 +287,54 @@ void NCurses_commander::render_hand()
 
         empty_marker.draw();
         empty_text.draw();
+    }
+    else {
+        if (focus_hand_id >= hand.size()) {
+            focus_hand_id = hand.size() - 1;
+        }
+        Card_sprite focused_card(hand[focus_hand_id]);
+
+        focused_card.x = hand_center_origin_x;
+        focused_card.y = hand_center_origin_y;
+
+        focused_card.x_scale = x_scale;
+        focused_card.y_scale = y_scale;
+
+        focused_card.draw();
+
+        hand_cards_left.x = hand_center_origin_x;
+        hand_cards_left.y = hand_center_origin_y;
+        hand_cards_left.height = y_scale*2;
+
+        hand_cards_right.x = hand_center_origin_x + 2*x_scale;
+        hand_cards_right.y = hand_center_origin_y;
+        hand_cards_right.height = y_scale*2;
+
+        int type_colors[] = {CPAIR_CARD_UNIT_INV, CPAIR_CARD_CONTRACT_INV, CPAIR_CARD_TACTIC_INV};
+        // Render cards to the left
+        hand_cards_left.x -= HAND_INACTIVE_CARD_WIDTH * focus_hand_id;
+        for (int i = 0; i < focus_hand_id; i++) {   
+            hand_cards_left.set_color(type_colors[hand[i].type]);
+            hand_cards_left.draw();
+            hand_cards_left.x += HAND_INACTIVE_CARD_WIDTH;
+        }
+        // Render cards to the right
+        for (int i = focus_hand_id+1; i < hand.size(); i++) {
+            hand_cards_right.set_color(type_colors[hand[i].type]);
+            hand_cards_right.draw();
+            hand_cards_right.x += HAND_INACTIVE_CARD_WIDTH;
+        }
+    }
 }
 
 void NCurses_commander::UI_Object::draw(int orig_y, int orig_x)
 {
     for (UIobj_ref& child : children) {
         if (child.get().visible) {
-            if (child.get().use_absolute_position && child.get().y >= 0 && child.get().x >= 0) {
+            if (child.get().use_absolute_position) {
                 child.get().draw(child.get().y, child.get().x);
             }
-            else if (child.get().y + orig_y >= 0 && child.get().x + orig_x >= 0) {
+            else {
                 child.get().draw(child.get().y + orig_y, child.get().x + orig_x);
             }
         }
@@ -311,22 +390,22 @@ void NCurses_commander::Rect::draw_self(int orig_y, int orig_x)
             attron(COLOR_PAIR(border_color));
         }
         // Horizontal borders
-        for (int i = orig_x+1; i < orig_x+width; i++) {
+        for (int i = orig_x+1; i < orig_x+width-1; i++) {
             mvaddch(orig_y, i, t_border);
-            mvaddch(orig_y + height, i, b_border);
+            mvaddch(orig_y+height-1, i, b_border);
         }
         // Vertical borders
-        for (int i = orig_y+1; i < orig_y+height; i++) {
+        for (int i = orig_y+1; i < orig_y+height-1; i++) {
             mvaddch(i, orig_x, l_border);
-            mvaddch(i, orig_x + width, r_border);
+            mvaddch(i, orig_x+width-1, r_border);
         }
         // Corners
         if (width > 0 && height > 0)
         {
         mvaddch(orig_y, orig_x, tl_corner);
-        mvaddch(orig_y, orig_x+width, tr_corner);
-        mvaddch(orig_y+height, orig_x, bl_corner);
-        mvaddch(orig_y+height, orig_x+width, br_corner);
+        mvaddch(orig_y, orig_x+width-1, tr_corner);
+        mvaddch(orig_y+height-1, orig_x, bl_corner);
+        mvaddch(orig_y+height-1, orig_x+width-1, br_corner);
         }
         if (border_color != 0) {
             attroff(COLOR_PAIR(border_color));
@@ -374,21 +453,28 @@ void NCurses_commander::Text_box::draw_self(int orig_y, int orig_x)
 
 NCurses_commander::Unit_sprite::Unit_sprite(Card_info c_info)
 {
-    rect.set_all(' ');
+    x_scale = XSCALE;
+    y_scale = YSCALE;
+
+    rect.set_hborders(ACS_HLINE);
+    rect.set_vborders(ACS_VLINE);
+
+    rect.tl_corner = ACS_ULCORNER;
+    rect.tr_corner = ACS_URCORNER;
+    rect.bl_corner = ACS_LLCORNER;
+    rect.br_corner = ACS_LRCORNER;
+
     rect.draw_filled = false;
-    rect.set_color(CPAIR_CARD_UNIT);
+    rect.set_color(CPAIR_NORMAL);
 
     name.x = 1;
     name.y = 1;
-    name.width = XSCALE-2;
     name.height = 2;
 
-    value.x = XSCALE-2;
-    value.y = YSCALE-1;
+    name.color = CPAIR_NORMAL;
     value.color = CPAIR_UNIT_VALUE;
 
     advantage.x = 1;
-    advantage.y = YSCALE-1;
     advantage.color = CPAIR_UNIT_ADVANTAGE;
 
     indicator.x = 1;
@@ -404,16 +490,103 @@ void NCurses_commander::Unit_sprite::set_card(Card_info c_info)
     name.text = Description_generator::get().get_card_instance(card_info.global_id).name;
 
     value.text = std::to_string(card_info.value);
-    advantage.text = card_info.advantage > 0 ? std::to_string(card_info.advantage) : " ";
+    advantage.text = card_info.advantage > 0 ? std::to_string(card_info.advantage) : "";
 
     indicator.text = "";
     indicator.text += card_info.can_move ? (card_info.can_attack ? "~" : "X") : " ";
     indicator.text += card_info.is_overwhelmed ? "!" : " ";
 }
 
-NCurses_commander::Card_sprite::Card_sprite(Description_generator::Card_descr c_descr)
+void NCurses_commander::Unit_sprite::draw_self(int orig_y, int orig_x)
 {
-    
+    rect.width = x_scale;
+    rect.height = y_scale;
+
+    name.width = x_scale-2;
+    name.color = darken_name ? CPAIR_ACCENT : CPAIR_NORMAL;
+
+    value.x = x_scale-value.text.size()-1;
+    value.y = y_scale-2;
+
+    advantage.y = y_scale-2;
+
+    rect.draw(orig_y, orig_x);
+    name.draw(orig_y, orig_x);
+    value.draw(orig_y, orig_x);
+    advantage.draw(orig_y, orig_x);
+    indicator.draw(orig_y, orig_x);
 }
 
+NCurses_commander::Card_sprite::Card_sprite(Description_generator::Card_descr c_descr)
+{
+    x_scale = XSCALE;
+    y_scale = YSCALE;
+
+    rect.set_hborders(ACS_HLINE);
+    rect.set_vborders(ACS_VLINE);
+
+    rect.tl_corner = ACS_ULCORNER;
+    rect.tr_corner = ACS_URCORNER;
+    rect.bl_corner = ACS_LLCORNER;
+    rect.br_corner = ACS_LRCORNER;
+
+    name.x = 1;
+    name.y = 1;
+    name.height = 2;
+    cost.y = 1;
+
+    ability_text.x = 1;
+    ability_text.height = 3;
+
+    flavor_text.x = 1;
+    flavor_text.height = 3;
+
+    cost.color = CPAIR_CARD_COST;
+    flavor_text.color = CPAIR_ACCENT;
+    set_desc(c_descr);
+}
+
+void NCurses_commander::Card_sprite::set_desc(Description_generator::Card_descr c_descr)
+{
+    name.text = c_descr.name;
+    ability_text.text = c_descr.ability_text;
+    flavor_text.text = c_descr.flavor_text;
+    cost.text = std::to_string(c_descr.cost);
+
+    value.text = std::to_string(c_descr.value);
+    value.color = c_descr.type == CTYPE_UNIT ? CPAIR_UNIT_VALUE : CPAIR_CONTRACT_VALUE;
+    
+    int type_colors[] = {CPAIR_CARD_UNIT_INV, CPAIR_CARD_CONTRACT_INV, CPAIR_CARD_TACTIC_INV};
+    rect.set_color(type_colors[c_descr.type]);
+}
+
+void NCurses_commander::Card_sprite::set_card(Card_info c_info)
+{
+    card_info = c_info;
+    set_desc(c_info.global_id);
+}
+
+void NCurses_commander::Card_sprite::draw_self(int orig_y, int orig_x)
+{
+    rect.width = x_scale*2;
+    rect.height = y_scale*2;
+
+    name.width = x_scale*2-3;
+    flavor_text.width = x_scale*2-2;
+    ability_text.width = x_scale*2-2;
+
+    value.x = x_scale*2-value.text.size()-1;
+    value.y = y_scale*2-2;
+    cost.x  = x_scale*2-2;
+
+    flavor_text.y  = y_scale*2-5;
+    ability_text.y = y_scale*2-8;
+
+    rect.draw(orig_y, orig_x);
+    name.draw(orig_y, orig_x);
+    cost.draw(orig_y, orig_x);
+    ability_text.draw(orig_y, orig_x);
+    flavor_text.draw(orig_y, orig_x);
+    value.draw(orig_y, orig_x);
+}
 

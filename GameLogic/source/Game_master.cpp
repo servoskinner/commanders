@@ -59,7 +59,7 @@ Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
         players.emplace_back(playerid);
 
         commanders[playerid].get().id = playerid;
-
+        
         commanders[playerid].get().grid_height = GRID_HEIGHT,
         commanders[playerid].get().grid_width = GRID_WIDTH;
 
