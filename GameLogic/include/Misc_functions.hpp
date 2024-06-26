@@ -26,22 +26,23 @@ bool pop_element(std::vector<Type>& vec, Key_type& key, \
 }
 
 template <typename Type, typename Key_type>
-bool contains_elem(std::vector<Type>& vec, Key_type& key, \
-                 const std::function<bool(Type&, Key_type&)> compare = \
-                 [](Type& left, Key_type& right){ return left == right; }) 
-                 // Remove element that matches comparison criterion from a vector (== by default).
-                 // Returns TRUE if element was found and destroyed and FALSE otherwise
+int find_index(std::vector<Type>& vec, Key_type& key, \
+               const std::function<bool(Type&, Key_type&)> compare = \
+               [](Type& left, Key_type& right){ return left == right; }) 
+               // Remove element that matches comparison criterion from a vector (== by default).
+               // Returns TRUE if element was found and destroyed and FALSE otherwise
 
-                 // CAUTION: mind the order of Type and Keytype. don't repeat my mistakes
+               // CAUTION: mind the order of Type and Keytype. don't repeat my mistakes
 {
-    for(auto iter = vec.begin(); iter != vec.end(); iter++)
+    int index = 0;
+    for(auto iter = vec.begin(); iter != vec.end(); iter++, index++)
     {
         if(compare(*iter, key))
         {
-            return true;
+            return index;
         }
     }
-    return false;
+    return -1;
 }
 
 template <typename Type>

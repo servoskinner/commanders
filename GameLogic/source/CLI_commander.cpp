@@ -96,17 +96,17 @@ void CLI_commander::render_UI()
 
    // HAND __________________________________________
    
-   std::cout << "HAND: " << hand.size() \
-               << "/??    DECK: " << players[id].library_size \
-               << "    DISCARD: " << players[id].discard_size << "\n";
+   std::cout << "HAND: " << hands[active_id].size() \
+               << "/??    DECK: " << players[active_id].library_size \
+               << "    DISCARD: " << players[active_id].discard_size << "\n";
    std::cout << "HAND:____________________________\n";
-   std::cout << "YOU HAVE $" << players[id].funds << ":\n\n";
+   std::cout << "YOU HAVE $" << players[active_id].funds << ":\n\n";
 
-   for(int i=0; i<hand.size(); i++)
+   for(int i=0; i<hands[active_id].size(); i++)
    {
-      Description_generator::Card_descr original = desc_gen.get_card_instance(hand[i].global_id);
-      std::cout  << "[" << i << "] $" << hand[i].cost << " " << original.name << " (";
-      			 (hand[i].value >= 0 ? std::cout << hand[i].value : std::cout << "T") \
+      Description_generator::Card_descr original = desc_gen.get_card_instance(hands[active_id][i].global_id);
+      std::cout  << "[" << i << "] $" << hands[active_id][i].cost << " " << original.name << " (";
+      			 (hands[active_id][i].value >= 0 ? std::cout << hands[active_id][i].value : std::cout << "T") \
       			 << ")" << "\n|   " << original.ability_text << "\n\n";
    }
    
@@ -115,7 +115,7 @@ void CLI_commander::render_UI()
    // CONTRACTS _____________________________________
    for(Card_info card : active_cards)
    {
-      if(card.type == CTYPE_CONTRACT && card.owner_id == id)
+      if(card.type == CTYPE_CONTRACT && card.owner_id == active_id)
       {
          Description_generator::Card_descr origin = desc_gen.get_card_instance(card.global_id);
          std::cout << origin.name << " (" << card.value << ")\n";
@@ -132,7 +132,7 @@ Commander::Order CLI_commander::get_order()
 
 while(true)
    {
-      std::cout << "PLAYER " << id << " GOES \n"; 
+      std::cout << "PLAYER " << active_id << " GOES \n"; 
       std::cout << "PENDING ACTION: (P)ASS - (M)OVE - (A)TTACK - (D)EPLOY" << std::endl;
       std::cin >> buffer;
       
@@ -174,7 +174,7 @@ while(true)
          order.type = Order::ORD_PLAY;
          std::cout << "SPECIFY CARD NO.:" << std::endl;
          std::cin >> order.data[0];
-         if(order.data[0] >= 0 && order.data[0] < hand.size() && hand[order.data[0]].type == CTYPE_UNIT)
+         if(order.data[0] >= 0 && order.data[0] < hands[active_id].size() && hands[active_id][order.data[0]].type == CTYPE_UNIT)
          {
             order.data.resize(3);
             std::cout << "SPECIFY DEPLOYMENT COORDINATES:" << std::endl;
@@ -191,7 +191,7 @@ while(true)
    }
 }
 
-void CLI_commander::process_event(const Event& event)
+void CLI_commander::process_event(Event event)
 {
    //enum invalidAction {INVORD_NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
    switch(event.type)
@@ -241,7 +241,7 @@ void CLI_commander::process_event(const Event& event)
          }
          break;
       case Event::EV_GAME_WON_BY:
-         if(event.data[0] == id)
+         if(event.data[0] == active_id)
          {
             std::cout << "You win!" << std::endl;
          }
@@ -256,7 +256,7 @@ void CLI_commander::process_event(const Event& event)
 
 void CLI_commander::apply_updates()
 {
-   if(turn == id)
+   if(turn == active_id)
       render_UI();
 }
 

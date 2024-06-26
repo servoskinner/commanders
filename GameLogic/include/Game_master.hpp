@@ -26,6 +26,7 @@ protected:
     class Deck;
     class Player;
     class Tile;
+    class Ability;
     class Card_generator;
 
     typedef std::reference_wrapper<Game_master::Player> player_ref;
@@ -94,4 +95,4 @@ protected: // __________________________________________________________________
 #include "Deck.hpp"
 #include "Player.hpp"
 #include "Tile.hpp"
-#include "Card_mechanics.hpp"
+#include "Ability.hpp"

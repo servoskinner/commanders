@@ -1,40 +1,21 @@
 #pragma once
 
 #include "Commander.hpp"
-
 #include <queue>
 
-class Proxy_commander : public Commander
+class Proxy_commander : Commander
 {
     public:
+    void queue_order(Order order);
+    void process_event(Event event) override;
 
-    Order get_order() override
-    {
-        Order ord = Order();
-        if (orders.size() > 0)
-        {
-            ord = orders.front();
-            orders.pop();
-        }
-        return ord;
-    }
-    void push_order(Order ord) { orders.push(ord);}
+    Order get_order() override;
+    Event get_event();
 
-    void process_event(const Event& event) override { events.push(event);}
-    Event receive_event()
-    {
-        Event ev = Event();
-        if (events.size() > 0)
-        {
-            ev = events.front();
-            events.pop();
-        }
-        return ev;
-    };
-    Proxy_commander() = default;
+    int events_size() { return event_queue.size();}
+    int orders_size() { return order_queue.size();}
 
     private:
-    
-    std::queue<Order> orders; // Inbound orders
-    std::queue<Event> events; // Outbound events
+    std::queue<Order> order_queue;
+    std::queue<Event> event_queue;
 };

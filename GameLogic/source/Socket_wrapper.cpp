@@ -42,7 +42,7 @@ inline const bool Socket_wrapper::enable_broadcast()
     return setsockopt(socket_fdesc, SOL_SOCKET, SO_BROADCAST, &flag_value, sizeof(flag_value)) >= 0;
 }
 
-const bool Socket_wrapper::send(const std::vector<char>& msg, int dest_id)
+const bool Socket_wrapper::send_id(const std::vector<char>& msg, int dest_id)
 {
     if(destinations.size() >= dest_id)
     {
@@ -111,4 +111,16 @@ const std::string Socket_wrapper::Socket_info::addrstr()
     char bytes[3*4+4] = {};
     inet_ntop(AF_INET, &address, bytes, 3*4+3);
     return std::string(bytes);
+}
+
+Server_info::Server_info(std::vector<char> packed)
+{
+    if(packed.size() < sizeof(char)*(1+8))
+    {
+        throw std::runtime_error("Player_info(): char vector is too short to be unpacked");
+    }
+
+    connected_players = packed[0];
+    std::memcpy(flags, packed.data()+sizeof(char), sizeof(char)*8);
+    description = {packed.begin()+1+8, packed.end()};
 }

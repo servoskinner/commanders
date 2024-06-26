@@ -4,9 +4,11 @@
 int main()
 {
     NCurses_commander commander;
-    commander.id = 0;
+    commander.active_id = 0;
     commander.grid_height = 6;
     commander.grid_width = 8;
+
+    commander.hands.push_back({});
 
     Commander::Card_info merc;
     merc.type = CTYPE_UNIT;
@@ -21,7 +23,7 @@ int main()
     merc.y = 3;
     merc.owner_id = 0;
     commander.active_cards.push_back(merc);
-    commander.hand.push_back(merc);
+    commander.hands[0].push_back(merc);
     merc.x = 2;
     merc.y = 4;
     merc.owner_id = 1;
@@ -34,16 +36,16 @@ int main()
     merc.y = 5;
     merc.global_id = MAIMBOT;
     commander.active_cards.push_back(merc);
-    commander.hand.push_back(merc);
+    commander.hands[0].push_back(merc);
 
     merc.type = CTYPE_CONTRACT;
     merc.global_id = FISSION;
-    commander.hand.push_back(merc);
+    commander.hands[0].push_back(merc);
     merc.global_id = MACHINEPARTS;
-    commander.hand.push_back(merc);
+    commander.hands[0].push_back(merc);
     merc.global_id = ARCHON;
     merc.type = CTYPE_UNIT;
-    commander.hand.push_back(merc);
+    commander.hands[0].push_back(merc);
 
     bool is_running = true;
     while (is_running)

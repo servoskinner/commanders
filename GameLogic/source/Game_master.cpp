@@ -17,8 +17,9 @@ Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
         std::clog << "Redundant decks provided for Game_master constructor. Ignoring last;" << std::endl;
 	}
 
+    // Set up grid
     std::vector<std::vector<int>> n_terrain;
-    if(terrain.size() == 0 || terrain[0].size() == 0)   // use default terrain
+    if(terrain.size() == 0 || terrain[0].size() == 0)   // Use default terrain if none was provided
     {
         n_terrain = {GRID_HEIGHT, std::vector<int>(GRID_WIDTH, Tile::NORMAL)};
         for(int row = 0; row < GRID_HEIGHT; row++) 
@@ -58,7 +59,10 @@ Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
     for(int playerid = 0; playerid < commanders.size(); playerid++) {
         players.emplace_back(playerid);
 
-        commanders[playerid].get().id = playerid;
+        commanders[playerid].get().controlled_ids.push_back(playerid);
+        if (commanders[playerid].get().controlled_ids.size() == 1) {
+            commanders[playerid].get().active_id = playerid;
+        }
         
         commanders[playerid].get().grid_height = GRID_HEIGHT,
         commanders[playerid].get().grid_width = GRID_WIDTH;
@@ -141,6 +145,7 @@ void Game_master::end_turn()
     // Increment turn counter (also is playerid of whoever takes the turn)
     turn = (turn + 1) % commanders.size();
     turn_absolute++;
+    commanders[turn].get().active_id = turn;
 
 	// Players starting their turn with zero money get a bonus
 	if (players[turn].funds == 0) 
@@ -349,27 +354,27 @@ int Game_master::exec_order(const Commander::Order& order)
 
 void Game_master::update_status(int player_id)
 {
-    commander_ref controller = commanders[player_id];
+    commander_ref commander = commanders[player_id];
 
-    controller.get().turn = turn;
-    controller.get().turn_absolute = turn_absolute;
+    commander.get().turn = turn;
+    commander.get().turn_absolute = turn_absolute;
     
-    controller.get().active_cards.resize(active_cards.size());
+    commander.get().active_cards.resize(active_cards.size());
     for(int i = 0; i < active_cards.size(); i++)
     {
-        controller.get().active_cards[i] = active_cards[i].get().get_info();
+        commander.get().active_cards[i] = active_cards[i].get().get_info();
     }
 
-    controller.get().hand.resize(players[player_id].hand.size());
+    commander.get().hands[player_id].resize(players[player_id].hand.size());
     for(int i = 0; i < players[player_id].hand.size(); i++)
     {
-        controller.get().hand[i] = players[player_id].hand[i].get().get_info();
+        commander.get().hands[player_id][i] = players[player_id].hand[i].get().get_info();
     }
 
-    controller.get().players.resize(players.size());
+    commander.get().players.resize(players.size());
     for(int i = 0; i < players.size(); i++)
     {
-        controller.get().players[i] = players[i].get_info(decks[i]);
+        commander.get().players[i] = players[i].get_info(decks[i]);
     }
 }
 

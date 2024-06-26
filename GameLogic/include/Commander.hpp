@@ -22,39 +22,35 @@ class Commander // Acts as an interface between the Game Master and whoever is p
 public:
     struct Player_info // Information about other players seen by everyone.
     {
-        int id;
-        int points;
-        int funds;
+        char id;
+        short points;
+        short funds;
 
-        int deck_total_size;
-        int library_size;
-        int discard_size;
-        int hand_size;
+        short deck_total_size;
+        short library_size;
+        short discard_size;
+        short hand_size;
 
         Player_info() = default;
-        const std::vector<char> packed();
-        Player_info(const std::vector<char>& packed);
     };
-    struct Card_info // Gameplay-wise card information excerpt
+    struct Card_info // Card information to be exchanged between commanders and the master
     {
-        int global_id;
-        int match_id;
-        int owner_id;
+        short global_id;
+        short match_id;
+        char owner_id;
 
-        int x, y;
+        short x, y;
 
         bool can_attack;
         bool can_move;
         bool is_overwhelmed;
 
-        int value;
-        int cost;
-        int advantage;
-        int type;
+        short value;
+        short cost;
+        short advantage;
+        char type;
 
         Card_info() = default; 
-        const std::vector<char> packed(); // Packs the structure to send it via network.
-        Card_info(const std::vector<char>& packed); // Unpacks the structure from byte sequence
     };
     struct Commander_message // Data structure that represents the player's in-game actions.
     {
@@ -108,15 +104,16 @@ public:
     typedef Commander_message Order;
     typedef Commander_message Event; // Message describing a happening in game.
 
-    int id; // Associated player's unique identifier
+    int active_id; // The player that commander is controlling at the moment
+    std::vector<int> controlled_ids; // All players controlled by the commander
 
     int grid_width, grid_height;         
     int turn, turn_absolute;     
 
-    std::vector<Card_info>   active_cards;  // Cards placed on the battlefield and visible to everyone.
-    std::vector<Card_info>   hand;          // Associated player's hand.
-    std::vector<Player_info> players;       // Known data about other players: their funds, hand size, graveyard, etc.
+    std::vector<Card_info> active_cards;            // Cards placed on the battlefield and visible to everyone.
+    std::vector<std::vector<Card_info>> hands;      // Known cards in players' hands
+    std::vector<Player_info> players;               // Known data about other players: their funds, hand size, graveyard, etc.
 
     virtual Order get_order() = 0;         // Called by the Game Master to receive player input.
-    virtual void process_event(const Event& event) = 0; // Called by the Game Master to communicate a game event
+    virtual void process_event(Event event) = 0; // Called by the Game Master to communicate a game event
 };

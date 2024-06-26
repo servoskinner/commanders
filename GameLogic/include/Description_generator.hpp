@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <array>
 
 #include "Card_index.hpp"
 
@@ -19,6 +20,7 @@ public:
         int value = 0;
         int cost = 0;
         int type = -1;
+        std::array<bool, 15> mnemosprite = {};
     };
     inline const Card_descr& get_card_instance(int index) 
     { return (index >= 0 && index < TOTAL_CARDS_IN_GAME) ? cards[index] : unknown_card; }

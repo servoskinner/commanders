@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <array>
 
 #define COLOR_BRIGHT_BLACK		8
 #define COLOR_BRIGHT_RED		9
@@ -83,7 +84,7 @@ class NCurses_commander : public Commander
     ~NCurses_commander();
 
     Order get_order() override;
-    void process_event(const Event& event) override;
+    void process_event(Event event) override;
     void apply_updates();
 
     private:
@@ -181,6 +182,8 @@ class NCurses_commander : public Commander
         private:
         Description_generator::Card_descr card_descr;
         std::optional<Card_info> card_info;
+        std::array<bool, 15> mnemosprite;
+        int sprite_color;
 
         virtual void draw_self(int orig_y, int orig_x) override;
 
@@ -199,15 +202,22 @@ class NCurses_commander : public Commander
     int focus_group;
     int focus_x, focus_y, focus_hand_id;
     bool selected;
+    bool hand_highlit;
     int selection_x, selection_y;
 
     Rect grid_cell;
     Rect grid_border;
     Rect grid_capture_area;
     Rect grid_highlight;
+    Rect hand_highlight;
 
     Rect hand_cards_left, hand_cards_right;
     Text_box bottom_line;
+    Text_box hand_tooltip_r, hand_tooltip_l;
+    Text_box status_message;
+
+    Order pending_order;
+    bool order_is_ready;
 
     void render_UI();
     void render_hand();

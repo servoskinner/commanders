@@ -11,6 +11,11 @@ Description_generator::Description_generator() // instantiate all cards in game
 
     cards[BOUNTYHUNTER].cost = 1;
     cards[BOUNTYHUNTER].value = 2;
+    cards[BOUNTYHUNTER].mnemosprite = {0, 0, 1,
+                                       1, 1, 1,
+                                       0, 0, 1,
+                                       0, 1, 0,
+                                       1, 1, 0};
     //______________________________
     cards[HENCHMAN].name = "Henchman";
     cards[HENCHMAN].type = CTYPE_UNIT;
@@ -18,6 +23,11 @@ Description_generator::Description_generator() // instantiate all cards in game
 
     cards[HENCHMAN].cost = 2;
     cards[HENCHMAN].value = 3;
+    cards[HENCHMAN].mnemosprite =     {1, 1, 1,
+                                       0, 0, 0,
+                                       0, 0, 1,
+                                       1, 0, 1,
+                                       1, 0, 1};
     //______________________________
     cards[COMMANDO].name = "Terrorguard";
     cards[COMMANDO].type = CTYPE_UNIT;
@@ -25,6 +35,11 @@ Description_generator::Description_generator() // instantiate all cards in game
 
     cards[COMMANDO].cost = 3;
     cards[COMMANDO].value = 4;
+    cards[COMMANDO].mnemosprite =     {1, 1, 1,
+                                       1, 0, 1,
+                                       0, 1, 1,
+                                       0, 1, 1,
+                                       1, 1, 0};
     //______________________________
     cards[OPPRESSOR].name = "Oppressor";
     cards[OPPRESSOR].type = CTYPE_UNIT;
@@ -32,14 +47,24 @@ Description_generator::Description_generator() // instantiate all cards in game
 
     cards[OPPRESSOR].cost = 4;
     cards[OPPRESSOR].value = 5;
+    cards[OPPRESSOR].mnemosprite =    {0, 1, 1,
+                                       1, 1, 1,
+                                       1, 0, 0,
+                                       0, 1, 0,
+                                       1, 1, 1};
     //______________________________
     cards[MAIMBOT].name = "Maimbot";
     cards[MAIMBOT].type = CTYPE_UNIT;
-    cards[MAIMBOT].flavor_text = "Autonomous weapons platform.\n|   [ADVANTAGE 1]";
+    cards[MAIMBOT].flavor_text = "Autonomous weapons platform.";
     cards[MAIMBOT].ability_text = "Advantage 1";
 
     cards[MAIMBOT].cost = 4;
     cards[MAIMBOT].value = 3;
+    cards[MAIMBOT].mnemosprite =      {1, 1, 1,
+                                       1, 1, 0,
+                                       0, 1, 1,
+                                       1, 1, 0,
+                                       1, 0, 0};
     //______________________________
     cards[ARCHON].name = "Omnitank";
     cards[ARCHON].type = CTYPE_UNIT;
@@ -48,6 +73,11 @@ Description_generator::Description_generator() // instantiate all cards in game
 
     cards[ARCHON].cost = 7;
     cards[ARCHON].value = 5;
+    cards[ARCHON].mnemosprite =       {1, 0, 1,
+                                       1, 1, 0,
+                                       1, 1, 1,
+                                       1, 0, 1,
+                                       1, 0, 1};
     //______________________________
     cards[MACHINEPARTS].name = "Machine Shop";
     cards[MACHINEPARTS].type = CTYPE_CONTRACT;
@@ -55,6 +85,11 @@ Description_generator::Description_generator() // instantiate all cards in game
 
     cards[MACHINEPARTS].cost = 3;
     cards[MACHINEPARTS].value = 7;
+    cards[MACHINEPARTS].mnemosprite = {1, 1, 0,
+                                       1, 1, 1,
+                                       0, 0, 0,
+                                       1, 1, 0,
+                                       0, 1, 0};
     //______________________________
     cards[GUNKFOOD].name = "Gunkfood";
     cards[GUNKFOOD].type = CTYPE_CONTRACT;
@@ -62,6 +97,11 @@ Description_generator::Description_generator() // instantiate all cards in game
 
     cards[GUNKFOOD].cost = 1;
     cards[GUNKFOOD].value = 4; 
+    cards[GUNKFOOD].mnemosprite =     {0, 0, 1,
+                                       1, 0, 0,
+                                       1, 1, 0,
+                                       1, 1, 0,
+                                       0, 1, 0};
     //______________________________
     cards[FISSION].name = "Nuclear Fission";
     cards[FISSION].type = CTYPE_CONTRACT;
@@ -69,6 +109,11 @@ Description_generator::Description_generator() // instantiate all cards in game
 
     cards[FISSION].cost = 5;
     cards[FISSION].value = 10;
+    cards[FISSION].mnemosprite =      {1, 1, 1,
+                                       0, 1, 1,
+                                       0, 0, 1,
+                                       1, 1, 0,
+                                       1, 0, 0};
     //______________________________
     // cards[UNITANK].name = "Unicyclone";
     // cards[UNITANK].type = CTYPE_UNIT;

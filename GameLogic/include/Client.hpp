@@ -9,17 +9,26 @@
 #include <utility>
 
 #define CLIENT_PORT 8989
-#define SV_LIST_TICKS_TO_FORGET 3
-#define TICK_RATE 100
+#define SERVER_UPKEEP_COUNTDOWN 4
+#define SERVER_UPKEEP_DELAY_MS 100
 
 class Client
 {
     public:
-    Client();
+    Client(unsigned short port = CLIENT_PORT) : client_socket(port) {}
 
-    virtual void process_msgs(int quantity = -1);
-    void bcast_discovery_msg(int server_port = 9898);
-    const std::vector<std::pair<Socket_wrapper::Socket_info, int>> get_discovered_connections() { return discovered_connections; }
+    struct Server_list_entry 
+    {
+        Socket_wrapper::Socket_info socket;
+        int upkeep;
+        Server_info info;
+
+        Server_list_entry() = default;
+    };
+
+    virtual void process_msgs(int limit = -1);
+    void bcast_discovery_msg(unsigned short server_port = 9898);
+    const std::vector<Server_list_entry> get_discovered_connections() { return discovered_connections; }
     void request_connection(Socket_wrapper::Socket_info server);
 
     std::vector<Commander::Card_info> get_active_cards();
@@ -35,7 +44,7 @@ class Client
 
     Socket_wrapper client_socket;
     std::optional<Socket_wrapper::Socket_info> connection;
-    std::vector<std::pair<Socket_wrapper::Socket_info, int>> discovered_connections;
+    std::vector<Server_list_entry> discovered_connections;
 
     std::queue<Commander::Event> events;
     std::vector<std::vector<std::optional<Commander::Card_info>>> field;
