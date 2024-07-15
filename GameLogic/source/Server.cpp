@@ -2,68 +2,149 @@
 
 void Server::process_messages()
 {
-    int cur_time = std::clock();
-    int delta_time = cur_time - prev_time;
-    prev_time = cur_time;
+    // todo add message limit 
+    Socket_wrapper::Socket_inbound_message inbound;
+    while((inbound = serv_socket.receive()).msg.size() > 1) {
 
-    Socket_wrapper::Socket_inbound_message next_msg;
-    while((next_msg = serv_socket.receive()).msg.size() > 1) {
-
-        std::optional<Client_info&> sender;
-        auto sender_iter = std::find_if(clients.begin(), clients.end(), [&next_msg](Client_info& c_info){return c_info.sock_info == next_msg.sender;});
-        if (sender_iter != clients.end()) {
-            sender.emplace(*sender_iter);
+        std::optional<Client_slot&> sender;
+        auto sender_iter = std::find_if(client_slots.begin(), client_slots.end(), \
+                                        [&inbound](std::optional<Client_slot>& c_info) \
+                                        {return c_info.has_value() && c_info->sock_info == inbound.sender;});
+        if (sender_iter != client_slots.end()) {
+            sender.emplace(sender_iter->value());
         }
     
-        switch (next_msg.msg[0])
+        switch (inbound.msg[0])
         {
         case MSG_CONTROL:
-            switch (next_msg.msg[1])
+            switch (inbound.msg[1])
             {
                 case ICTRL_UPKEEP:
-
+                {
+                    if (sender.has_value())
+                    {
+                        sender->upkeep = CLIENT_UPKEEP_COUNTDOWN;
+                    }
+                }
                 break;
 
-                case ICTRL_DISCOVER_BCAST:
-
+                case ICTRL_DISCOVER:
+                {
+                    std::vector<char> discover_msg = {MSG_CONTROL, ICTRL_DISCOVER};
+                    std::vector<char> info_packed = get_info().packed();
+                    std::copy(info_packed.begin(), info_packed.end(), std::back_inserter(discover_msg));
+                    
+                    serv_socket.send(inbound.sender, discover_msg);
+                }
                 break;
 
                 case ICTRL_CONNECT_REQ:
+                {
+                    // check deck legality
+                    //
+                    //
 
+                    if(is_full() || inbound.msg.size() < (32 + 1))
+                    {
+                        std::vector<char> rejection_msg = {MSG_CONTROL, ICTRL_NACKNOWLEDGE, ICTRL_CONNECT_REQ};
+                        serv_socket.send(inbound.sender, rejection_msg);
+                    }
+
+                    Client_slot new_connection;
+
+                    new_connection.sock_info = inbound.sender;
+                    new_connection.
+
+                    std::vector<char> response_msg = {MSG_CONTROL, ICTRL_ACKNOWLEDGE, ICTRL_CONNECT_REQ};
+                    serv_socket.send(inbound.sender, response_msg);
+                }
                 break;
             }
             break;
         
         case MSG_GAMEPLAY:
-
+            {
+                if(sender.has_value() && sender->commander.has_value())
+                {
+                    std::vector<char> order_packed = inbound.msg;
+                    order_packed.erase(order_packed.begin());
+                    sender->commander->get().queue_order({order_packed});
+                }
+            }
             break;
 
         case MSG_CHAT:
-            if(next_msg.msg.size() > 2 && sender.has_value() && sender->get().commander.has_value()) {
-                std::function<bool(Client_info&, Socket_wrapper::Socket_info&)> compare_addr = [](Client_info& cl, Socket_wrapper::Socket_info& sock){ return cl.sock_info == sock;};
-                
-                int sender_id = find_index(clients, next_msg.sender, compare_addr);
-                std::vector<char> forward_msg = next_msg.msg;
+            if(inbound.msg.size() > 2 && sender.has_value() && sender->get().commander.has_value()) {
+                int sender_id = find_index(client_slots, inbound.sender);
+
+                std::vector<char> forward_msg = inbound.msg;
                 forward_msg[1] = sender_id;
 
-                if(next_msg.msg[1] == -1) { // broadcast
-                    for (const Client_info& client : clients) {
-                        serv_socket.send(client.sock_info, forward_msg);
+                if(inbound.msg[1] == -1) { // broadcast
+                    for (const std::optional<Client_slot>& slot : client_slots) {
+                        if (slot.has_value()) {
+                            serv_socket.send(slot->sock_info, forward_msg);
+                        }
                     }
                 }
-                else if (next_msg.msg[1] < commanders.size()) { // whisper
+                else if (inbound.msg[1] < commanders.size()) { // whisper
                     
                 }
-                // TODO add confirmatio
+                // TODO add confirmation
             }
             break;
         }
     }
+}
 
-    if(upkeep_broadcast_cooldown <= delta_time * 1000 / CLOCKS_PER_SEC) {
+void Server::process_timers()
+{
+    int cur_time = std::clock();
+    int delta_time = cur_time - prev_tick_time;
+    prev_tick_time = cur_time;
+
+    if (upkeep_broadcast_cooldown <= delta_time * 1000 / CLOCKS_PER_SEC) {
         upkeep_broadcast_cooldown = CLIENT_UPKEEP_DELAY_MS;
+        manage_upkeep();
     }
     else {
         upkeep_broadcast_cooldown -= delta_time; 
     }
+}
+
+void Server::manage_upkeep()
+{
+    for (std::optional<Client_slot>& slot : client_slots)
+    {
+        if (slot.has_value())
+        {
+            slot->upkeep--;
+            if (slot->upkeep <= 0)
+            {
+
+            }
+        }
+    }
+}
+
+Server_info Server::get_info()
+{
+    Server_info info;
+    info.connected_players = client_slots.size();
+    info.description = description;
+    return info;
+}
+
+std::vector<Socket_wrapper::Socket_info> Server::get_peers()
+{
+    std::vector<Socket_wrapper::Socket_info> peers = {};
+
+    for(const std::optional<Client_slot>& slot : client_slots)
+    {
+        if (slot.has_value())
+        {
+            peers.push_back(slot->sock_info);
+        }
+    }
+    return peers;
 }

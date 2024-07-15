@@ -124,3 +124,15 @@ Server_info::Server_info(std::vector<char> packed)
     std::memcpy(flags, packed.data()+sizeof(char), sizeof(char)*8);
     description = {packed.begin()+1+8, packed.end()};
 }
+
+std::vector<char> Server_info::packed()
+{
+    std::vector<char> pack = std::vector<char>(1+8+description.size()+1);
+
+    pack[0] = connected_players;
+    std::copy(flags, flags+8, pack.begin()+1);
+    std::copy(description.begin(), description.end(), pack.begin()+1+8);
+    *pack.rbegin() = 0;
+
+    return pack;
+}

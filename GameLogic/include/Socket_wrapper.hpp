@@ -23,12 +23,9 @@ enum inet_message_tags
 }; 
 enum inet_control_tags
 {
+    ICTRL_NACKNOWLEDGE,
     ICTRL_ACKNOWLEDGE,            // code of prev op
-    ICTRL_UPKEEP,
-    ICTRL_DISCOVER_BCAST,         // 
-    ICTRL_DISCOVER_REPLY,         // name[32], active players(char), game is on (char)
-    ICTRL_CONNECT_REQ,            // name[32], deck size (int16), deck image[...]
-    ICTRL_SERVER_FORCE_DISCONNECT // optional error message[128]
+    ICTRL_UPKEEP
 };
 
 struct Server_info
@@ -38,10 +35,12 @@ struct Server_info
     char flags[8];
 
     Server_info(std::vector<char> packed);
+    Server_info() = default;
+    std::vector<char> packed();
 };
 
 template <typename Type>
-std::vector<char> socket_pack(const Type& object)
+std::vector<char> socket_c_pack(const Type& object)
 {
     char packed[sizeof(Type)];
     std::memcpy(packed, this, sizeof(Type));
@@ -50,7 +49,7 @@ std::vector<char> socket_pack(const Type& object)
 }
 
 template <typename Type>
-Type socket_unpack(std::vector<char> packed)
+Type socket_c_unpack(std::vector<char> packed)
 {
     Type new_obj = {};
     if(packed.size() < sizeof(Type))

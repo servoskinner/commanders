@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Misc_functions.hpp"
 #include "Socket_wrapper.hpp"
 #include "Commander.hpp"
 
@@ -9,8 +10,12 @@
 #include <utility>
 
 #define CLIENT_PORT 8989
+
 #define SERVER_UPKEEP_COUNTDOWN 4
 #define SERVER_UPKEEP_DELAY_MS 100
+
+#define CONNECTED_UPKEEP_COUNTDOWN 4
+#define CONNECTED_UPKEEP_DELAY_MS 100
 
 class Client
 {
@@ -27,8 +32,10 @@ class Client
     };
 
     virtual void process_msgs(int limit = -1);
+    virtual void process_timers();
+    
     void bcast_discovery_msg(unsigned short server_port = 9898);
-    const std::vector<Server_list_entry> get_discovered_connections() { return discovered_connections; }
+    const std::vector<Server_list_entry> get_discovered_connections() { return discovered_servers; }
     void request_connection(Socket_wrapper::Socket_info server);
 
     std::vector<Commander::Card_info> get_active_cards();
@@ -41,10 +48,12 @@ class Client
     
     private:
     void handle_control_message(Socket_wrapper::Socket_inbound_message msg);
+    void manage_upkeep();
 
     Socket_wrapper client_socket;
     std::optional<Socket_wrapper::Socket_info> connection;
-    std::vector<Server_list_entry> discovered_connections;
+    int connection_upkeep;
+    std::vector<Server_list_entry> discovered_servers;
 
     std::queue<Commander::Event> events;
     std::vector<std::vector<std::optional<Commander::Card_info>>> field;

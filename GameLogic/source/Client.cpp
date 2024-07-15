@@ -30,21 +30,39 @@ void Client::process_msgs(int limit)
         case MSG_CONTROL:
                 switch (inbound.msg[1])
                 {
+                case ICTRL_UPKEEP:
+                    // bounce message back
+                    client_socket.send(inbound.sender, inbound.msg);
+                    break;
                 case ICTRL_ACKNOWLEDGE:
-                    if (inbound.msg.size() >= 3 && inbound.msg[3] == ICTRL_CONNECT_REQ) {
-                        
+                    if (inbound.msg.size() >= 3 && inbound.msg[3] == ICTRL_CONNECT_REQ) 
+                    {
+                        connection = inbound.sender;
+                        connection_upkeep = CONNECTED_UPKEEP_COUNTDOWN;
                     }
                     break;
                 case ICTRL_DISCOVER_REPLY:
                     if (inbound.msg.size() >= DISCOVER_REPLY_SIZE) {
-                        Server_list_entry new_entry = {inbound.sender, \
-                                                       SERVER_UPKEEP_COUNTDOWN, \
-                                                       {{inbound.msg.begin()+2, inbound.msg.begin()+DISCOVER_REPLY_SIZE}}};
-                        discovered_connections.push_back(new_entry);
+                        // Check if this server is still remembered
+                        auto entry_it = std::find_if(discovered_servers.begin(), discovered_servers.end(), \
+                                                    [&inbound](Server_list_entry& entry){ return entry.socket = inbound.sender;});
+
+                        if (entry_it == discovered_servers.end()) { // New server discovered
+                            Server_list_entry new_entry = {inbound.sender, \
+                                                        SERVER_UPKEEP_COUNTDOWN, \
+                                                        {{inbound.msg.begin()+2, inbound.msg.begin()+DISCOVER_REPLY_SIZE}}};
+                            discovered_servers.push_back(new_entry);
+                        }
+                        else { // Refresh existing
+                            entry_it->upkeep = SERVER_UPKEEP_COUNTDOWN;
+                        }
                     }
                     break;
                 case ICTRL_SERVER_FORCE_DISCONNECT:
-
+                    // check that connection was severed by same server
+                    if (inbound.sender == *connection) {
+                        connection.reset();
+                    }
                     break;
                 }
             break;
