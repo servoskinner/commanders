@@ -16,7 +16,7 @@ void Client::process_msgs(int limit)
     int msgs_processed = 0;
     while(msgs_processed < limit || limit == -1)
     {
-        Socket_wrapper::Socket_inbound_message inbound = client_socket.receive();
+        Socket_inbound_message inbound = client_socket.receive();
         if (inbound.msg.size() < 2) {
             break;
         }
@@ -33,13 +33,6 @@ void Client::process_msgs(int limit)
                 case ICTRL_UPKEEP:
                     // bounce message back
                     client_socket.send(inbound.sender, inbound.msg);
-                    break;
-                case ICTRL_ACKNOWLEDGE:
-                    if (inbound.msg.size() >= 3 && inbound.msg[3] == ICTRL_CONNECT_REQ) 
-                    {
-                        connection = inbound.sender;
-                        connection_upkeep = CONNECTED_UPKEEP_COUNTDOWN;
-                    }
                     break;
                 case ICTRL_DISCOVER_REPLY:
                     if (inbound.msg.size() >= DISCOVER_REPLY_SIZE) {
@@ -75,7 +68,7 @@ void Client::process_msgs(int limit)
 
 void Client::bcast_discovery_msg(unsigned short server_port)
 {
-    Socket_wrapper::Socket_info broadcast = {server_port, BROADCAST_IP};
+    Socket_info broadcast = {server_port, BROADCAST_IP};
     client_socket.enable_broadcast();
 
     client_socket.destinations.push_back(broadcast);

@@ -3,7 +3,7 @@
 void Server::process_messages()
 {
     // todo add message limit 
-    Socket_wrapper::Socket_inbound_message inbound;
+    Socket_inbound_message inbound;
     while((inbound = serv_socket.receive()).msg.size() > 1) {
 
         std::optional<Client_slot&> sender;
@@ -35,28 +35,6 @@ void Server::process_messages()
                     std::copy(info_packed.begin(), info_packed.end(), std::back_inserter(discover_msg));
                     
                     serv_socket.send(inbound.sender, discover_msg);
-                }
-                break;
-
-                case ICTRL_CONNECT_REQ:
-                {
-                    // check deck legality
-                    //
-                    //
-
-                    if(is_full() || inbound.msg.size() < (32 + 1))
-                    {
-                        std::vector<char> rejection_msg = {MSG_CONTROL, ICTRL_NACKNOWLEDGE, ICTRL_CONNECT_REQ};
-                        serv_socket.send(inbound.sender, rejection_msg);
-                    }
-
-                    Client_slot new_connection;
-
-                    new_connection.sock_info = inbound.sender;
-                    new_connection.
-
-                    std::vector<char> response_msg = {MSG_CONTROL, ICTRL_ACKNOWLEDGE, ICTRL_CONNECT_REQ};
-                    serv_socket.send(inbound.sender, response_msg);
                 }
                 break;
             }
@@ -135,9 +113,9 @@ Server_info Server::get_info()
     return info;
 }
 
-std::vector<Socket_wrapper::Socket_info> Server::get_peers()
+std::vector<Socket_info> Server::get_peers()
 {
-    std::vector<Socket_wrapper::Socket_info> peers = {};
+    std::vector<Socket_info> peers = {};
 
     for(const std::optional<Client_slot>& slot : client_slots)
     {

@@ -4,15 +4,11 @@
 
 int main()
 {
-    u_short user_port, peer_port;
+    u_short server_port;
+    TCP_client socket_self;
 
-    std::cout << "Enter user port: " << std::flush;
-    std::cin >> user_port;
-
-    UDP_wrapper socket_self(user_port);
-
-    std::cout << "Enter peer port: " << std::flush;
-    std::cin >> peer_port;
+    std::cout << "Enter server port: " << std::flush;
+    std::cin >> server_port;
 
     std::string username;
     std::cout << "enter username: " << std::flush;
@@ -20,6 +16,10 @@ int main()
 
     std::string user_input;
     std::string incoming_message;
+
+    std::cout << "Connecting..." << std::endl;
+    while(!socket_self.connect_to({server_port, "127.0.0.1"})) {};
+    std::cout << "Success" << std::endl;
     while(true)
     {
         std::cout << ">" << std::flush;
@@ -33,7 +33,9 @@ int main()
         if(user_input.size() > 0)
         {
             user_input = "<" + username + ">: " + user_input;
-            socket_self.send_to({peer_port, "127.0.0.1"},std::vector<char>(user_input.begin(), user_input.end()));
+            if(socket_self.send_msg(std::vector<char>(user_input.begin(), user_input.end()))) {
+                std::cout << "message sent" << std::endl;
+            }
         }
         // read incoming messages
         while(true)

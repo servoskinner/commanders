@@ -24,7 +24,7 @@ class Client
 
     struct Server_list_entry 
     {
-        Socket_wrapper::Socket_info socket;
+        Socket_info socket;
         int upkeep;
         Server_info info;
 
@@ -36,7 +36,7 @@ class Client
     
     void bcast_discovery_msg(unsigned short server_port = 9898);
     const std::vector<Server_list_entry> get_discovered_connections() { return discovered_servers; }
-    void request_connection(Socket_wrapper::Socket_info server);
+    void request_connection(Socket_info server);
 
     std::vector<Commander::Card_info> get_active_cards();
     std::vector<Commander::Player_info> get_players();
@@ -47,11 +47,11 @@ class Client
     bool events_pop_back();
     
     private:
-    void handle_control_message(Socket_wrapper::Socket_inbound_message msg);
+    void handle_control_message(Socket_inbound_message msg);
     void manage_upkeep();
 
-    Socket_wrapper client_socket;
-    std::optional<Socket_wrapper::Socket_info> connection;
+    UDP_wrapper client_socket;
+    std::optional<Socket_info> connection;
     int connection_upkeep;
     std::vector<Server_list_entry> discovered_servers;
 
