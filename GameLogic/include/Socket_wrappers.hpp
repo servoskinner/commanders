@@ -139,34 +139,96 @@ class TCP_client
 class TCP_server
 {
     public:
-    std::set<in_addr_t> allowed_ips;
+    std::set<in_addr_t> allowed_ips; ///< IP addresses that can connect to the server.
     bool accept_all = false;
+    /** If set to true, accepts all connection requests
+     *  without checking sender IP against allowed_ips.
+     */
 
+    /**
+     *  @brief Constructor of TCP_server.
+     *  @param port port to host the service socket used to request new connections.
+     */
     TCP_server(u_short port);
     ~TCP_server();
 
+    /**
+     *  @brief Run by a separate thread: checks for incoming messages on open sockets and processes them.
+     */
     void poll_events();
-    inline const std::vector<Socket_info> get_peers() { return peer_info;}
-    bool send_to(int id, std::vector<char> message);
-    Socket_inbound_message get_message();
-    bool disconnect(int id);
+
+    /**
+     *  @brief Allows connection requests from clients with given IP address.
+     */
+    void allow_ip(in_addr_t addr);
+
+    /**
+     *  @brief Forbids connection requests from clients with given IP address.
+     */
+    void disallow_ip(in_addr_t addr);
     
+    /**
+     *  @brief Returns a set of IPs that are allowed to connect.
+     */
+    const std::set<in_addr_t> get_allowed_ips() { return allowed_ips;}
+    
+    /**
+     *  @brief Returns port that handles connection requests.
+     */
+    const u_short get_port() { return own_port;}
+    
+    inline const std::vector<Socket_info> get_peers() { return peer_info;}
+
+    /**
+     *  @brief Sends message to peer with given id.
+     *
+     *  @param id id of peer to send the message to.
+     *  @param message byte vector to send.
+     *  @return The message itself as byte vector
+     *  combined with sender's port and IP address. 
+    */
+    bool send_to(int id, std::vector<char> message);
+    
+     /**
+     *  @brief Retrieves a received message from the queue.
+     * 
+     *  @return The message itself as byte vector
+     *  combined with sender's port and IP address. 
+    */
+    Socket_inbound_message get_message();
+
+    /**
+     *  @brief Terminates connection with a peer.
+     * 
+     *  @param id id of peer. Addresses can be accessed using get_peers().
+     *  @return Whether terminating connection was successful.
+    */
+    bool disconnect_peer(int id);
 
     private:
-    u_short own_port;
-    int socket_fdesc;
+    u_short own_port; ///< Port to receive connection requests.
 
-    std::vector<pollfd> polled; // first one is always own socket
-    // pollfd structs must be stored continuously
-    std::vector<Socket_info> peer_info;
-    std::queue<Socket_inbound_message> inbound;
+    std::vector<pollfd> polled; ///< Description of polled sockets, including their descriptors.
+    std::vector<Socket_info> peer_info; ///< Peer IP addresses and ports.
+    std::queue<Socket_inbound_message> inbound; ///< Received messages queued for retrieval.
 
     std::thread receiver_thread;
-    std::atomic<bool> is_running;
-    std::mutex inbound_mutex, peer_list_mutex, socket_mutex;
+    std::atomic<bool> is_running; 
+    /** Determines if server is monitoring its descriptors.
+     * Used to stop the receiver thread when set to false.    
+     */
+    std::mutex inbound_mutex, peer_list_mutex, socket_mutex, allowed_list_mutex;
 
     void handle_request();
+    /**
+     *  @brief Handle new connection request received by service (0th) socket.
+     */
+
     void handle_client(int id);
+    /**
+     *  @brief Receives a message from client socket.
+     *  @param id the client's id.
+    */
 };
 
 

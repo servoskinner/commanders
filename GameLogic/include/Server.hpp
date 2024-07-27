@@ -4,9 +4,8 @@
 #include <utility>
 #include <functional>
 #include <queue>
-#include <ctime>
 
-#include "Socket_wrapper.hpp"
+#include "Socket_wrappers.hpp"
 #include "Game_master.hpp"
 #include "Proxy_commander.hpp"
 #include "Misc_functions.hpp"
@@ -18,7 +17,7 @@
 class Server
 {
     public:
-    Server(unsigned short port = 9898) : serv_socket(port), prev_tick_time(std::clock()) {};
+    Server(unsigned short port = SERVER_PORT) : discovery_socket(port) {};
 
     void process_messages();
     void process_timers();
@@ -30,10 +29,6 @@ class Server
     Server_info get_info();
 
     private:
-
-    int prev_tick_time;
-    int upkeep_broadcast_cooldown;
-
     struct Client_slot
     {
         Socket_info sock_info;
@@ -49,7 +44,7 @@ class Server
     std::vector<std::optional<Client_slot>> client_slots;
     std::vector<Proxy_commander> commanders;
 
-    UDP_wrapper serv_socket;
+    UDP_wrapper discovery_socket;
     std::optional<Game_master> master;
 
     std::vector<char> pack_commander_data(int index);

@@ -4,7 +4,7 @@ void Server::process_messages()
 {
     // todo add message limit 
     Socket_inbound_message inbound;
-    while((inbound = serv_socket.receive()).msg.size() > 1) {
+    while((inbound = discovery_socket.receive()).msg.size() > 1) {
 
         std::optional<Client_slot&> sender;
         auto sender_iter = std::find_if(client_slots.begin(), client_slots.end(), \
@@ -34,7 +34,7 @@ void Server::process_messages()
                     std::vector<char> info_packed = get_info().packed();
                     std::copy(info_packed.begin(), info_packed.end(), std::back_inserter(discover_msg));
                     
-                    serv_socket.send(inbound.sender, discover_msg);
+                    discovery_socket.send_to(inbound.sender, discover_msg);
                 }
                 break;
             }
@@ -61,7 +61,7 @@ void Server::process_messages()
                 if(inbound.msg[1] == -1) { // broadcast
                     for (const std::optional<Client_slot>& slot : client_slots) {
                         if (slot.has_value()) {
-                            serv_socket.send(slot->sock_info, forward_msg);
+                            discovery_socket.send_to(slot->sock_info, forward_msg);
                         }
                     }
                 }

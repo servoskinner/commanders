@@ -1,8 +1,8 @@
 #include "Socket_wrappers.hpp"
 
-TCP_server::TCP_server(u_short port) : own_port(port), socket_fdesc(-1), polled(0) 
+TCP_server::TCP_server(u_short port) : own_port(port), polled(0) 
 {
-    socket_fdesc = socket(AF_INET, SOCK_STREAM, 0);
+    int socket_fdesc = socket(AF_INET, SOCK_STREAM, 0);
     if (socket_fdesc == 0) {
         std::cerr << "Socket failed\n";
         exit(EXIT_FAILURE);
@@ -38,8 +38,17 @@ TCP_server::TCP_server(u_short port) : own_port(port), socket_fdesc(-1), polled(
 
 TCP_server::~TCP_server() 
 {
-    if (socket_fdesc != -1) {
-        close(socket_fdesc);
+        {
+    std::lock_guard<std::mutex> lock_socket(socket_mutex);
+    std::lock_guard<std::mutex> lock_plist(peer_list_mutex);
+
+    for (const pollfd& pd : polled) {
+        close(pd.fd);
+    }
+        }
+    is_running = false;
+    if (receiver_thread.joinable()) {
+        receiver_thread.join();
     }
 }
 
@@ -62,15 +71,17 @@ void TCP_server::poll_events() {
     }
 }
 
-void TCP_server::handle_request() {
+void TCP_server::handle_request() 
+{
     struct sockaddr_in client_addr;
     socklen_t addrlen = sizeof(client_addr);
 
-    int new_socket = accept(socket_fdesc, (struct sockaddr*)&client_addr, &addrlen);
+    int new_socket = accept(polled[0].fd, (struct sockaddr*)&client_addr, &addrlen);
     if (new_socket < 0) {
         throw std::runtime_error("TCP_server: Failed to accept connection");
     }
 
+    std::lock_guard lock_allowed_list(allowed_list_mutex);
     if ((accept_all || allowed_ips.find(client_addr.sin_addr.s_addr) != allowed_ips.end()) && \
         polled.size() < TCP_SERVER_MAX_CLIENTS) 
     {
@@ -83,7 +94,8 @@ void TCP_server::handle_request() {
     }
 }
 
-void TCP_server::handle_client(int id) {
+void TCP_server::handle_client(int id) 
+{ 
     std::lock_guard<std::mutex> lock(socket_mutex);
 
     int client_socket = polled[id+1].fd;
@@ -94,6 +106,18 @@ void TCP_server::handle_client(int id) {
         std::lock_guard lock(inbound_mutex);
         inbound.push({peer_info[id], {buffer, buffer+bytes_read}});
     }
+}
+
+void TCP_server::allow_ip(in_addr_t addr)
+{
+    std::lock_guard lock_allowed_list(allowed_list_mutex);
+    allowed_ips.insert(addr);
+}
+
+void TCP_server::disallow_ip(in_addr_t addr)
+{
+    std::lock_guard lock_allowed_list(allowed_list_mutex);
+    allowed_ips.erase(addr);
 }
 
 Socket_inbound_message TCP_server::get_message()
@@ -109,8 +133,8 @@ Socket_inbound_message TCP_server::get_message()
     }
 }
 
-bool TCP_server::disconnect(int id) 
-{
+bool TCP_server::disconnect_peer(int id) 
+{ 
     std::lock_guard<std::mutex> lock_socket(socket_mutex);
     std::lock_guard<std::mutex> lock_plist(peer_list_mutex);
 

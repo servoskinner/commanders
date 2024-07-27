@@ -33,7 +33,7 @@ int main()
         if(user_input.size() > 0)
         {
             user_input = "<" + username + ">: " + user_input;
-            socket_self.send_to({peer_port, "127.0.0.1"},std::vector<char>(user_input.begin(), user_input.end()));
+            socket_self.send_to({peer_port, BROADCAST_IP},std::vector<char>(user_input.begin(), user_input.end()));
         }
         // read incoming messages
         while(true)

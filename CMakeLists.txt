@@ -26,9 +26,12 @@ add_executable(src ${SOURCES})
 add_executable(cli_test ${SOURCES} GameLogic/Test_main.cpp)
 add_executable(ncurses_test GameLogic/source/NCurses_commander.cpp GameLogic/source/Misc_functions.cpp 
                GameLogic/source/Description_generator.cpp GameLogic/Ncurses_test.cpp)
+
 add_executable(socket_test_p2p GameLogic/Socket_test_p2p.cpp GameLogic/source/UDP_wrapper.cpp)
 add_executable(tcp_client GameLogic/source/TCP_client.cpp GameLogic/TCP_test_client.cpp)
 add_executable(tcp_server GameLogic/source/TCP_server.cpp GameLogic/TCP_test_server.cpp)
+
+add_executable(timer_test GameLogic/Timer_test.cpp GameLogic/source/Event_timer.cpp)
 
 # Links the "corporatewars" executable target with the SFML libraries.
 target_link_libraries(src sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
