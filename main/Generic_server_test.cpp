@@ -15,25 +15,37 @@ int main()
     UDP_wrapper discovery_socket(server_port);
     TCP_server service_socket(server_port+1);
 
+    std::cout << service_socket.get_port() << std::endl;
+
     std::string incoming_message;
 
     while(true)
     {
-        Socket_inbound_message discovery_req = discovery_socket.receive();
+        // Process queues in parallel
+        Socket_inbound_message discovery_req = discovery_socket.get_message();
+        if (discovery_req.msg.size() != 0) {
+            std::cout << "got discovery message" << std::endl;
+        }
         if (discovery_req.msg.size() >= 1 && discovery_req.msg[0] == ICTRL_DISCOVER) {
-            discovery_socket.send_to(discovery_req.sender, {ICTRL_DISCOVER_REPLY, 'f', 'r', 'o', 'g', '\0'});
+            if (discovery_socket.send_to(discovery_req.sender, {ICTRL_DISCOVER_REPLY, 'f', 'r', 'o', 'g', '\0'})) {
+                std::cout << discovery_req.sender.port << std::endl;
+            }
         }
         if (discovery_req.msg.size() >= 5 && discovery_req.msg[0] == ICTRL_CONNECTION_REQUEST) {
             if(*(int*)(discovery_req.msg.data()+1) == magic_number) {
-                service_socket.allow_ip(discovery_req.sender.address);
+                service_socket.allow_ip(discovery_req.sender.address); // Whitelist new ip
                 discovery_socket.send_to(discovery_req.sender, {ICTRL_ACK, ICTRL_CONNECTION_REQUEST});
+                std::cout << "allowed ip " << discovery_req.sender.addrstr() << std::endl;
             }
-            else {
+            else { // Deny request
                 discovery_socket.send_to(discovery_req.sender, {ICTRL_NACK, ICTRL_CONNECTION_REQUEST});
             }
         }
 
-        
+        Socket_info new_connection = service_socket.get_connection_event();
+        if (new_connection.address != 0) {
+            service_socket.disallow_ip(new_connection.address); // Require to request connection again
+        }
 
         std::vector<char> msg = service_socket.get_message().msg;
         if (msg.size() == 0) {

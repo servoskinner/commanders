@@ -38,13 +38,13 @@ int main()
         // read incoming messages
         while(true)
         {
-            std::vector<char> msg = socket_self.receive().msg;
-            if (msg.size() == 0)
+            Socket_inbound_message inbound = socket_self.get_message();
+            if (inbound.msg.size() == 0)
             {
                 break;
             }
-            incoming_message = std::string(msg.begin(), msg.end());
-            std::cout << incoming_message << std::endl;
+            incoming_message = std::string(inbound.msg.begin(), inbound.msg.end());
+            std::cout << "[" << inbound.sender.port << "]" << incoming_message << std::endl;
         }
     }
     return 0;

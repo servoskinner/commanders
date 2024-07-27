@@ -54,7 +54,7 @@ bool TCP_client::disconnect()
     return true;
 }
 
-const bool TCP_client::send_msg(const std::vector<char>& msg) {
+bool TCP_client::send_msg(const std::vector<char>& msg) {
     std::lock_guard<std::mutex> lock(mutex);
     if (connected) {
         return send(socket_fdesc, msg.data(), msg.size(), 0) == msg.size();
@@ -64,7 +64,7 @@ const bool TCP_client::send_msg(const std::vector<char>& msg) {
     }
 }
 
-Socket_inbound_message TCP_client::receive() {
+Socket_inbound_message TCP_client::get_message() {
     std::lock_guard<std::mutex> lock(mutex);
     if (message_queue.empty()) {
         return {};
@@ -91,7 +91,7 @@ void TCP_client::receive_messages() {
                                   0, (sockaddr*)&inbound_addr, &inbound_addr_len);
             if (bytes_received > 0) {
                 std::vector<char> msg = std::vector<char>(buffer, buffer + bytes_received);
-                message_queue.push({{inbound_addr.sin_port, inbound_addr.sin_addr.s_addr}, msg});
+                message_queue.push({{ntohs(inbound_addr.sin_port), inbound_addr.sin_addr.s_addr}, msg});
             }
         }
         }

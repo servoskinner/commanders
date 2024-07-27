@@ -50,7 +50,7 @@ const bool UDP_wrapper::send_to(const Socket_info& dest, const std::vector<char>
     return bytes_sent == msg.size();
 }
 
-const Socket_inbound_message UDP_wrapper::receive()
+const Socket_inbound_message UDP_wrapper::get_message()
 {
     sockaddr_in inbound_addr;
     socklen_t inbound_addr_len = sizeof(inbound_addr);
@@ -69,6 +69,6 @@ const Socket_inbound_message UDP_wrapper::receive()
         std::clog << "WARNING: Socket_wrapper (port " << own_port << ") failed to receive message: errno #" << errno << std::endl;
     }
     
-    Socket_inbound_message inbound_message = {{inbound_addr.sin_port, inbound_addr.sin_addr.s_addr}, msg};
+    Socket_inbound_message inbound_message = {{ntohs(inbound_addr.sin_port), inbound_addr.sin_addr.s_addr}, msg};
     return inbound_message;
 }

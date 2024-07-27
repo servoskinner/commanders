@@ -4,7 +4,7 @@ void Server::process_messages()
 {
     // todo add message limit 
     Socket_inbound_message inbound;
-    while((inbound = discovery_socket.receive()).msg.size() > 1) {
+    while((inbound = discovery_socket.get_message()).msg.size() > 1) {
 
         std::optional<Client_slot&> sender;
         auto sender_iter = std::find_if(client_slots.begin(), client_slots.end(), \

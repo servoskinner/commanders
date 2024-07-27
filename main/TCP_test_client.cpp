@@ -40,7 +40,7 @@ int main()
         // read incoming messages
         while(true)
         {
-            std::vector<char> msg = socket_self.receive().msg;
+            std::vector<char> msg = socket_self.get_message().msg;
             if (msg.size() == 0)
             {
                 break;

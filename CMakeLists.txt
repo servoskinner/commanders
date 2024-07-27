@@ -30,6 +30,11 @@ add_executable(tcp_server logic/source/network/TCP_server.cpp main/TCP_test_serv
 
 add_executable(timer_test logic/source/utility/Event_timer.cpp main/Timer_test.cpp)
 
+add_executable(generic_client_test logic/source/network/TCP_client.cpp logic/source/network/UDP_wrapper.cpp 
+               logic/source/network/Socket_wrappers.cpp main/Generic_client_test.cpp)
+add_executable(generic_server_test logic/source/network/TCP_server.cpp logic/source/network/UDP_wrapper.cpp 
+               logic/source/network/Socket_wrappers.cpp main/Generic_server_test.cpp)
+
 # Links the "corporatewars" executable target with the SFML libraries.
 # target_link_libraries(game sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 target_link_libraries(ncurses_test PRIVATE ncurses)

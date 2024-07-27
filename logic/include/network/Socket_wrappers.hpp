@@ -121,7 +121,7 @@ class UDP_wrapper
     UDP_wrapper(u_short port);
     ~UDP_wrapper() { close(socket_fdesc);}
 
-    const Socket_inbound_message receive();
+    const Socket_inbound_message get_message();
     const bool send_to(const Socket_info& dest, const std::vector<char>& msg);
 
     const inline u_short get_port() { return own_port;};
@@ -137,10 +137,12 @@ class TCP_client
     TCP_client();
     ~TCP_client();
 
-    Socket_inbound_message receive();
-    const bool send_msg(const std::vector<char>& msg);
+    Socket_inbound_message get_message();
+    bool send_msg(const std::vector<char>& msg);
     bool connect_to(const Socket_info& destination);
     bool disconnect();
+    const bool is_connected() { return connected_to.has_value();}
+    const Socket_info get_connection() { return connected_to.value();}
 
     private:
     void receive_messages();
@@ -209,10 +211,17 @@ class TCP_server
      *
      *  @param id id of peer to send the message to.
      *  @param message byte vector to send.
-     *  @return The message itself as byte vector
-     *  combined with sender's port and IP address. 
+     *  @return Whether all bytes were delivered successfully.
     */
     bool send_to(int id, std::vector<char> message);
+
+    /**
+     *  @brief Sends message to all connected peers.
+     *
+     *  @param message byte vector to send.
+     *  @return Whether all send operations were successful.
+    */
+    bool send_all(std::vector<char> message);
     
      /**
      *  @brief Retrieves a received message from the queue.
@@ -259,7 +268,7 @@ class TCP_server
     void handle_request();
 
     /**
-     *  @brief Receives a message from client socket.
+     *  @brief Receives a message from client socket and tries to queue it in inbox.
      *  @param id the client's id.
     */
     void handle_client(int id);

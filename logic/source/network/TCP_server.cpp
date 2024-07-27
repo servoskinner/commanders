@@ -88,7 +88,7 @@ void TCP_server::handle_request()
         std::lock_guard lock(peer_list_mutex);
         polled.push_back({new_socket, POLLIN, 0});
 
-        Socket_info new_info = {client_addr.sin_port, client_addr.sin_addr.s_addr};
+        Socket_info new_info = {ntohs(client_addr.sin_port), client_addr.sin_addr.s_addr};
         peer_info.push_back(new_info);
         if (connection_log.size() < TCP_SERVER_MAX_LOG_QUEUE)
         connection_log.push(new_info);
@@ -100,13 +100,13 @@ void TCP_server::handle_request()
 
 void TCP_server::handle_client(int id) 
 { 
-    std::lock_guard<std::mutex> lock(socket_mutex);
+    std::lock_guard<std::mutex> lock_socket(socket_mutex);
 
     int client_socket = polled[id+1].fd;
     char buffer[SOCKET_BUFFER_SIZE] = {};
     int bytes_read = read(client_socket, buffer, sizeof(buffer));
 
-    std::lock_guard lock(inbox_mutex);
+    std::lock_guard lock_inbox(inbox_mutex);
     if (bytes_read > 0 && inbox.size() < TCP_SERVER_MAX_INBOX) {
         inbox.push({peer_info[id], {buffer, buffer+bytes_read}});
     }
@@ -197,4 +197,14 @@ bool TCP_server::send_to(int id, std::vector<char> msg)
         throw std::out_of_range("TCP_server::send_to(): id out of range");
     }
     return send(polled[id+1].fd, msg.data(), msg.size(), 0) == msg.size();
+}
+
+bool TCP_server::send_all(std::vector<char> message)
+{
+    bool success = true;
+    std::lock_guard<std::mutex> socket_lock(socket_mutex), polled_lock(peer_list_mutex);
+    for (int i = 1; i < polled.size(); i++) {
+        success &= send(polled[i].fd, message.data(), message.size(), 0) == message.size();
+    }
+    return success;
 }
