@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Misc_functions.hpp"
+
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -20,15 +22,15 @@
 #include <optional>
 #include <set>
 
-#define SOCKET_BUFFER_SIZE 1024
-#define BROADCAST_IP "255.255.255.255"
-#define DISCOVER_REPLY_SIZE (2+64+1+8)
+#define SOCKET_BUFFER_SIZE           1024
+#define BROADCAST_IP                 "255.255.255.255"
+#define DISCOVER_REPLY_SIZE          sizeof(Server_info)+1
 
-#define TCP_RECEIVER_THREAD_DELAY_MS 10
-#define TCP_CLIENT_MAX_QUEUE 256
-#define TCP_SERVER_MAX_QUEUE  256
-#define TCP_SERVER_MAX_REQ 64
-#define TCP_SERVER_MAX_CLIENTS 1023
+#define TCP_CLIENT_MAX_INBOX         1024
+#define TCP_SERVER_MAX_LOG_QUEUE     256
+#define TCP_SERVER_MAX_INBOX         1024
+#define TCP_SERVER_MAX_REQ           64
+#define TCP_SERVER_MAX_CLIENTS       1023
 
 enum inet_message_tags
 {
@@ -38,25 +40,28 @@ enum inet_message_tags
 }; 
 enum inet_control_tags
 {
-    ICTRL_NACKNOWLEDGE,
-    ICTRL_ACKNOWLEDGE,  // code of prev op
+    ICTRL_ACK,
+    ICTRL_NACK,
     ICTRL_UPKEEP,
     ICTRL_DISCOVER,
     ICTRL_DISCOVER_REPLY,
+    ICTRL_CONNECTION_REQUEST,
     ICTRL_SERVER_FORCE_DISCONNECT
 };
 
+/**
+ * @struct Information offered by server when discovered.
+ */
 struct Server_info
 {
-    std::string description;
+    char description[128];
     char connected_players;
     char flags[8];
-
-    Server_info(std::vector<char> packed);
-    Server_info() = default;
-    std::vector<char> packed();
 };
 
+/**
+ * @brief Packs a fixed-size structure into a byte vector to be sent as a message.
+ */
 template <typename Type>
 std::vector<char> pack_struct(const Type& object)
 {
@@ -66,6 +71,9 @@ std::vector<char> pack_struct(const Type& object)
     return std::vector<char>((char*)packed, (char*)packed+sizeof(Type));
 }
 
+/**
+ * @brief Creates a fixed-size structure out of a byte vector received over network.
+ */
 template <typename Type>
 Type unpack_struct(std::vector<char> packed)
 {
@@ -77,6 +85,10 @@ Type unpack_struct(std::vector<char> packed)
     std::memcpy(&new_obj, packed.data(), sizeof(Type));
     return new_obj;
 }
+
+/**
+ * @struct Combination of a socket's port and IP address.
+ */
 struct Socket_info
 {
     u_short port = 0;
@@ -90,12 +102,19 @@ struct Socket_info
     const bool operator==(const Socket_info& other) {return port == other.port && address == other.address; }
     const std::string addrstr();
 };
+
+/**
+ * @struct Message in form of byte vector and its sender.
+ */
 struct Socket_inbound_message
 {
     Socket_info sender = {};
     std::vector<char> msg = {};
 };
 
+/**
+ * @class Entity used to send and receive byte arrays over network using UDP
+ */
 class UDP_wrapper
 {
     public:
@@ -107,7 +126,7 @@ class UDP_wrapper
 
     const inline u_short get_port() { return own_port;};
 
-    private:
+    protected:
     u_short own_port = -1;
     int socket_fdesc = -1;
 };
@@ -140,10 +159,11 @@ class TCP_server
 {
     public:
     std::set<in_addr_t> allowed_ips; ///< IP addresses that can connect to the server.
-    bool accept_all = false;
+
     /** If set to true, accepts all connection requests
      *  without checking sender IP against allowed_ips.
      */
+    bool accept_all = false;
 
     /**
      *  @brief Constructor of TCP_server.
@@ -176,6 +196,11 @@ class TCP_server
      *  @brief Returns port that handles connection requests.
      */
     const u_short get_port() { return own_port;}
+
+    /**
+     *  @brief Pops first value from queue that holds Socket_infos of recently connected peers.
+     */
+    const Socket_info get_connection_event();
     
     inline const std::vector<Socket_info> get_peers() { return peer_info;}
 
@@ -204,31 +229,40 @@ class TCP_server
      *  @return Whether terminating connection was successful.
     */
     bool disconnect_peer(int id);
+    /**
+     *  @brief Terminates connection with a peer with matching IP address and port.
+     * 
+     *  @param addr Address and port of peer. Addresses can be accessed using get_peers().
+     *  @return Whether terminating connection was successful.
+    */
+    bool disconnect_peer_addr(Socket_info peer_info);
 
-    private:
+    protected:
     u_short own_port; ///< Port to receive connection requests.
 
     std::vector<pollfd> polled; ///< Description of polled sockets, including their descriptors.
     std::vector<Socket_info> peer_info; ///< Peer IP addresses and ports.
-    std::queue<Socket_inbound_message> inbound; ///< Received messages queued for retrieval.
+    std::queue<Socket_inbound_message> inbox; ///< Received messages queued for retrieval
+    std::queue<Socket_info> connection_log; ///< Sockets that have been connected
 
     std::thread receiver_thread;
-    std::atomic<bool> is_running; 
+
     /** Determines if server is monitoring its descriptors.
      * Used to stop the receiver thread when set to false.    
      */
-    std::mutex inbound_mutex, peer_list_mutex, socket_mutex, allowed_list_mutex;
+    std::atomic<bool> is_running; 
+    std::mutex inbox_mutex, peer_list_mutex, socket_mutex, allowed_list_mutex, connection_log_mutex;
 
-    void handle_request();
     /**
      *  @brief Handle new connection request received by service (0th) socket.
      */
+    void handle_request();
 
-    void handle_client(int id);
     /**
      *  @brief Receives a message from client socket.
      *  @param id the client's id.
     */
+    void handle_client(int id);
 };
 
 

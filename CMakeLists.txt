@@ -6,44 +6,36 @@ project(corporatewars)
 
 # Sets the C++ standard to C++11 for the project.
 set(CMAKE_CXX_STANDARD 17)
-# Ensures that the C++ standard is strictly adhered to and is a requirement.
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-# Adds the debug flag "-g" to the C++ compiler fl2ags.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 # Adds the specified directory to the list of paths in which the compiler should search for include files.
-include_directories(GameLogic/include)
+file (GLOB INCLUDE "logic/include/*")
+include_directories(${INCLUDE})
 
 # Gathers a list of source files matching the specified glob pattern and assigns it to the variable SOURCES.
-file(GLOB SOURCES "GameLogic/source/*.cpp")
+file(GLOB SOURCES "logic/source/*/*.cpp")
 
 # Looks for and configures the SFML package, requiring at least version 2.5 and the specified components (system, window, graphics, network, audio).
 find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 
 # Creates executables based on the source files listed in the SOURCES variable.
-add_executable(src ${SOURCES})
+add_executable(game_test ${SOURCES} main/Gameplay_test.cpp)
+add_executable(ncurses_test logic/source/interface/NCurses_commander.cpp logic/source/utility/Misc_functions.cpp 
+               logic/source/interface/Description_generator.cpp main/Ncurses_test.cpp)
 
-add_executable(cli_test ${SOURCES} GameLogic/Test_main.cpp)
-add_executable(ncurses_test GameLogic/source/NCurses_commander.cpp GameLogic/source/Misc_functions.cpp 
-               GameLogic/source/Description_generator.cpp GameLogic/Ncurses_test.cpp)
+add_executable(socket_test_p2p logic/source/network/UDP_wrapper.cpp main/Socket_test_p2p.cpp )
+add_executable(tcp_client logic/source/network/TCP_client.cpp main/TCP_test_client.cpp)
+add_executable(tcp_server logic/source/network/TCP_server.cpp main/TCP_test_server.cpp)
 
-add_executable(socket_test_p2p GameLogic/Socket_test_p2p.cpp GameLogic/source/UDP_wrapper.cpp)
-add_executable(tcp_client GameLogic/source/TCP_client.cpp GameLogic/TCP_test_client.cpp)
-add_executable(tcp_server GameLogic/source/TCP_server.cpp GameLogic/TCP_test_server.cpp)
-
-add_executable(timer_test GameLogic/Timer_test.cpp GameLogic/source/Event_timer.cpp)
+add_executable(timer_test logic/source/utility/Event_timer.cpp main/Timer_test.cpp)
 
 # Links the "corporatewars" executable target with the SFML libraries.
-target_link_libraries(src sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
+# target_link_libraries(game sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 target_link_libraries(ncurses_test PRIVATE ncurses)
 
-# Sets properties for the "test" target, specifically setting the output name of the executable to "test".
-set_target_properties(cli_test PROPERTIES OUTPUT_NAME "test")
-set_target_properties(socket_test_p2p PROPERTIES OUTPUT_NAME "socket_test_p2p")
-set_target_properties(ncurses_test PROPERTIES OUTPUT_NAME "ncurses_test")
-
 # Adds a preprocessor definition called TESTING for the "test" target, which is only visible when compiling this target.
-target_compile_definitions(cli_test PRIVATE TESTING)
+target_compile_definitions(game_test PRIVATE TESTING)
 target_compile_definitions(socket_test_p2p PRIVATE TESTING)
 target_compile_definitions(ncurses_test PRIVATE TESTING)
 

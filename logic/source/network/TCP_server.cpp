@@ -87,7 +87,11 @@ void TCP_server::handle_request()
     {
         std::lock_guard lock(peer_list_mutex);
         polled.push_back({new_socket, POLLIN, 0});
-        peer_info.push_back({client_addr.sin_port, client_addr.sin_addr.s_addr});
+
+        Socket_info new_info = {client_addr.sin_port, client_addr.sin_addr.s_addr};
+        peer_info.push_back(new_info);
+        if (connection_log.size() < TCP_SERVER_MAX_LOG_QUEUE)
+        connection_log.push(new_info);
     } 
     else {
         close(new_socket); // Reject connection
@@ -102,9 +106,9 @@ void TCP_server::handle_client(int id)
     char buffer[SOCKET_BUFFER_SIZE] = {};
     int bytes_read = read(client_socket, buffer, sizeof(buffer));
 
-    if (bytes_read > 0) {
-        std::lock_guard lock(inbound_mutex);
-        inbound.push({peer_info[id], {buffer, buffer+bytes_read}});
+    std::lock_guard lock(inbox_mutex);
+    if (bytes_read > 0 && inbox.size() < TCP_SERVER_MAX_INBOX) {
+        inbox.push({peer_info[id], {buffer, buffer+bytes_read}});
     }
 }
 
@@ -122,14 +126,27 @@ void TCP_server::disallow_ip(in_addr_t addr)
 
 Socket_inbound_message TCP_server::get_message()
 {
-    std::lock_guard<std::mutex> lock(inbound_mutex);
-    if(inbound.empty()) {
+    std::lock_guard<std::mutex> lock(inbox_mutex);
+    if(inbox.empty()) {
         return {};
     }
     else {
-        Socket_inbound_message msg = inbound.front();
-        inbound.pop();
+        Socket_inbound_message msg = inbox.front();
+        inbox.pop();
         return msg;
+    }
+}
+
+const Socket_info TCP_server::get_connection_event()
+{
+    std::lock_guard<std::mutex> lock(connection_log_mutex);
+    if (connection_log.empty()) {
+        return {};
+    }
+    else {
+        Socket_info info = connection_log.front();
+        connection_log.pop();
+        return info;
     }
 }
 
@@ -151,6 +168,26 @@ bool TCP_server::disconnect_peer(int id)
         peer_info.erase(peer_info.begin() + 1 + id);
         return true;
     }
+}
+
+bool TCP_server::disconnect_peer_addr(Socket_info addr) 
+{ 
+    std::lock_guard<std::mutex> lock_socket(socket_mutex);
+    std::lock_guard<std::mutex> lock_plist(peer_list_mutex);
+
+    int index = find_index(peer_info, addr);
+
+    if (index == -1) {
+        return false;
+    }
+
+    if (close(polled[index+1].fd) < 0) {
+        return false;
+    }
+
+    polled.erase(polled.begin()+index+1);
+    peer_info.erase(peer_info.begin()+index);
+    return true;
 }
 
 bool TCP_server::send_to(int id, std::vector<char> msg)

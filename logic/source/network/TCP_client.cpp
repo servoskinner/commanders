@@ -86,7 +86,7 @@ void TCP_client::receive_messages() {
         poll(&poll_req, 1, -1);
         {
         std::lock_guard<std::mutex> lock(mutex);
-        if (message_queue.size() < TCP_CLIENT_MAX_QUEUE) {
+        if (message_queue.size() < TCP_CLIENT_MAX_INBOX) {
             int bytes_received = recvfrom(socket_fdesc, buffer, sizeof(buffer), \
                                   0, (sockaddr*)&inbound_addr, &inbound_addr_len);
             if (bytes_received > 0) {

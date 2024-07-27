@@ -31,7 +31,7 @@ void Server::process_messages()
                 case ICTRL_DISCOVER:
                 {
                     std::vector<char> discover_msg = {MSG_CONTROL, ICTRL_DISCOVER};
-                    std::vector<char> info_packed = get_info().packed();
+                    std::vector<char> info_packed = pack_struct(get_info());
                     std::copy(info_packed.begin(), info_packed.end(), std::back_inserter(discover_msg));
                     
                     discovery_socket.send_to(inbound.sender, discover_msg);
@@ -77,17 +77,6 @@ void Server::process_messages()
 
 void Server::process_timers()
 {
-    int cur_time = std::clock();
-    int delta_time = cur_time - prev_tick_time;
-    prev_tick_time = cur_time;
-
-    if (upkeep_broadcast_cooldown <= delta_time * 1000 / CLOCKS_PER_SEC) {
-        upkeep_broadcast_cooldown = CLIENT_UPKEEP_DELAY_MS;
-        manage_upkeep();
-    }
-    else {
-        upkeep_broadcast_cooldown -= delta_time; 
-    }
 }
 
 void Server::manage_upkeep()
@@ -109,7 +98,12 @@ Server_info Server::get_info()
 {
     Server_info info;
     info.connected_players = client_slots.size();
-    info.description = description;
+    if (description.size() <= 128) {
+        std::copy(description.begin(), description.end(), info.description);
+    }
+    else {
+        std::copy(description.begin(), description.begin()+128, info.description);
+    }
     return info;
 }
 
