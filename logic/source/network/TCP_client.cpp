@@ -1,6 +1,6 @@
 #include "Socket_wrappers.hpp"
 
-TCP_client::TCP_client() : connected(false) 
+TCP_client::TCP_client() : is_polling(false), connected(false)
 {
     // Start the receive thread
     socket_fdesc = socket(AF_INET, SOCK_STREAM, 0);
@@ -35,7 +35,7 @@ bool TCP_client::connect_to(const Socket_info& destination) {
     if (connect(socket_fdesc, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         return false;
     }
-    connected_to = destination;
+    server = destination;
     connected = true;
     receiver_thread = std::thread(&TCP_client::receive_messages, this);
     return true;
@@ -43,19 +43,32 @@ bool TCP_client::connect_to(const Socket_info& destination) {
 
 bool TCP_client::disconnect()
 {
-    if (!connected) {
+    std::lock_guard<std::mutex> lock_conf(confirmation_mutex);
+    if (!is_polling) {
         return false;
     }
+
+    is_polling = false;
     connected = false;
-    connected_to = {};
+    server = {};
+
     if (receiver_thread.joinable()) {
         receiver_thread.join();
     }
     return true;
 }
 
+const std::optional<Socket_info> TCP_client::get_connection()
+{
+    std::lock_guard<std::mutex> conf_lock(confirmation_mutex);
+    if (!connected) {
+        return {};
+    }
+    return server;
+}
+
 bool TCP_client::send_msg(const std::vector<char>& msg) {
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::mutex> lock(receiver_mutex);
     if (connected) {
         return send(socket_fdesc, msg.data(), msg.size(), 0) == msg.size();
     }
@@ -65,7 +78,7 @@ bool TCP_client::send_msg(const std::vector<char>& msg) {
 }
 
 Socket_inbound_message TCP_client::get_message() {
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::mutex> lock(receiver_mutex);
     if (message_queue.empty()) {
         return {};
     }
@@ -85,7 +98,7 @@ void TCP_client::receive_messages() {
     while (connected) {
         poll(&poll_req, 1, -1);
         {
-        std::lock_guard<std::mutex> lock(mutex);
+        std::lock_guard<std::mutex> lock(receiver_mutex);
         if (message_queue.size() < TCP_CLIENT_MAX_INBOX) {
             int bytes_received = recvfrom(socket_fdesc, buffer, sizeof(buffer), \
                                   0, (sockaddr*)&inbound_addr, &inbound_addr_len);

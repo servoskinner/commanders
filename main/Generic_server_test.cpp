@@ -1,6 +1,7 @@
 #include "Socket_wrappers.hpp"
 #include <iostream>
 #include <string>
+#include <thread>
 
 int main()
 {
@@ -60,6 +61,7 @@ int main()
                 std::cout << "forwarded successfully to" << i << std::endl;
             }
         }
+        std::this_thread::sleep_for(10);
     }
     return 0;
 }

@@ -141,8 +141,7 @@ class TCP_client
     bool send_msg(const std::vector<char>& msg);
     bool connect_to(const Socket_info& destination);
     bool disconnect();
-    const bool is_connected() { return connected_to.has_value();}
-    const Socket_info get_connection() { return connected_to.value();}
+    const std::optional<Socket_info> get_connection();
 
     private:
     void receive_messages();
@@ -151,10 +150,11 @@ class TCP_client
     int socket_fdesc = -1;
 
     std::thread receiver_thread;
+    std::atomic<bool> is_polling;
     std::atomic<bool> connected;
     std::queue<Socket_inbound_message> message_queue;
-    std::optional<Socket_info> connected_to = {};
-    std::mutex mutex;
+    std::optional<Socket_info> server = {};
+    std::mutex receiver_mutex, confirmation_mutex;
 };
 
 class TCP_server

@@ -86,12 +86,21 @@ void TCP_server::handle_request()
         polled.size() < TCP_SERVER_MAX_CLIENTS) 
     {
         std::lock_guard lock(peer_list_mutex);
+        // send confirmation message
+        std::vector<char> confirmation_message = {0};
+        if (send(new_socket, confirmation_message.data(), confirmation_message.size(), 0) != confirmation_message.size()) {
+            close(new_socket);
+            return;
+        }
+
         polled.push_back({new_socket, POLLIN, 0});
 
         Socket_info new_info = {ntohs(client_addr.sin_port), client_addr.sin_addr.s_addr};
         peer_info.push_back(new_info);
-        if (connection_log.size() < TCP_SERVER_MAX_LOG_QUEUE)
-        connection_log.push(new_info);
+
+        if (connection_log.size() < TCP_SERVER_MAX_LOG_QUEUE) {
+            connection_log.push(new_info);
+        }  
     } 
     else {
         close(new_socket); // Reject connection

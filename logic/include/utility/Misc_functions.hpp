@@ -26,7 +26,7 @@ bool pop_element(std::vector<Type>& vec, Key_type& key, \
 }
 
 template <typename Type, typename Key_type>
-int find_index(std::vector<Type>& vec, Key_type& key, \
+int find_index(std::vector<Type> vec, Key_type& key, \
                const std::function<bool(Type&, Key_type&)> compare = \
                [](Type& left, Key_type& right){ return left == right; }) 
                // Remove element that matches comparison criterion from a vector (== by default).
