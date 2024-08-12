@@ -3,7 +3,7 @@
 Description_generator::Description_generator() // instantiate all cards in game 
 {
     for(int i = 0; i < TOTAL_CARDS_IN_GAME; i++)
-        cards[i].global_id = i;
+        cards[i].entity_id = i;
     //______________________________
     cards[BOUNTYHUNTER].name = "Small-Time Merc";
     cards[BOUNTYHUNTER].type = CTYPE_UNIT;

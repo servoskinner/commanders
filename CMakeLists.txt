@@ -20,7 +20,10 @@ file(GLOB SOURCES "logic/source/*/*.cpp")
 find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 
 # Creates executables based on the source files listed in the SOURCES variable.
-add_executable(game_test ${SOURCES} main/Gameplay_test.cpp)
+add_executable(game_test main/Gameplay_test.cpp logic/source/gameplay/Ability.cpp logic/source/gameplay/Ability.cpp
+               logic/source/gameplay/Card.cpp logic/source/gameplay/Deck.cpp logic/source/gameplay/Effects.cpp logic/source/gameplay/Game_master.cpp
+               logic/source/gameplay/Player.cpp logic/source/gameplay/Tile.cpp logic/source/interface/CLI_commander.cpp 
+               logic/source/interface/Description_generator.cpp logic/source/utility/Unique.cpp logic/source/utility/Misc_functions.cpp)
 add_executable(ncurses_test logic/source/interface/NCurses_commander.cpp logic/source/utility/Misc_functions.cpp 
                logic/source/interface/Description_generator.cpp main/Ncurses_test.cpp)
 

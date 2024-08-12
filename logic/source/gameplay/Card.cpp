@@ -4,25 +4,95 @@
 #include <iostream>
 
 #include "Misc_functions.hpp"
-class GameMaster;
+class Game_master;
 
-Game_master::Card::Card(int gid, int mid)
+Game_master::Card::Card(int id, int oid) : entity_id(), card_id(id), owner_id(oid)
 {
-    match_id = mid;
-    global_id = gid;
-    owner_id = -1;
+    // Initialize abilities
+    switch (card_id)
+    {
+        case BOUNTYHUNTER:
+        case HENCHMAN:
+        case COMMANDO:
+        case OPPRESSOR:
+        case MAIMBOT:
+        case ARCHON:
+        case GUNKFOOD:
+        case MACHINEPARTS:
+        case FISSION:
+        break;
+    }
 
-    value = 0;
-    advantage = 0;
-    cost = 0;
+    reset();
+}
 
-    type = CTYPE_UNIT;
-    status = Card::CSTATUS_UNDEFINED; 
-    x = -1, y = -1;
-
+void Game_master::Card::reset() 
+{
     can_attack = false;
     can_move = false;
     is_overwhelmed = false;
+    x = -1, y = -1;
+
+    status = CSTATUS_UNDEFINED;
+
+    switch (card_id)
+    {
+    case BOUNTYHUNTER:
+        type = CTYPE_UNIT;
+
+        cost = 1;
+        value = 2;
+        break;
+    case HENCHMAN:
+        type = CTYPE_UNIT;
+
+        cost = 2;
+        value = 3;
+        break;
+    case COMMANDO:
+        type = CTYPE_UNIT;
+
+        cost = 3;
+        value = 4;
+        break;
+    case OPPRESSOR:
+        type = CTYPE_UNIT;
+
+        cost = 4;
+        value = 5;
+        break;
+    case MAIMBOT:
+        type = CTYPE_UNIT;
+
+        cost = 4;
+        value = 3;
+        advantage = 1;
+        break;
+    case ARCHON:
+        type = CTYPE_UNIT;
+
+        cost = 7;
+        value = 5;
+        advantage = 1;
+        break;
+    case GUNKFOOD:
+        type = CTYPE_CONTRACT;
+
+        cost = 1;
+        value = 4; 
+    case MACHINEPARTS:
+        type = CTYPE_CONTRACT;
+
+        cost = 3;
+        value = 7;
+        break;
+    case FISSION:
+        type = CTYPE_CONTRACT;
+
+        cost = 5;
+        value = 10;
+        break;
+    }
 }
 
 Commander::Card_info Game_master::Card::get_info()
@@ -30,8 +100,8 @@ Commander::Card_info Game_master::Card::get_info()
     Commander::Card_info info;
 
     info.owner_id = owner_id;
-    info.global_id = global_id;
-    info.match_id = match_id;
+    info.card_id = card_id;
+    info.entity_id = entity_id.get_id();
 
     info.x = x, info.y = y;
 
@@ -45,20 +115,4 @@ Commander::Card_info Game_master::Card::get_info()
     info.is_overwhelmed = is_overwhelmed;
 
     return info;
-}
-
-Game_master::Card& Game_master::Card::operator=(const Game_master::Card& other)
-{
-    // keep match_id and abilities
-    global_id = other.global_id;
-    
-    cost = other.cost;
-    value = other.value;
-    advantage = other.advantage;
-
-    trig_ability = other.trig_ability;
-    trig_played = other.trig_played;
-    trig_destroyed = other.trig_destroyed;
-    
-    return *this;
 }

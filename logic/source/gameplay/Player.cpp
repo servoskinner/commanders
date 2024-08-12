@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 
-Game_master::Player::Player(int playerid) : id(playerid)
+Game_master::Player::Player(int playerid, Deck& deck) : id(playerid), deck(deck)
 {
     std::cout << "created player with ID " << id << " at " << this <<  std::endl;
 
@@ -13,7 +13,7 @@ Game_master::Player::Player(int playerid) : id(playerid)
     is_active = true;
 }
 
-Commander::Player_info Game_master::Player::get_info(Deck& deck)
+Commander::Player_info Game_master::Player::get_info()
 {
     Commander::Player_info info;
 
@@ -21,9 +21,9 @@ Commander::Player_info Game_master::Player::get_info(Deck& deck)
     info.funds = funds;
     info.points = points;
 
-    info.deck_total_size = deck.all.size();
-    info.library_size = deck.library.size();
-    info.discard_size = deck.discard.size();
+    info.deck_total_size = deck.get().all.size();
+    info.library_size = deck.get().library.size();
+    info.discard_size = deck.get().graveyard.size();
     info.hand_size = hand.size();
 
     return info;

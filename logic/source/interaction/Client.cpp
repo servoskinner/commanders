@@ -6,17 +6,12 @@
 #include "Description_generator.hpp"
 #include "Misc_functions.hpp"
 
-void Client::bcast_discovery_msg(unsigned short server_port)
-{
-
-}
-
 void Client::process_msgs(int limit)
 {
     int msgs_processed = 0;
     while(msgs_processed < limit || limit == -1)
     {
-        Socket_inbound_message inbound = client_socket.receive();
+        Socket_inbound_message inbound = client_socket.get_message();
         if (inbound.msg.size() < 2) {
             break;
         }
@@ -32,18 +27,18 @@ void Client::process_msgs(int limit)
                 {
                 case ICTRL_UPKEEP:
                     // bounce message back
-                    client_socket.send(inbound.sender, inbound.msg);
+                    client_socket.send_to(inbound.sender, inbound.msg);
                     break;
                 case ICTRL_DISCOVER_REPLY:
                     if (inbound.msg.size() >= DISCOVER_REPLY_SIZE) {
                         // Check if this server is still remembered
                         auto entry_it = std::find_if(discovered_servers.begin(), discovered_servers.end(), \
-                                                    [&inbound](Server_list_entry& entry){ return entry.socket = inbound.sender;});
+                                                    [&inbound](Server_list_entry& entry){ return entry.socket == inbound.sender;});
 
                         if (entry_it == discovered_servers.end()) { // New server discovered
                             Server_list_entry new_entry = {inbound.sender, \
                                                         SERVER_UPKEEP_COUNTDOWN, \
-                                                        {{inbound.msg.begin()+2, inbound.msg.begin()+DISCOVER_REPLY_SIZE}}};
+                                                        unpack_struct<Server_info>({inbound.msg.begin()+2, inbound.msg.begin()+DISCOVER_REPLY_SIZE})};
                             discovered_servers.push_back(new_entry);
                         }
                         else { // Refresh existing
@@ -69,8 +64,5 @@ void Client::process_msgs(int limit)
 void Client::bcast_discovery_msg(unsigned short server_port)
 {
     Socket_info broadcast = {server_port, BROADCAST_IP};
-    client_socket.enable_broadcast();
-
-    client_socket.destinations.push_back(broadcast);
-    std::vector<char> message = {MSG_CONTROL, ICTRL_DISCOVER_BCAST};
+    std::vector<char> message = {MSG_CONTROL, ICTRL_DISCOVER};
 }

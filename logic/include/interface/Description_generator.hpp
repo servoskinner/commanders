@@ -12,7 +12,7 @@ class Description_generator // A singleton that returns a card's description for
 public:
     struct Card_descr
     {
-        int global_id = -1;
+        int entity_id = -1;
         std::string name = "unknown";
         std::string ability_text = "";
         std::string flavor_text = "";

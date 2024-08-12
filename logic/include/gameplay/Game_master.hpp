@@ -5,6 +5,8 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <map>
+#include <utility>
 
 #include "Commander.hpp"
 #include "Card_index.hpp"
@@ -26,8 +28,12 @@ protected:
     class Deck;
     class Player;
     class Tile;
+
     class Ability;
-    class Card_generator;
+    class Binding;
+
+    typedef std::function<void(Game_master&, std::vector<int>)> Reaction;
+    typedef std::map<int, Reaction> Trigger;
 
     typedef std::reference_wrapper<Game_master::Player> player_ref;
     typedef std::reference_wrapper<Game_master::Deck>   deck_ref;
@@ -47,9 +53,9 @@ public: // _____________________________________________________________________
     int get_grid_width() { return grid[0].size(); }
     int get_grid_height() { return grid.size(); }
 
-protected: // _____________________________________________________________________________
-    Card_generator &card_generator;
+private: // _____________________________________________________________________________
 
+    std::vector<Card> tokens;
     std::vector<Player> players;
     std::vector<Deck> decks;
     std::vector<commander_ref> commanders; // entities that provide player inputs.
@@ -58,18 +64,20 @@ protected: // __________________________________________________________________
     std::vector<std::vector<Tile>> grid; // The playing field. (0,0) is top left corner; X axis is vertical, Y is horizontal.
     std::vector<Game_master::card_ref> active_cards;   // Cards that are currently on the playing field.
 
+     int turn;
+    int turn_absolute;
+
+    bool game_is_on;
+
     int exec_order(const Commander::Order &action);
+    void fire_trigger(Trigger& trigger);
 
     void update_status(int playerId);
     inline void broadcast_event(const Commander::Event& event);
     bool check_dominance(int playerId);
 
-    int turn;
-    int turn_absolute;
-
-    bool game_is_on;
-    // Actions
-    bool deploy_card(Card &card, std::optional<tile_ref> targer);         // Place a card in play.
+    // Card actions
+    bool deploy_card(Card &card, std::optional<tile_ref> target);         // Place a card in play.
     bool resolve_movement(Card &card, const int &direction);   // Move a card in specified direction.
     void resolve_destruction(Card &card);                      // Remove a card from play and discard it.
     bool resolve_attack(Card &card, const int &direction); // Resolve an attack from one tile to another.
@@ -81,9 +89,10 @@ protected: // __________________________________________________________________
         BOTH_DEAD,
         ATTACKER_DEAD
     };
-    // Tiles
+    // Tile functions
     std::vector<std::optional<Game_master::tile_ref>> get_4neighbors(const Tile &tile);
     std::vector<std::optional<Game_master::tile_ref>> get_8neighbors(const Tile &tile);
+
     // Players
     bool resolve_draw(int playerId);                             // Returns whether deck is empty or not
     bool discard(int playerId, int handIndex);                // Returns whether discarding this card was possible

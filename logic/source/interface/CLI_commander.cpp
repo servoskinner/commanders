@@ -45,7 +45,7 @@ void CLI_commander::render_UI()
      // Render Units
    for(Card_info card : active_cards)
    {
-      Description_generator::Card_descr original = desc_gen.get_card_instance(card.global_id);
+      Description_generator::Card_descr original = desc_gen.get_card_instance(card.card_id);
       if(card.type == CTYPE_UNIT)
       {
          if(card.y == 3 || card.y == 4) //in capture zone
@@ -104,7 +104,8 @@ void CLI_commander::render_UI()
 
    for(int i=0; i<hands[active_id].size(); i++)
    {
-      Description_generator::Card_descr original = desc_gen.get_card_instance(hands[active_id][i].global_id);
+      Description_generator::Card_descr original = desc_gen.get_card_instance(hands[active_id][i].card_id);
+
       std::cout  << "[" << i << "] $" << hands[active_id][i].cost << " " << original.name << " (";
       			 (hands[active_id][i].value >= 0 ? std::cout << hands[active_id][i].value : std::cout << "T") \
       			 << ")" << "\n|   " << original.ability_text << "\n\n";
@@ -117,7 +118,7 @@ void CLI_commander::render_UI()
    {
       if(card.type == CTYPE_CONTRACT && card.owner_id == active_id)
       {
-         Description_generator::Card_descr origin = desc_gen.get_card_instance(card.global_id);
+         Description_generator::Card_descr origin = desc_gen.get_card_instance(card.entity_id);
          std::cout << origin.name << " (" << card.value << ")\n";
       }
    }
@@ -132,6 +133,8 @@ Commander::Order CLI_commander::get_order()
 
 while(true)
    {
+      render_UI();
+
       std::cout << "PLAYER " << active_id << " GOES \n"; 
       std::cout << "PENDING ACTION: (P)ASS - (M)OVE - (A)TTACK - (D)EPLOY" << std::endl;
       std::cin >> buffer;

@@ -1,4 +1,5 @@
 #include "Unique.hpp"
+#include <iostream>
 
 std::vector<char> Unique::available_ids = {};
 std::mutex Unique::id_mutex;
@@ -7,8 +8,8 @@ Unique::Unique()
 {
     id = -1;
     for(int i = 0; i < UNIQUE_ENTITY_LIMIT; i++) {
-        if (!Unique::check_id(i)) {
-            Unique::set_id(i, true);
+        if (!Unique::is_taken(i)) {
+            Unique::claim_id(i, true);
             id = i;
             break;
         }
@@ -20,11 +21,11 @@ Unique::Unique()
 
 Unique::~Unique()
 {
-    Unique::set_id(id, false);
+    Unique::claim_id(id, false);
     Unique::resize_id_list();
 }
 
-bool Unique::check_id(int id)
+const bool Unique::is_taken(int id)
 {
     std::lock_guard<std::mutex> lock(id_mutex);
 
@@ -40,7 +41,7 @@ bool Unique::check_id(int id)
     return (Unique::available_ids[byte] & (1 << pos)) != 0;
 }
 
-void Unique::set_id(int id, bool val)
+void Unique::claim_id(int id, bool val)
 {
     std::lock_guard<std::mutex> lock(id_mutex);
 

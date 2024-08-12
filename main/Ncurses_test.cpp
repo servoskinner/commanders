@@ -12,7 +12,7 @@ int main()
 
     Commander::Card_info merc;
     merc.type = CTYPE_UNIT;
-    merc.global_id = BOUNTYHUNTER;
+    merc.card_id = BOUNTYHUNTER;
     merc.value = 2;
     merc.advantage = 0;
     merc.x = 1;
@@ -34,16 +34,16 @@ int main()
     merc.advantage = 1;
     merc.x = 5;
     merc.y = 5;
-    merc.global_id = MAIMBOT;
+    merc.card_id = MAIMBOT;
     commander.active_cards.push_back(merc);
     commander.hands[0].push_back(merc);
 
     merc.type = CTYPE_CONTRACT;
-    merc.global_id = FISSION;
+    merc.card_id = FISSION;
     commander.hands[0].push_back(merc);
-    merc.global_id = MACHINEPARTS;
+    merc.card_id = MACHINEPARTS;
     commander.hands[0].push_back(merc);
-    merc.global_id = ARCHON;
+    merc.card_id = ARCHON;
     merc.type = CTYPE_UNIT;
     commander.hands[0].push_back(merc);
 

@@ -35,8 +35,8 @@ public:
     };
     struct Card_info // Card information to be exchanged between commanders and the master
     {
-        short global_id;
-        short match_id;
+        short card_id;
+        short entity_id;
         char owner_id;
 
         short x, y;

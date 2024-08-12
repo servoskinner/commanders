@@ -7,7 +7,7 @@
 
 Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
                          const std::vector<std::vector<int>>& deck_images,
-                         const std::vector<std::vector<int>>& terrain) : card_generator(Game_master::Card_generator::get())
+                         const std::vector<std::vector<int>>& terrain)
 {
     // Check argument validity
     if(commanders_ref.size() > deck_images.size()) {
@@ -38,11 +38,11 @@ Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
     }
     int grid_height = n_terrain.size();
     int grid_width = n_terrain[0].size();
+
     // Unpack decks
     commanders = commanders_ref;
-    for(const std::vector<int>& image : deck_images)
-    {
-        decks.push_back(image);
+    for(const std::vector<int>& image : deck_images) {
+        decks.emplace_back(image);
     }
     // Build grid
     grid = {GRID_HEIGHT, std::vector<Tile>(GRID_WIDTH)};
@@ -54,10 +54,8 @@ Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
 	}
 
     // Assign IDs to various entities
-    int cards_in_match = 0; // TODO reserve id space for tokens
-
     for(int playerid = 0; playerid < commanders.size(); playerid++) {
-        players.emplace_back(playerid);
+        players.emplace_back(playerid, decks[playerid]);
 
         commanders[playerid].get().controlled_ids.push_back(playerid);
         if (commanders[playerid].get().controlled_ids.size() == 1) {
@@ -67,28 +65,27 @@ Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
         commanders[playerid].get().grid_height = GRID_HEIGHT,
         commanders[playerid].get().grid_width = GRID_WIDTH;
 
-        for(Card& card : decks[playerid].all) {
-            card.owner_id = playerid;
-
-            card.match_id = cards_in_match;
-            cards_in_match++;
-        }
+        commanders[playerid].get().hands = {commanders.size(), std::vector<Commander::Card_info>()};
     }
 
     turn = -1;
     turn_absolute = -1;
 
+    // shuffle decks
+    for (Deck& deck : decks) {
+        deck.shuffle();
+    }
+
     // Deal cards TODO add re-draw
-    for(int id = 0; id < players.size(); id++)
-    {
-    	// Shuffle decks
-        decks[id].shuffle();
+    for(int id = 0; id < players.size(); id++) {
         // Deal starting hand
         for(int card = 0; card < STARTING_HAND_SIZE; card++) {
             resolve_draw(id);
         }
+        for (Card& card : players[id].deck.get().all) {
+            card.controller_id = id;
+        }
     }
-
     game_is_on = true;
     end_turn(); // end -1st turn
 }
@@ -184,13 +181,13 @@ void Game_master::end_turn()
 
     for(card_ref cref : active_cards)
     {
-        if(cref.get().type == CTYPE_UNIT && cref.get().owner_id == turn) // Un-overwhelm units and refresh move and attack
+        if(cref.get().type == CTYPE_UNIT && cref.get().controller_id == turn) // Un-overwhelm units and refresh move and attack
         {
             cref.get().can_move       = true;
             cref.get().can_attack     = true;
             cref.get().is_overwhelmed = false;
         }
-        if(cref.get().type == CTYPE_CONTRACT && cref.get().owner_id == turn) // Gain profit for each contract and decrement their duration
+        if(cref.get().type == CTYPE_CONTRACT && cref.get().controller_id == turn) // Gain profit for each contract and decrement their duration
         {
             cref.get().value--;
             players[turn].funds++;
@@ -248,7 +245,7 @@ int Game_master::exec_order(const Commander::Order& order)
             // check that target tile is vacant
             if(grid[order.data[2]][order.data[3]].card.has_value())       { return Commander::Order::INVORD_NOTARGET; 	}
             // check ownership permissions
-            if(grid[order.data[0]][order.data[1]].card->get().owner_id != turn) { return Commander::Order::INVORD_PERMISSION; }
+            if(grid[order.data[0]][order.data[1]].card->get().controller_id != turn) { return Commander::Order::INVORD_PERMISSION; }
             // check if ability was exhausted
             if(!grid[order.data[0]][order.data[1]].card->get().can_move)        { return Commander::Order::INVORD_EXHAUSTED; 	}
 
@@ -298,7 +295,7 @@ int Game_master::exec_order(const Commander::Order& order)
             // check target legality
             if(!grid[order.data[2]][order.data[3]].card.has_value())       { return Commander::Order::INVORD_NOTARGET; 	}
             // check ownership permissions
-            if(grid[order.data[0]][order.data[1]].card->get().owner_id != turn) { return Commander::Order::INVORD_PERMISSION; }
+            if(grid[order.data[0]][order.data[1]].card->get().controller_id != turn) { return Commander::Order::INVORD_PERMISSION; }
             // check if ability was exhausted
             if(!grid[order.data[0]][order.data[1]].card->get().can_attack)      { return Commander::Order::INVORD_EXHAUSTED; 	}
 
@@ -374,7 +371,7 @@ void Game_master::update_status(int player_id)
     commander.get().players.resize(players.size());
     for(int i = 0; i < players.size(); i++)
     {
-        commander.get().players[i] = players[i].get_info(decks[i]);
+        commander.get().players[i] = players[i].get_info();
     }
 }
 
@@ -384,7 +381,7 @@ bool Game_master::check_dominance(int playerId)
     for(card_ref cref : active_cards) // Find active cards within capture zone
         if(cref.get().type == CTYPE_UNIT && grid[cref.get().x][cref.get().y].type == Tile::OBJECTIVE)
         {
-            if(cref.get().owner_id == turn)
+            if(cref.get().controller_id == turn)
                 unit_count_difference++;
             else
                 unit_count_difference--;
@@ -395,7 +392,7 @@ bool Game_master::check_dominance(int playerId)
 bool Game_master::deploy_card(Card& card, std::optional<tile_ref> target)
 {
     if(card.type == CTYPE_UNIT && !target.has_value()) throw std::runtime_error("No deployment site provided for unit");
-    if(card.status == Card::CSTATUS_IN_PLAY) std::clog << "WARNING: Deploying card marked as \"IN PLAY\"";
+    if(card.status == Card::CSTATUS_BATTLEFIELD) std::clog << "WARNING: Deploying card marked as \"IN PLAY\"";
 
     if(card.type == CTYPE_UNIT)
     {   // Set grid position
@@ -414,14 +411,11 @@ bool Game_master::deploy_card(Card& card, std::optional<tile_ref> target)
     
     if(card.type != CTYPE_TACTIC)
     {   // Update status
-        card.status = Card::CSTATUS_IN_PLAY;
+        card.status = Card::CSTATUS_BATTLEFIELD;
         active_cards.push_back(std::ref(card));
     }
 
-    // Fire trig_played events
-    for(const auto& event_played : card.trig_played) {
-        event_played();
-    }
+
     if(card.type == CTYPE_TACTIC) {
         resolve_destruction(card);
     }
@@ -467,20 +461,16 @@ void Game_master::resolve_destruction(Card& card)
         if(!pop_element(active_cards, card, compare_origins))
             std::clog << "WARNING: killing card that was not in activeCards" << std::endl;
 
-        if(card.status != Card::CSTATUS_IN_PLAY)
+        if(card.status != Card::CSTATUS_BATTLEFIELD)
             std::clog << "WARNING: killing card that was not \"in play\"" << std::endl;
     }
 
-    // Fire death events
-    for(const auto& death_event : card.trig_destroyed)
-        death_event();
-
     // Send to discard
-    card.status = Card::CSTATUS_DISCARD;
-    decks[card.owner_id].discard.push_back(std::ref(card));
+    card.status = Card::CSTATUS_GRAVEYARD;
+    decks[card.owner_id].graveyard.push_back(std::ref(card));
 
     // Restore default power and linked triggers
-    card = card_generator.get_card_instance(card.global_id);
+    card.reset();
 }
 
 bool Game_master::resolve_attack(Card& card, const int& direction)
@@ -488,7 +478,7 @@ bool Game_master::resolve_attack(Card& card, const int& direction)
     // Check if card's position on grid is OK
     if(direction < 0 || direction > 7) throw std::invalid_argument("Invalid direction");
     if(!grid[card.x][card.y].card.has_value() || \
-        grid[card.x][card.y].card->get().match_id != card.match_id) throw std::runtime_error("Attacking with card with bad position");
+        grid[card.x][card.y].card->get().entity_id != card.entity_id) throw std::runtime_error("Attacking with card with bad position");
 
     std::vector<std::optional<tile_ref>> options = get_8neighbors(grid[card.x][card.y]);
     // Check if there is a target in this direction.
@@ -593,24 +583,21 @@ std::vector<std::optional<Game_master::tile_ref>> Game_master::get_8neighbors(co
 
 bool Game_master::resolve_draw(int player_id)
 {
-    if(decks[player_id].library.size() == 0)
-    {
-        if(decks[player_id].discard.size() == 0)
-        {
+    if(players[player_id].deck.get().library.size() == 0) {
+        if(players[player_id].deck.get().graveyard.size() == 0) {
             return false;
         }
-        else
-        {
-            decks[player_id].refresh();
+        else {
+            players[player_id].deck.get().refresh();
         }
     }
-    if(decks[player_id].library.back().get().status != Card::CSTATUS_IN_DECK)
-    {
+    if(players[player_id].deck.get().library.back().get().status != Card::CSTATUS_LIBRARY) {
         std::clog << "Warning: drawing card that has not been marked as \"In deck\"" << std::endl;
     }
-    players[player_id].hand.push_back(decks[player_id].library.back());
-    decks[player_id].library.back().get().status = Card::CSTATUS_IN_HAND;
-    decks[player_id].library.pop_back();
+
+    players[player_id].hand.push_back(players[player_id].deck.get().library.back());
+    players[player_id].deck.get().library.back().get().status = Card::CSTATUS_HAND;
+    players[player_id].deck.get().library.pop_back();
 
     return true;
 }
@@ -620,11 +607,11 @@ bool Game_master::discard(int player_id, int hand_index)
     if(player_id < 0 || player_id >= players.size()) throw std::out_of_range("playerId out of range");
     if(hand_index < 0 || hand_index >= players[player_id].hand.size()) throw std::out_of_range("handIndex out of range");
 
-    if(players[player_id].hand[hand_index].get().status != Card::CSTATUS_IN_HAND)
+    if(players[player_id].hand[hand_index].get().status != Card::CSTATUS_HAND)
         std::clog << "Warning: discarding card that has not been marked as \"In hand\"" << std::endl;
 
-    decks[player_id].discard.push_back(players[player_id].hand[hand_index]);
-    players[player_id].hand[hand_index].get().status = Card::CSTATUS_DISCARD;
+    decks[player_id].graveyard.push_back(players[player_id].hand[hand_index]);
+    players[player_id].hand[hand_index].get().status = Card::CSTATUS_GRAVEYARD;
     pop_index(players[player_id].hand, hand_index);
 
     return true;
@@ -655,7 +642,7 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<tile_re
             for(std::optional<tile_ref> tptr : get_4neighbors(target.value()))
                 if(tptr.has_value() && \
                    tptr->get().card.has_value() && \
-                   tptr->get().card->get().owner_id == player_id)
+                   tptr->get().card->get().controller_id == player_id)
                     nearFriendly = true;
 
             if(!nearFriendly) return Commander::Order::INVORD_NOTARGET;
@@ -664,12 +651,12 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<tile_re
             for(std::optional<tile_ref> tptr : get_8neighbors(target.value()))
                 if(tptr.has_value() && \
                    tptr->get().card.has_value() && 
-                   tptr->get().card->get().owner_id != player_id)
+                   tptr->get().card->get().controller_id != player_id)
                     return Commander::Order::INVORD_NOTARGET;
         }
     }
 
-    if(played.status != Card::CSTATUS_IN_HAND)
+    if(played.status != Card::CSTATUS_HAND)
         std::clog << "Warning: trying to play card that has not been marked as \"In hand\"" << std::endl;
 
     players[player_id].funds -= players[player_id].hand[hand_index].get().cost;

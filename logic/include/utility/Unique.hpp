@@ -9,23 +9,24 @@
 class Unique 
 {
     private:
-    int id;
+    unsigned int id;
     static std::vector<char> available_ids;
     static std::mutex id_mutex;
 
-    static void set_id(int id, bool val);
-    static bool check_id(int id);
+    static void claim_id(int id, bool val);
     static void resize_id_list();
     
     public:
+    const static bool is_taken(int id);
+
     Unique();
     ~Unique();
 
-    bool operator==(const Unique& other) { return other.id == id;}
-    bool operator!=(const Unique& other) { return other.id != id;}
+    const bool operator==(const Unique& other) { return other.id == id;}
+    const bool operator!=(const Unique& other) { return other.id != id;}
 
-    bool operator==(const int& other) { return other == id;}
-    bool operator!=(const int& other) { return other != id;}
+    const bool operator==(const int& other) { return other == id;}
+    const bool operator!=(const int& other) { return other != id;}
 
-    int get_id() { return id;}
+    const unsigned int get_id() { return id;}
 };

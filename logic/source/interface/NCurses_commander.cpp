@@ -596,7 +596,7 @@ NCurses_commander::Unit_sprite::Unit_sprite(Card_info c_info)
 void NCurses_commander::Unit_sprite::set_card(Card_info c_info)
 {
     card_info = c_info;
-    name.text = Description_generator::get().get_card_instance(card_info.global_id).name;
+    name.text = Description_generator::get().get_card_instance(card_info.card_id).name;
 
     value.text = std::to_string(card_info.value);
     advantage.text = card_info.advantage > 0 ? std::to_string(card_info.advantage) : "";
@@ -677,7 +677,7 @@ void NCurses_commander::Card_sprite::set_desc(Description_generator::Card_descr 
 void NCurses_commander::Card_sprite::set_card(Card_info c_info)
 {
     card_info = c_info;
-    set_desc(c_info.global_id);
+    set_desc(c_info.card_id);
 }
 
 void NCurses_commander::Card_sprite::draw_self(int orig_y, int orig_x)
