@@ -18,8 +18,9 @@
 #define GRID_HEIGHT 	6
 
 #define BASIC_INCOME 			1
-#define BONUS_INCOME_IF_ZERO    1
-#define STARTING_HAND_SIZE 		4
+#define BONUS_INCOME            1
+#define BONUS_INCOME_THRESHOLD  1
+#define STARTING_HAND_SIZE 		4 
 #define POINTS_REQ_FOR_VICTORY 	10
 
 #define EVENT_QUEUE_CAPACITY    1024
@@ -62,7 +63,7 @@ public: // _____________________________________________________________________
     int get_turn() { return turn; }
     int get_absolute_turn() { return turn_absolute; }
     bool is_on() { return game_is_on; }
-    inline Commander::Static_game_info get_static_game_info();
+    Commander::Game_params get_static_game_info();
     std::pair<int, int> get_grid_params() { return {grid.size(), grid[0].size()}; }
 
     int exec_order(int player_id, const Commander::Order &action);

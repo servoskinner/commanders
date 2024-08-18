@@ -7,7 +7,7 @@ class Proxy_commander : Commander
 {
     public:
     void queue_order(Order order);
-    void process_event(Event event) override;
+    void process_order_feedback(Event event) override;
 
     Order get_order() override;
     Event get_event();

@@ -152,7 +152,7 @@ void Game_master::end_turn()
 	// Players starting their turn with zero money get a bonus
 	if (players[turn].funds == 0) 
     {
-		players[turn].funds += BONUS_INCOME_IF_ZERO;
+		players[turn].funds += BONUS_INCOME;
 	}
     // Add basic income
     players[turn].funds += BASIC_INCOME;
@@ -368,18 +368,19 @@ void Game_master::fire_trigger(Trigger& trigger, std::vector<int> args = {})
 const Commander::Game_status Game_master::get_status(int player_id)
 {
     Commander::Game_status status;
-    
-    status.active_cards.resize(active_cards.size());
+        
+    status.active_cards = std::vector<Commander::Card_info>(active_cards.size());
     for(int i = 0; i < active_cards.size(); i++) {
         status.active_cards[i] = active_cards[i].get().get_info();
     }
 
+    status.hands = std::vector<std::vector<Commander::Card_info>>(players.size());
     status.hands[player_id].resize(players[player_id].hand.size());
     for(int i = 0; i < players[player_id].hand.size(); i++) {
         status.hands[player_id][i] = players[player_id].hand[i].get().get_info();
     }
 
-    status.players.resize(players.size());
+    status.players = std::vector<Commander::Player_info>(players.size());
     for(int i = 0; i < players.size(); i++) {
         status.players[i] = players[i].get_info();
     }
@@ -387,10 +388,10 @@ const Commander::Game_status Game_master::get_status(int player_id)
     return status;
 }
 
-Commander::Static_game_info Game_master::get_static_game_info()
+Commander::Game_params Game_master::get_static_game_info()
 {
     std::unordered_map<unsigned int, Commander::Card_info> manifest;
-    std::pair<int, int> grid_params = {grid.size(), grid[0].size()};
+    std::pair<int, int> grid_size = {grid.size(), grid[0].size()};
 
     for (Deck& deck : decks) {
         for (Card& card : deck.all) {
@@ -401,7 +402,7 @@ Commander::Static_game_info Game_master::get_static_game_info()
         manifest.insert({card.entity_id.get_id(), card.get_info()});
     }
 
-    return {manifest, grid_params};
+    return {manifest, grid_size};
 }
 
 bool Game_master::check_dominance(int playerId)

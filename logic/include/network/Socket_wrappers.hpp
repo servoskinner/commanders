@@ -61,64 +61,6 @@ struct Server_info
 };
 
 /**
- * @brief Packs a fixed-size structure into a byte vector to be sent as a message.
- */
-template <typename Type>
-std::vector<char> serialize_struct(const Type& object)
-{
-    char serialized[sizeof(Type)];
-    std::memcpy(serialized, &object, sizeof(Type));
-
-    return std::vector<char>((char*)serialized, (char*)serialized+sizeof(Type));
-}
-
-template <typename Keytype, typename Valtype>
-std::vector<char> serialize_map(std::unordered_map<Keytype, Valtype> map)
-{
-    // build prefix
-    std::vector<char> result = {serialize_struct<unsigned int>(map.size())};
-
-    for (std::pair<Keytype, Valtype>& pair : map) {
-        std::vector<char> serialized = {serialize_struct(pair.first), serialize_struct(pair.second)};
-        std::copy(serialized.begin(), serialized.end(), std::back_inserter(result)); // append to result
-    }
-    return result;
-}
-
-/**
- * @brief Creates a fixed-size structure out of a byte vector received over network.
- */
-template <typename Type>
-Type deserialize_struct(std::vector<char> serialized)
-{
-    Type new_obj;
-    if(serialized.size() < sizeof(Type))
-    {
-        throw std::runtime_error("deserialize_struct(): char vector is too short to be unpacked");
-    }
-    std::memcpy(&new_obj, serialized.data(), sizeof(Type));
-    return new_obj;
-}
-
-template <typename Keytype, typename Valtype>
-std::unordered_map<Keytype, Valtype> deserialize_map(std::vector<char> serialized)
-{
-    // decode prefix
-    unsigned int map_size = {serialized.begin(), serialized.begin()+sizeof(unsigned int)};
-    
-    std::unordered_map<Keytype, Valtype> map;
-    for (unsigned int i = 0; i < map_size; i++) {
-        Keytype key = deserialize_struct({serialized.begin() + sizeof(unsigned int) + i*(sizeof(Keytype) + sizeof(Valtype)), \
-                                          serialized.begin() + sizeof(unsigned int) + i*(sizeof(Keytype) + sizeof(Valtype)) + sizeof(Keytype)});
-        Valtype val = deserialize_struct({serialized.begin() + sizeof(unsigned int) + i*(sizeof(Keytype) + sizeof(Valtype)) + sizeof(Keytype),
-                                          serialized.begin() + sizeof(unsigned int) + i*(sizeof(Keytype) + sizeof(Valtype)) + sizeof(Keytype) \
-                                          + sizeof(Valtype)});
-        map.insert({key, val});
-    }
-    return map;
-}
-
-/**
  * @struct Combination of a socket's port and IP address.
  */
 struct Socket_info

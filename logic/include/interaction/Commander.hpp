@@ -102,10 +102,10 @@ public:
         Commander_message(const std::vector<char>& packed);
     };
 
-    struct Static_game_info
+    struct Game_params
     {
     std::unordered_map<unsigned int, Card_info> card_manifest;
-    std::pair<int, int> grid_params;
+    std::pair<int, int> grid_size;
     };
 
     struct Game_status
@@ -122,7 +122,7 @@ public:
     std::vector<int> controlled_ids; // All players controlled by the commander
     int active_id;    
 
-    Static_game_info static_game_info;
+    Game_params game_params;
     Game_status game_status;
 
     virtual Order get_order() = 0;         // Called by the Game Master to receive player input.

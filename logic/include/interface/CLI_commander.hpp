@@ -10,7 +10,8 @@ class CLI_commander : public Commander
     public:
 
     Order get_order() override;
-    void process_event(Event event) override;
+    void process_order_feedback(int code);
+    void process_event(Event event) {}
     void apply_updates();
 
     CLI_commander();

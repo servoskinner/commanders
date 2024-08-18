@@ -15,6 +15,9 @@ class Unique
 
     static void claim_id(int id, bool val);
     static void resize_id_list();
+
+    Unique& operator= (const Unique& other) = delete;
+    Unique(const Unique& other) = delete;
     
     public:
     const static bool is_taken(int id);

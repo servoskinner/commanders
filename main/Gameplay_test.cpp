@@ -38,24 +38,22 @@ int main()
         FISSION
     };
 
-    CLI_commander cmd1, cmd2;
+    CLI_commander commander;
     std::vector<std::vector<int>> deck_images = {deck1, deck2};
 
     Game_master gm(deck_images);
 
-    cmd1.static_game_info = gm.get_static_game_info();
-    cmd2.static_game_info = gm.get_static_game_info();
+    commander.game_params = gm.get_static_game_info();
 
-    while(true)
+    while(gm.is_on())
     {
-        cmd1.game_status = gm.get_status(0);
-        cmd2.game_status = gm.get_status(1);
-        if (gm.get_turn() % 2 == 0){
-            int order_code = gm.exec_order(0, cmd1.get_order());
-        }
-        else {
-            int order_code = gm.exec_order(1, cmd2.get_order());
-        }
+        int turn = gm.get_turn();
+        commander.game_status = gm.get_status(turn);
+        commander.active_id = turn;
+        commander.apply_updates();
+
+        int order_code = gm.exec_order(turn, commander.get_order());
+        commander.process_order_feedback(order_code);
     }
     
     return 0;

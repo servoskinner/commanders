@@ -122,7 +122,7 @@ Commander::Order NCurses_commander::get_order()
     }
 }
 
-void NCurses_commander::process_event(Commander::Event event)
+void NCurses_commander::process_order_feedback(Commander::Event event)
 {
     switch (event.type)
     {

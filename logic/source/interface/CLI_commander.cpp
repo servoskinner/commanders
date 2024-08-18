@@ -15,31 +15,31 @@ void CLI_commander::render_UI()
      //draw the empty field
      std::string buffer = ".";
 
-     for(int i = 0; i < grid_width; i++)
+     for(int i = 0; i < game_params.grid_size.first; i++)
         buffer.append(std::string(TILE_WIDTH_CHARS, ' ').append("."));  //first divider line
 
      buffer.append("\n");
 
-     for(int j = 0; j < grid_height; j++)
+     for(int j = 0; j < game_params.grid_size.second; j++)
      {
         // empty spaces
         for(int i = 0; i < TILE_HEIGHT_CHARS; i++)
-            buffer.append(std::string(grid_width*(TILE_WIDTH_CHARS+1), ' ').append(" \n"));  
+            buffer.append(std::string(game_params.grid_size.first*(TILE_WIDTH_CHARS+1), ' ').append(" \n"));  
 
         // divider
         buffer.append(".");
 
-        for(int i = 0; i < grid_width; i++)
+        for(int i = 0; i < game_params.grid_size.first; i++)
         buffer.append(std::string(TILE_WIDTH_CHARS, ' ').append("."));
 
         buffer.append("\n");
      }
 
      // Highlight deploy zones
-     for(int i = 0; i < grid_height; i++)
+     for(int i = 0; i < game_params.grid_size.second; i++)
      {
-         highlight_tile_subtle(buffer, grid_width, i, 0);
-         highlight_tile_subtle(buffer, grid_width, i, grid_width - 1);
+         highlight_tile_subtle(buffer, game_params.grid_size.first, i, 0);
+         highlight_tile_subtle(buffer, game_params.grid_size.first, i, game_params.grid_size.first - 1);
      }
 
      // Render Units
@@ -49,48 +49,48 @@ void CLI_commander::render_UI()
       if(card.type == CTYPE_UNIT)
       {
          if(card.y == 3 || card.y == 4) //in capture zone
-            highlight_tile_funky(buffer, grid_width, card.x, card.y);
+            highlight_tile_funky(buffer, game_params.grid_size.first, card.x, card.y);
          else
-            highlight_tile_bold(buffer, grid_width, card.x, card.y);
+            highlight_tile_bold(buffer, game_params.grid_size.first, card.x, card.y);
 
          // Name
          for(int bias = 1; bias < (TILE_WIDTH_CHARS+1) && bias < original.name.size() + 1; bias++)
-            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 1)*(grid_width*(TILE_WIDTH_CHARS+1) + 2) \
+            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 1)*(game_params.grid_size.first*(TILE_WIDTH_CHARS+1) + 2) \
             	   + card.y*(TILE_WIDTH_CHARS+1) + bias] = original.name[bias-1];
 
          for(int bias = original.name.size() + 1; bias < (TILE_WIDTH_CHARS+1); bias++)
-            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 1)*(grid_width*(TILE_WIDTH_CHARS+1) + 2) \
+            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 1)*(game_params.grid_size.first*(TILE_WIDTH_CHARS+1) + 2) \
             	   + card.y*(TILE_WIDTH_CHARS+1) + bias] = '_';
          // Value
-         buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(grid_width*(TILE_WIDTH_CHARS+1) + 2) \
+         buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(game_params.grid_size.first*(TILE_WIDTH_CHARS+1) + 2) \
          		+ card.y*(TILE_WIDTH_CHARS+1) + TILE_WIDTH_CHARS] = (std::to_string(card.value % 10))[0];
-         buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(grid_width*(TILE_WIDTH_CHARS+1) + 2) \
+         buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(game_params.grid_size.first*(TILE_WIDTH_CHARS+1) + 2) \
          		+ card.y*(TILE_WIDTH_CHARS+1) + TILE_WIDTH_CHARS-1] = (std::to_string(card.value / 10))[0];
          // Advantage points (if there is any)
          if(card.advantage > 0)
          {
-            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(grid_width*(TILE_WIDTH_CHARS+1) + 2) \
+            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(game_params.grid_size.first*(TILE_WIDTH_CHARS+1) + 2) \
                    + card.y*(TILE_WIDTH_CHARS+1) + 2] = (std::to_string(card.advantage % 10))[0];
-            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(grid_width*(TILE_WIDTH_CHARS+1) + 2) \
+            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + TILE_HEIGHT_CHARS)*(game_params.grid_size.first*(TILE_WIDTH_CHARS+1) + 2) \
             	   + card.y*(TILE_WIDTH_CHARS+1) + 1] = (std::to_string(card.advantage / 10))[0];
          }
          // Overwhelmed indicator
          if(card.is_overwhelmed)
-            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 2)*(grid_width*(TILE_WIDTH_CHARS+1) + 2) \
+            buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 2)*(game_params.grid_size.first*(TILE_WIDTH_CHARS+1) + 2) \
             	   + card.y*(TILE_WIDTH_CHARS+1) + TILE_WIDTH_CHARS] = '!';
          // Ability exhaustion
          if(!card.can_move)
             if(!card.can_attack)
-               buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 2)*(grid_width*(TILE_WIDTH_CHARS+1) + 2) \
+               buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 2)*(game_params.grid_size.first*(TILE_WIDTH_CHARS+1) + 2) \
                		  + card.y*(TILE_WIDTH_CHARS+1) + 1] = 'X';
             else
-               buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 2)*(grid_width*(TILE_WIDTH_CHARS+1) + 2) \
+               buffer[(card.x*(TILE_HEIGHT_CHARS+1) + 2)*(game_params.grid_size.first*(TILE_WIDTH_CHARS+1) + 2) \
                		  + card.y*(TILE_WIDTH_CHARS+1) + 1] = '~';
       }
    }
    std::cout << buffer << std::endl;
 
-   std::cout << "Turn " << turn_absolute + 1 << "\n";
+   std::cout << "Turn " << game_status.turn_absolute + 1 << "\n";
    std::cout << "P1: $" << game_status.players[0].funds << "       " << game_status.players[0].points << " DP       " << game_status.players[0].hand_size << " in hand\n";
    std::cout << "P2: $" << game_status.players[1].funds << "       " << game_status.players[1].points << " DP       " << game_status.players[1].hand_size << " in hand\n";
 
@@ -194,72 +194,56 @@ while(true)
    }
 }
 
-void CLI_commander::process_event(Event event)
+void CLI_commander::process_order_feedback(int code)
 {
    //enum invalidAction {INVORD_NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
-   switch(event.type)
+   switch(code)
    {
-      case Event::EV_ORDER_INVALID:
-      switch (event.data[0])
-      {
-         case Order::INVORD_NONE:
-            std::cout << "\nFalse Alarm...\n" << std::endl;
-            break;
-
-         case Order::INVORD_INVTYPE:
-            std::cout << "\nInvalid command type...\n" << std::endl;
-            break;
-
-         case Order::INVORD_INVARGS:
-            std::cout << "\nInvalid argument(s)...\n" << std::endl;
-            break;
-
-         case Order::INVORD_PERMISSION:
-            std::cout << "\nYou don't have permission...\n" << std::endl;
-            break;
-
-         case Order::INVORD_NOSELECT:
-            std::cout << "\nNo unit has been selected...\n" << std::endl;
-            break;
-
-         case Order::INVORD_NOTARGET:
-            std::cout << "\nNo target has been specified...\n" << std::endl;
-            break;
-
-         case Order::INVORD_EXHAUSTED:
-            std::cout << "\nOption exhausted...\n" << std::endl;
-            break;
-         
-         case Order::INVORD_NOFUNDS:
-            std::cout << "\nInsufficient funds...\n" << std::endl;
-            break;
-
-         case Order::INVORD_UNKNOWN:
-            std::cout << "\nAn unknown error occurred...\n" << std::endl;
-            break;
-
-         default:
-            std::cout << "\nAn even less known error occurred...\n" << std::endl;
-            break;
-         }
+      case Order::ORDER_SUCCESS:
+         std::cout << "\nExecuted\n" << std::endl;
          break;
-      case Event::EV_GAME_WON_BY:
-         if(event.data[0] == active_id)
-         {
-            std::cout << "You win!" << std::endl;
-         }
-         else
-         {
-            std::cout << "You lose!" << std::endl;
-         }
+
+      case Order::INVORD_INVTYPE:
+         std::cout << "\nInvalid command type...\n" << std::endl;
+         break;
+
+      case Order::INVORD_INVARGS:
+         std::cout << "\nInvalid argument(s)...\n" << std::endl;
+         break;
+
+      case Order::INVORD_PERMISSION:
+         std::cout << "\nYou don't have permission...\n" << std::endl;
+         break;
+
+      case Order::INVORD_NOSELECT:
+         std::cout << "\nNo unit has been selected...\n" << std::endl;
+         break;
+
+      case Order::INVORD_NOTARGET:
+         std::cout << "\nNo target has been specified...\n" << std::endl;
+         break;
+
+      case Order::INVORD_EXHAUSTED:
+         std::cout << "\nOption exhausted...\n" << std::endl;
+         break;
+      
+      case Order::INVORD_NOFUNDS:
+         std::cout << "\nInsufficient funds...\n" << std::endl;
+         break;
+
+      case Order::INVORD_UNKNOWN:
+         std::cout << "\nAn unknown error occurred...\n" << std::endl;
+         break;
+
+      default:
+         std::cout << "\nAn even less known error occurred...\n" << std::endl;
          break;
    }
-
 }
 
 void CLI_commander::apply_updates()
 {
-   if(turn == active_id)
+   if(game_status.turn == active_id)
       render_UI();
 }
 

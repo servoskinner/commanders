@@ -22,8 +22,7 @@ public:
         int type = -1;
         std::array<bool, 15> mnemosprite = {};
     };
-    inline const Card_descr& get_card_instance(int index) 
-    { return (index >= 0 && index < TOTAL_CARDS_IN_GAME) ? cards[index] : unknown_card; }
+    inline const Card_descr& get_card_instance(int index);
     static Description_generator& get();
 
 private:
@@ -31,6 +30,4 @@ private:
 
     Description_generator(const Description_generator&) = delete;
     Description_generator& operator=(const Description_generator&) = delete;
-    std::array<Card_descr, TOTAL_CARDS_IN_GAME> cards;
-    Card_descr unknown_card = {};
 };
