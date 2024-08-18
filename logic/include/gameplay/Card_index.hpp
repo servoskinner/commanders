@@ -3,18 +3,19 @@
 enum cardIds
 {
     BOUNTYHUNTER,
-    HENCHMAN,
-    COMMANDO,
+    TERRORGUARD,
     OPPRESSOR,
-    MAIMBOT,
-    ARCHON,
+    MAIMDROID,
+    OMNITANK,
     GUNKFOOD,
     MACHINEPARTS,
     FISSION,
     LOGISTICS,
-    UNITANK,
-    BIOWEAPONRD,
-    BARGAIN,
+    UNICYCLONE,
+    BIOWEAPONSRD,
+    VVAPPRENTICE,
+    DEMOLITIONIST,
+
     TOTAL_CARDS_IN_GAME // do not add anything PAST this entry
 };
 enum card_type

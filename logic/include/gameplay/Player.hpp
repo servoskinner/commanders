@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Game_master.hpp"
+#include "Ability.hpp"
 
 class Game_master::Player
     {
     public: // _____________________________________________________________________________
-        Player(int playerid, Deck& deck);
+        Player(int player_id, Deck& p_deck);
 
         const int id; // Unique player ID and turn no. on which it issues orders.
         bool is_active;
@@ -20,4 +21,5 @@ class Game_master::Player
         Trigger turn_start;
         Trigger turn_end;
         Trigger deploys;
+        Trigger draws;
     };

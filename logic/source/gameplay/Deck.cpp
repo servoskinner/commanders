@@ -3,10 +3,10 @@
 
 #include "Game_master.hpp"
 
-Game_master::Deck::Deck(const std::vector<int>& deck_image, int player_id)
+Game_master::Deck::Deck(Game_master& master, const std::vector<int>& deck_image, int player_id)
 {
     for(int id : deck_image) {   
-        all.emplace_back(id, player_id);
+        all.emplace_back(master, id, player_id);
         library.push_back(all.back());
         all.back().status = Card::CSTATUS_LIBRARY;
     }

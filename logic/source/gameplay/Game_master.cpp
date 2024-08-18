@@ -5,21 +5,26 @@
 #include <optional>
 #include <memory>
 
-Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
-                         const std::vector<std::vector<int>>& deck_images,
+Game_master::Game_master(const std::vector<std::vector<int>>& deck_images,
+                         int gamemode,
+                         int nplayers,
                          const std::vector<std::vector<int>>& terrain)
 {
+    // for now, assuming that gamemode is GM_STANDARD
     // Check argument validity
-    if(commanders_ref.size() > deck_images.size()) {
+    if(gamemode == GM_STANDARD && deck_images.size() < 1 ||
+       deck_images.size() == 0) {
         throw std::runtime_error("Insufficient decks specified for game creation;");
     }
-    if(commanders_ref.size() < deck_images.size()) {
+    if(gamemode == GM_STANDARD && deck_images.size() > 2 ||
+       gamemode == GM_SKIRMISH && deck_images.size() > 1 ||
+       gamemode == GM_2V2 && (deck_images.size() == 3 || deck_images.size() > 4)) {
         std::clog << "Redundant decks provided for Game_master constructor. Ignoring last;" << std::endl;
 	}
 
     // Set up grid
     std::vector<std::vector<int>> n_terrain;
-    if(terrain.size() == 0 || terrain[0].size() == 0)   // Use default terrain if none was provided
+    if(terrain.size() < 2 || terrain[0].size() < 2)   // Use default terrain if none was provided
     {
         n_terrain = {GRID_HEIGHT, std::vector<int>(GRID_WIDTH, Tile::NORMAL)};
         for(int row = 0; row < GRID_HEIGHT; row++) 
@@ -38,12 +43,7 @@ Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
     }
     int grid_height = n_terrain.size();
     int grid_width = n_terrain[0].size();
-
-    // Unpack decks
-    commanders = commanders_ref;
-    for(const std::vector<int>& image : deck_images) {
-        decks.emplace_back(image);
-    }
+    
     // Build grid
     grid = {GRID_HEIGHT, std::vector<Tile>(GRID_WIDTH)};
 
@@ -53,101 +53,106 @@ Game_master::Game_master(const std::vector<commander_ref>& commanders_ref, \
         }
 	}
 
+    switch (gamemode)
+    {
+    case GM_STANDARD:
+        nplayers = 2;
+        break;
+    case GM_2V2:
+        nplayers = 4;
+    }
+    // Reserve space for all entities to prevent re-allocation
+    event_queues = {nplayers, std::queue<Commander::Event>()};
+    decks.reserve(deck_images.size());
+    players.reserve(nplayers);
+
     // Assign IDs to various entities
-    for(int playerid = 0; playerid < commanders.size(); playerid++) {
-        players.emplace_back(playerid, decks[playerid]);
-
-        commanders[playerid].get().controlled_ids.push_back(playerid);
-        if (commanders[playerid].get().controlled_ids.size() == 1) {
-            commanders[playerid].get().active_id = playerid;
+    if (gamemode != GM_SKIRMISH) {
+        for(int playerid = 0; playerid < nplayers; playerid++) {
+            decks.emplace_back(*this, deck_images[playerid], playerid);
+            players.emplace_back(playerid, decks.back());
         }
-        
-        commanders[playerid].get().grid_height = GRID_HEIGHT,
-        commanders[playerid].get().grid_width = GRID_WIDTH;
-
-        commanders[playerid].get().hands = {commanders.size(), std::vector<Commander::Card_info>()};
+    }
+    else {
+        decks.emplace_back(*this, deck_images[0]);
+        for (Player& p : players) {
+            p.deck = decks.back();
+        }
     }
 
     turn = -1;
     turn_absolute = -1;
-
     // shuffle decks
     for (Deck& deck : decks) {
         deck.shuffle();
     }
-
     // Deal cards TODO add re-draw
     for(int id = 0; id < players.size(); id++) {
         // Deal starting hand
         for(int card = 0; card < STARTING_HAND_SIZE; card++) {
             resolve_draw(id);
         }
-        for (Card& card : players[id].deck.get().all) {
-            card.controller_id = id;
-        }
     }
     game_is_on = true;
     end_turn(); // end -1st turn
 }
 
-bool Game_master::game_loop() 
+std::optional<Game_master::card_ref> Game_master::find_card(unsigned int entity_id)
 {
-    // Send game status updates to every player
-    for(int id = 0; id < commanders.size(); id++)
+    std::optional<card_ref> card = {};
+    for (Deck& deck : decks)
     {
-        update_status(id);
+        auto iter = std::find_if(deck.all.begin(), deck.all.end(), [entity_id](Card& card){ return card.entity_id == entity_id;} );
+        if (iter != deck.all.end()) {
+            card.emplace(*iter);
+            break;
+        }
     }
-
-    std::function<bool(Player&)> check_activity = [](Player& p){ return p.is_active; };
-
-    if(std::find_if(players.begin(), players.end(), check_activity) == players.end()) // End game if all players are inactive
-    {
-        game_is_on = false;
-        // Announce game end with no winner
-        Commander::Event event;
-        event.type = Commander::Event::EV_GAME_WON_BY;
-        event.data.push_back(-1);
-        broadcast_event(event);
-
-        return game_is_on;
+    if (!card.has_value()) {
+        auto iter = std::find_if(tokens.begin(), tokens.end(), [entity_id](Card& card){ return card.entity_id == entity_id;} );
+        if (iter != tokens.end()) {
+            card.emplace(*iter);
+        }
     }
-    while (!players[turn].is_active) // Skip inactive players
-    {
-        turn++;
-    }
-    Commander::Order action = commanders[turn].get().get_order();
-    int action_verdict = exec_order(action);
+    return card;
+}
 
-    Commander::Event order_response = {};
-    if(action_verdict != Commander::Order::INVORD_NONE) { // Invalid action received;
-        order_response.type = Commander::Event::EV_ORDER_INVALID,
-        order_response.data.push_back(action_verdict);
+inline void Game_master::pop_event(int player_id)
+{
+    if (!event_queues[player_id].empty()) {
+        event_queues[player_id].pop();
     }
-    
-    commanders[turn].get().process_event(order_response);
+}
 
-    return game_is_on;
+inline void Game_master::push_event(int player_id, const Commander::Event& event)
+{
+    if (event_queues[player_id].size() < EVENT_QUEUE_CAPACITY || EVENT_QUEUE_CAPACITY < 0) {
+        event_queues[player_id].push(event);
+    }
 }
 
 inline void Game_master::broadcast_event(const Commander::Event& event)
 {
-    for (commander_ref pc : commanders)
-    {
-        pc.get().process_event(event);
+    for (std::queue<Commander::Event>& queue : event_queues) {
+        if (queue.size() < EVENT_QUEUE_CAPACITY || EVENT_QUEUE_CAPACITY < 0) {
+            queue.push(event);
+        }
+    }
+    for (std::function<void(Commander::Event)> callback : on_event_broadcast) {
+        callback(event);
     }
 }
 
 void Game_master::end_turn()
 {
     // Increment turn counter (also is playerid of whoever takes the turn)
-    turn = (turn + 1) % commanders.size();
+    turn = (turn + 1) % players.size();
     turn_absolute++;
-    commanders[turn].get().active_id = turn;
 
 	// Players starting their turn with zero money get a bonus
 	if (players[turn].funds == 0) 
     {
-		players[turn].funds += BONUS_IF_ZERO_INCOME;
+		players[turn].funds += BONUS_INCOME_IF_ZERO;
 	}
     // Add basic income
     players[turn].funds += BASIC_INCOME;
@@ -166,10 +171,6 @@ void Game_master::end_turn()
         // Check if player wins on this turn
         if(players[turn].points >= POINTS_REQ_FOR_VICTORY)
         {
-            for(int id = 0; id < commanders.size(); id++)
-            {
-                update_status(id); // Send last game status update
-            }
             game_is_on = false;
             // Notify everyone that game ended
             Commander::Event event;
@@ -199,24 +200,22 @@ void Game_master::end_turn()
     }
 };
 
-int Game_master::exec_order(const Commander::Order& order)
+int Game_master::exec_order(int player_id, const Commander::Order& order)
 {
     int delta_x, delta_y; // Relative target postition for attacking and moving.
     int direction = -1; // Direction of attack or movement.
 
     switch(order.type)
     {
-
         //  PASS  _________________________________________________
-
         case Commander::Order::ORD_PASS:
-        // self-explanatory
-        end_turn();
-        return Commander::Order::INVORD_NONE; // Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
+        { // ends turn: self-explanatory
+        end_turn(); // Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
+        return Commander::Order::ORDER_SUCCESS;
+        }
         break;
 
         //  MOVE  _________________________________________________
-
         case Commander::Order::ORD_MOVE:
         {
 
@@ -229,42 +228,46 @@ int Game_master::exec_order(const Commander::Order& order)
             order.data[2] >= grid.size() || order.data[3] >= grid[0].size()) {
                 return Commander::Order::INVORD_INVARGS;
 			}
-                // determine direction and check if it is invalid
-                delta_x = order.data[2] - order.data[0];
-                delta_y = order.data[3] - order.data[1];
-                        // valid
-                if     (delta_x ==  1 && delta_y ==  0) { direction = Tile::DOWN; }
-                else if(delta_x == -1 && delta_y ==  0) { direction = Tile::UP; }
-                else if(delta_x ==  0 && delta_y ==  1) { direction = Tile::RIGHT; }
-                else if(delta_x ==  0 && delta_y == -1) { direction = Tile::LEFT; }
-                else    //invalid
+            // determine direction and check if it is invalid
+            delta_x = order.data[2] - order.data[0];
+            delta_y = order.data[3] - order.data[1];
+                    // valid
+            if     (delta_x ==  1 && delta_y ==  0) { direction = Tile::DOWN; }
+            else if(delta_x == -1 && delta_y ==  0) { direction = Tile::UP; }
+            else if(delta_x ==  0 && delta_y ==  1) { direction = Tile::RIGHT; }
+            else if(delta_x ==  0 && delta_y == -1) { direction = Tile::LEFT; }
+            else {
                 return Commander::Order::INVORD_INVARGS;
+            }
 
             // check that an unit was selected
-            if(!grid[order.data[0]][order.data[1]].card.has_value())       { return Commander::Order::INVORD_NOSELECT; 	}
+            if(!grid[order.data[0]][order.data[1]].card.has_value()) { 
+                return Commander::Order::INVORD_NOSELECT; 	
+            }
             // check that target tile is vacant
-            if(grid[order.data[2]][order.data[3]].card.has_value())       { return Commander::Order::INVORD_NOTARGET; 	}
+            if(grid[order.data[2]][order.data[3]].card.has_value()) { 
+                return Commander::Order::INVORD_NOTARGET; 	
+            }
             // check ownership permissions
-            if(grid[order.data[0]][order.data[1]].card->get().controller_id != turn) { return Commander::Order::INVORD_PERMISSION; }
+            if(grid[order.data[0]][order.data[1]].card->get().controller_id != turn) {
+                return Commander::Order::INVORD_PERMISSION; 
+            }
             // check if ability was exhausted
-            if(!grid[order.data[0]][order.data[1]].card->get().can_move)        { return Commander::Order::INVORD_EXHAUSTED; 	}
-
-            // exec order
-
+            if(!grid[order.data[0]][order.data[1]].card->get().can_move) { 
+                return Commander::Order::INVORD_EXHAUSTED; 	
+            }
+            // execute order
             if(!resolve_movement(grid[order.data[0]][order.data[1]].card.value(), direction)) {
                 return Commander::Order::INVORD_UNKNOWN;
             }
-
-            std::cout << "Executing..." << std::endl;
-            return Commander::Order::INVORD_NONE;
+            // push feedback
+            return Commander::Order::ORDER_SUCCESS;
         }
         break;
         
         //  ATTACK  _________________________________________________
-
         case Commander::Order::ORD_ATTACK:
         {
-
             // ensure all arguments are present
             if(order.data[0] < 0 || order.data[1] < 0 || order.data[2] < 0 || order.data[3] < 0) {
                 return Commander::Order::INVORD_INVARGS;
@@ -287,29 +290,37 @@ int Game_master::exec_order(const Commander::Order& order)
                 else if(delta_x ==  1 && delta_y == -1) { direction = Tile::DOWNLEFT;	}
                 else if(delta_x == -1 && delta_y ==  1) { direction = Tile::UPRIGHT;	}
                 else if(delta_x == -1 && delta_y == -1) { direction =   Tile::UPLEFT;	}
-                else    //invalid
-                return Commander::Order::INVORD_INVARGS;
+                else   { //invalid
+                    return Commander::Order::INVORD_INVARGS;
+                }
 
             // check that unit was selected
-            if(!grid[order.data[0]][order.data[1]].card.has_value())       { return Commander::Order::INVORD_NOSELECT; 	}
+            if(!grid[order.data[0]][order.data[1]].card.has_value()) { 
+                return Commander::Order::INVORD_NOSELECT; 	
+            }
             // check target legality
-            if(!grid[order.data[2]][order.data[3]].card.has_value())       { return Commander::Order::INVORD_NOTARGET; 	}
+            if(!grid[order.data[2]][order.data[3]].card.has_value()) { 
+                return Commander::Order::INVORD_NOTARGET; 	
+            }
             // check ownership permissions
-            if(grid[order.data[0]][order.data[1]].card->get().controller_id != turn) { return Commander::Order::INVORD_PERMISSION; }
+            if(grid[order.data[0]][order.data[1]].card->get().controller_id != turn) { 
+                return Commander::Order::INVORD_PERMISSION; 
+            }
             // check if ability was exhausted
-            if(!grid[order.data[0]][order.data[1]].card->get().can_attack)      { return Commander::Order::INVORD_EXHAUSTED; 	}
+            if(!grid[order.data[0]][order.data[1]].card->get().can_attack) { 
+                return Commander::Order::INVORD_EXHAUSTED; 	
+            }
 
             // process order
             if(!resolve_attack(grid[order.data[0]][order.data[1]].card.value(), direction)) {
             	return Commander::Order::INVORD_UNKNOWN;
 			}
-            std::cout << "Executing..." << std::endl;
-            return Commander::Order::INVORD_NONE;
+            // push feedback
+            return Commander::Order::ORDER_SUCCESS;
         }
         break;
 
         //  PLAY  _________________________________________________
-
         case Commander::Order::ORD_PLAY:
         {
         
@@ -317,62 +328,80 @@ int Game_master::exec_order(const Commander::Order& order)
             	return Commander::Order::INVORD_INVARGS;
 			}
             // Check for out-of-bounds arguments for unit deployment
-            std::optional<tile_ref> deploySite; // Get tile reference for unit deployment
+            std::optional<tile_ref> deployment_site; // Get tile reference for unit deployment
             if(players[turn].hand[order.data[0]].get().type == CTYPE_UNIT)
             {
-                if(order.data[1] < 0 || order.data[2] < 0) {
+                if(order.data[1] < 0 || order.data[2] < 0) { 
                     return Commander::Order::INVORD_INVARGS;
                 }
                 if(order.data[1] >= grid.size() || order.data[2] >= grid[0].size()) {
                     return Commander::Order::INVORD_INVARGS;
 				}
-                deploySite = std::ref(grid[order.data[1]][order.data[2]]);
+                deployment_site = std::ref(grid[order.data[1]][order.data[2]]);
             }
             // Ensure player has sufficient money
             if(players[turn].hand[order.data[0]].get().cost > players[turn].funds) {
                 return Commander::Order::INVORD_NOFUNDS;
 			}
             // Finally, perform the action and check for proper execution.
-            if(!play_card(turn, order.data[0], deploySite)) {
+            if(!play_card(turn, order.data[0], deployment_site)) {
                 return Commander::Order::INVORD_NOTARGET;
 			}
-            return Commander::Order::INVORD_NONE; // Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
+            return Commander::Order::ORDER_SUCCESS; // Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
         }
         break;
 
-        //  INVALID  _________________________________________________
-
+        //  INVALID TYPE ____________________________________________
         default:
             return Commander::Order::INVORD_INVTYPE;
         break;
     }
-    //return Commander::Order::INVORD_INVTYPE;
 }
 
-void Game_master::update_status(int player_id)
+void Game_master::fire_trigger(Trigger& trigger, std::vector<int> args = {}) 
 {
-    commander_ref commander = commanders[player_id];
+    for (std::pair<int, Reaction> bound : trigger) {
+        bound.second(args);
+    }
+}
 
-    commander.get().turn = turn;
-    commander.get().turn_absolute = turn_absolute;
+const Commander::Game_status Game_master::get_status(int player_id)
+{
+    Commander::Game_status status;
     
-    commander.get().active_cards.resize(active_cards.size());
-    for(int i = 0; i < active_cards.size(); i++)
-    {
-        commander.get().active_cards[i] = active_cards[i].get().get_info();
+    status.active_cards.resize(active_cards.size());
+    for(int i = 0; i < active_cards.size(); i++) {
+        status.active_cards[i] = active_cards[i].get().get_info();
     }
 
-    commander.get().hands[player_id].resize(players[player_id].hand.size());
-    for(int i = 0; i < players[player_id].hand.size(); i++)
-    {
-        commander.get().hands[player_id][i] = players[player_id].hand[i].get().get_info();
+    status.hands[player_id].resize(players[player_id].hand.size());
+    for(int i = 0; i < players[player_id].hand.size(); i++) {
+        status.hands[player_id][i] = players[player_id].hand[i].get().get_info();
     }
 
-    commander.get().players.resize(players.size());
-    for(int i = 0; i < players.size(); i++)
-    {
-        commander.get().players[i] = players[i].get_info();
+    status.players.resize(players.size());
+    for(int i = 0; i < players.size(); i++) {
+        status.players[i] = players[i].get_info();
     }
+
+    return status;
+}
+
+Commander::Static_game_info Game_master::get_static_game_info()
+{
+    std::unordered_map<unsigned int, Commander::Card_info> manifest;
+    std::pair<int, int> grid_params = {grid.size(), grid[0].size()};
+
+    for (Deck& deck : decks) {
+        for (Card& card : deck.all) {
+            manifest.insert({card.entity_id.get_id(), card.get_info()});
+        }
+    }
+    for (Card& card : tokens) {
+        manifest.insert({card.entity_id.get_id(), card.get_info()});
+    }
+
+    return {manifest, grid_params};
 }
 
 bool Game_master::check_dominance(int playerId)
@@ -415,6 +444,7 @@ bool Game_master::deploy_card(Card& card, std::optional<tile_ref> target)
         active_cards.push_back(std::ref(card));
     }
 
+    fire_trigger(card.enters_play, {});
 
     if(card.type == CTYPE_TACTIC) {
         resolve_destruction(card);
@@ -436,6 +466,12 @@ bool Game_master::resolve_movement(Card& card, const int& direction)
     if(options[direction]->get().card)
         return false;
 
+    fire_trigger(card.before_move, {direction});
+
+    // Broadcast event before coordinates have changed 
+    Commander::Event move_event = {Commander::Event::EV_CARD_MOVED, {card.x, card.y, options[direction]->get().x, options[direction]->get().y}};
+    broadcast_event(move_event);
+
     // Exchange positions
     grid[card.x][card.y].card.reset();
     options[direction]->get().card = std::ref(card);
@@ -444,6 +480,8 @@ bool Game_master::resolve_movement(Card& card, const int& direction)
     card.y = options[direction]->get().y;
 
     card.can_move = false;
+
+    fire_trigger(card.after_move, {direction});
 
     return true;
 }
@@ -465,12 +503,20 @@ void Game_master::resolve_destruction(Card& card)
             std::clog << "WARNING: killing card that was not \"in play\"" << std::endl;
     }
 
+    fire_trigger(card.leaves_play);
+
     // Send to discard
     card.status = Card::CSTATUS_GRAVEYARD;
     decks[card.owner_id].graveyard.push_back(std::ref(card));
 
     // Restore default power and linked triggers
     card.reset();
+
+    if (card.type != CTYPE_TACTIC) {
+        // Broadcast event if the card is not a tactic (in that case, deployment event is enough)
+        Commander::Event destruction_event = {Commander::Event::EV_CARD_DESTROYED, {(int)card.entity_id.get_id()}};
+        broadcast_event(destruction_event);
+    }
 }
 
 bool Game_master::resolve_attack(Card& card, const int& direction)
@@ -485,25 +531,34 @@ bool Game_master::resolve_attack(Card& card, const int& direction)
     if(!options[direction].has_value() || !(options[direction]->get().card.has_value()))
         return false;
 
-    resolve_combat(card, options[direction]->get().card.value());
+    fire_trigger(card.before_attack, {direction});
+
+    int combat_result = resolve_combat(card, options[direction]->get().card.value());
+
+    // Broadcast event
+    Commander::Event attack_event = {Commander::Event::EV_CARD_ATTACKS, {card.x, card.y, options[direction]->get().x, options[direction]->get().y}};
+    broadcast_event(attack_event);
+    // Process triggers
+    fire_trigger(card.after_attack, {direction, combat_result});
+
     return true;
 }
 
 int Game_master::resolve_combat(Card& attacker, Card& defender)
 {
     int advantage_difference = attacker.advantage - defender.advantage;
-    // Advantage bonus if defender is overwhelmed
+    // set advantage bonus if defender is overwhelmed
     if(defender.is_overwhelmed) { advantage_difference++; }
-    // Environmental advantage
+    // tile type advantage
     if(defender.x > 0 && defender.y > 0)
     {
-    if(grid[defender.x][defender.y].type = Tile::TERR_ADV)    { advantage_difference--; }
-    if(grid[defender.x][defender.y].type = Tile::TERR_DISADV) { advantage_difference++; }
+        if(grid[defender.x][defender.y].type = Tile::TERR_ADV)    { advantage_difference--; }
+        if(grid[defender.x][defender.y].type = Tile::TERR_DISADV) { advantage_difference++; }
     }
     if(attacker.x > 0 && attacker.y > 0)
     {
-    if(grid[attacker.x][attacker.y].type = Tile::TERR_ADV)    { advantage_difference--; }
-    if(grid[attacker.x][attacker.y].type = Tile::TERR_DISADV) { advantage_difference++; }
+        if(grid[attacker.x][attacker.y].type = Tile::TERR_ADV)    { advantage_difference--; }
+        if(grid[attacker.x][attacker.y].type = Tile::TERR_DISADV) { advantage_difference++; }
     }
     // advantage resolution
     if(advantage_difference > 0)
@@ -520,33 +575,34 @@ int Game_master::resolve_combat(Card& attacker, Card& defender)
     attacker.can_attack = false;
     attacker.can_move   = false;
     defender.is_overwhelmed = true;
-    // normal damage resolution
+
+    // raw damage resolution
     if(attacker.value > defender.value)
     {
         attacker.value -= defender.value;
         defender.value = 0;
         resolve_destruction(defender);
-        return Game_master::DEFENDER_DEAD;
+        return Game_master::COMBAT_WIN;
     }
     else if(attacker.value < defender.value)
     {
         defender.value -= attacker.value;
         attacker.value = 0;
         resolve_destruction(attacker);
-        return Game_master::ATTACKER_DEAD;
+        return Game_master::COMBAT_LOSE;
     }
     else // attacker.value == defender.value
     {
-        resolve_destruction(attacker);
         resolve_destruction(defender);
-        return Game_master::BOTH_DEAD;
+        resolve_destruction(attacker);
+        return Game_master::COMBAT_TIE;
     }
 }
 
 std::vector<std::optional<Game_master::tile_ref>> Game_master::get_4neighbors(const Tile& tile)    
 {
     std::vector<std::optional<Game_master::tile_ref>> res(4);
-
+    // Check boundary conditions and add all possible options to res.
     if(tile.x > 0)                  { res[Tile::UP]    = std::ref(grid[tile.x-1][tile.y]); }
     if(tile.y < grid[0].size() - 1) { res[Tile::RIGHT] = std::ref(grid[tile.x][tile.y+1]); }
     if(tile.x < grid.size() - 1)    { res[Tile::DOWN]  = std::ref(grid[tile.x+1][tile.y]); }
@@ -558,7 +614,7 @@ std::vector<std::optional<Game_master::tile_ref>> Game_master::get_4neighbors(co
 std::vector<std::optional<Game_master::tile_ref>> Game_master::get_8neighbors(const Tile& tile)
 {
     std::vector<std::optional<tile_ref>> res(8);
-    
+    // Check boundary conditions and add all possible options to res.
     if(tile.x > 0)
     {
         res[Tile::UP] = std::ref(grid[tile.x-1][tile.y]);
@@ -583,21 +639,34 @@ std::vector<std::optional<Game_master::tile_ref>> Game_master::get_8neighbors(co
 
 bool Game_master::resolve_draw(int player_id)
 {
-    if(players[player_id].deck.get().library.size() == 0) {
-        if(players[player_id].deck.get().graveyard.size() == 0) {
+    Player& player = players[player_id];
+
+    if(player.deck.get().library.size() == 0) {
+        // Library is empty, refill it by shuffling graveyard
+        if(player.deck.get().graveyard.size() == 0) {
+            // Graveyard is empty (everything is in hand or on battlefield?) -- draw is not resolved
             return false;
         }
         else {
-            players[player_id].deck.get().refresh();
+            player.deck.get().refresh();
+
+            Commander::Event refresh_event = {Commander::Event::EV_DECK_REFRESH, {player_id}};
+            broadcast_event(refresh_event);
         }
     }
-    if(players[player_id].deck.get().library.back().get().status != Card::CSTATUS_LIBRARY) {
+    if(player.deck.get().library.back().get().status != Card::CSTATUS_LIBRARY) {
         std::clog << "Warning: drawing card that has not been marked as \"In deck\"" << std::endl;
     }
 
-    players[player_id].hand.push_back(players[player_id].deck.get().library.back());
-    players[player_id].deck.get().library.back().get().status = Card::CSTATUS_HAND;
-    players[player_id].deck.get().library.pop_back();
+    player.hand.push_back(player.deck.get().library.back());
+    player.deck.get().library.back().get().status = Card::CSTATUS_HAND;
+    player.deck.get().library.pop_back();
+    
+    // Process triggers
+    fire_trigger(player.draws);
+    // Broadcast event
+    Commander::Event draw_event = {Commander::Event::EV_PLAYER_DRAWS, {player_id}};
+    broadcast_event(draw_event);
 
     return true;
 }
@@ -610,9 +679,15 @@ bool Game_master::discard(int player_id, int hand_index)
     if(players[player_id].hand[hand_index].get().status != Card::CSTATUS_HAND)
         std::clog << "Warning: discarding card that has not been marked as \"In hand\"" << std::endl;
 
+    int discarded_entity_id = (int)players[player_id].hand[hand_index].get().entity_id.get_id();
+
     decks[player_id].graveyard.push_back(players[player_id].hand[hand_index]);
     players[player_id].hand[hand_index].get().status = Card::CSTATUS_GRAVEYARD;
     pop_index(players[player_id].hand, hand_index);
+
+    // Broadcast event
+    Commander::Event discard_event = {Commander::Event::EV_PLAYER_DISCARDS, {player_id, discarded_entity_id}};
+    broadcast_event(discard_event);
 
     return true;
 }
@@ -632,7 +707,7 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<tile_re
     if(played.type == CTYPE_UNIT)
     {
         if(!target.has_value())
-            std::runtime_error("No deployment site provided for a unit");
+            std::runtime_error("No deployment site provided for a unit card");
 
         // Check surroundings or deployment zones
         if(target->get().type != player_id) //If deploying outside of Base
@@ -663,6 +738,22 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<tile_re
     
     pop_index(players[player_id].hand, hand_index);
     bool res = deploy_card(played, target);
+
+
+    if (res) {
+        played.controller_id = player_id;
+
+        fire_trigger(players[player_id].deploys);
+
+        int target_x = -1, target_y = -1;
+        if (target.has_value()) {
+            target_x = target->get().x;
+            target_y = target->get().y;
+        }
+
+        Commander::Event deploy_event = {Commander::Event::EV_PLAYER_DEPLOYS, {player_id, (int)played.entity_id.get_id(), target_x, target_y}};
+        broadcast_event(deploy_event);
+    }
 
     return res;
 }

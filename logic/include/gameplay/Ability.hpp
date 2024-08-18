@@ -8,12 +8,11 @@
 #include "Game_master.hpp"
 #include "Unique.hpp"
 
-
-
 class Game_master::Ability
 {
-    private:
+    protected:
     Card& attached_to;
+    Game_master& master;
 
     class Binding
     {
@@ -28,10 +27,10 @@ class Game_master::Ability
 
     public:
     Unique entity_id;
-    Ability(Card& card) : attached_to(card) {} 
+    Ability(Game_master& gm, Card& card) : master(gm), attached_to(card) {} 
 
     template <int amount>
-    void draw_cards(Game_master& master, std::vector<int> args)
+    void draw_cards(std::vector<int> args)
     {
         for (int i = 0; i < amount; i++) {
             master.resolve_draw(attached_to.owner_id);
@@ -39,8 +38,17 @@ class Game_master::Ability
     }
 
     template <int amount>
-    void gain_credits(Game_master& master, std::vector<int> args)
+    void gain_credits(std::vector<int> args)
     {
         master.players[attached_to.owner_id].funds += amount;
     }
+};
+
+class Game_master::Ability_simple : Game_master::Ability
+{
+    public:
+    Ability_simple(Game_master& gm, Card& card, std::vector<std::pair<Trigger&, Reaction>> effects);
+
+    protected:
+    std::vector<Binding> bindings;
 };

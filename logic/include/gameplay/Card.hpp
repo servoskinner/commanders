@@ -2,18 +2,19 @@
 
 #include "Game_master.hpp"
 #include "Unique.hpp"
+#include "Ability.hpp"
 
 class Game_master::Card
 {
 public: // _____________________________________________________________________________
-    Card(int id, int oid = -1);
+    Card(Game_master& master, int id, int oid = -1);
     void reset();
 
     // Identification
     const int owner_id;
     const int card_id;
     int controller_id;
-    
+
     Unique entity_id;
 
     int type;

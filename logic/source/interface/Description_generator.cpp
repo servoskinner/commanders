@@ -11,109 +11,110 @@ Description_generator::Description_generator() // instantiate all cards in game
 
     cards[BOUNTYHUNTER].cost = 1;
     cards[BOUNTYHUNTER].value = 2;
-    cards[BOUNTYHUNTER].mnemosprite = {0, 0, 1,
+    cards[BOUNTYHUNTER].mnemosprite = {0, 0, 0,
                                        1, 1, 1,
-                                       0, 0, 1,
+                                       1, 0, 1,
                                        0, 1, 0,
-                                       1, 1, 0};
+                                       1, 0, 0};
     //______________________________
-    cards[HENCHMAN].name = "Henchman";
-    cards[HENCHMAN].type = CTYPE_UNIT;
-    cards[HENCHMAN].flavor_text = "Standard infantry. Most standard of them all.";
+    cards[TERRORGUARD].name = "Terrorguard";
+    cards[TERRORGUARD].type = CTYPE_UNIT;
+    cards[TERRORGUARD].flavor_text = "Advanced augmentoid infantry. Kicks more ass than average.";
 
-    cards[HENCHMAN].cost = 2;
-    cards[HENCHMAN].value = 3;
-    cards[HENCHMAN].mnemosprite =     {1, 1, 1,
-                                       0, 0, 0,
+    cards[TERRORGUARD].cost = 3;
+    cards[TERRORGUARD].value = 5;
+    cards[TERRORGUARD].mnemosprite =  {1, 1, 1,
                                        0, 0, 1,
-                                       1, 0, 1,
-                                       1, 0, 1};
-    //______________________________
-    cards[COMMANDO].name = "Terrorguard";
-    cards[COMMANDO].type = CTYPE_UNIT;
-    cards[COMMANDO].flavor_text = "Advanced augmentoid infantry. Kicks more ass than average.";
-
-    cards[COMMANDO].cost = 3;
-    cards[COMMANDO].value = 4;
-    cards[COMMANDO].mnemosprite =     {1, 1, 1,
-                                       1, 0, 1,
-                                       0, 1, 1,
-                                       0, 1, 1,
-                                       1, 1, 0};
+                                       1, 1, 1,
+                                       1, 1, 0,
+                                       0, 1, 0};
     //______________________________
     cards[OPPRESSOR].name = "Oppressor";
     cards[OPPRESSOR].type = CTYPE_UNIT;
     cards[OPPRESSOR].flavor_text = "Superheavy assault unit. Ideal for shock-and-awe tactics.";
 
-    cards[OPPRESSOR].cost = 4;
-    cards[OPPRESSOR].value = 5;
+    cards[OPPRESSOR].cost = 5;
+    cards[OPPRESSOR].value = 8;
     cards[OPPRESSOR].mnemosprite =    {0, 1, 1,
                                        1, 1, 1,
+                                       1, 1, 1,
                                        1, 0, 0,
-                                       0, 1, 0,
-                                       1, 1, 1};
+                                       0, 1, 0};
     //______________________________
-    cards[MAIMBOT].name = "Maimbot";
-    cards[MAIMBOT].type = CTYPE_UNIT;
-    cards[MAIMBOT].flavor_text = "Autonomous weapons platform.";
-    cards[MAIMBOT].ability_text = "Advantage 1";
+    cards[MAIMDROID].name = "Maimdroid";
+    cards[MAIMDROID].type = CTYPE_UNIT;
+    cards[MAIMDROID].flavor_text = "Autonomous weapons platform.";
+    cards[MAIMDROID].ability_text = "Advantage 1";
 
-    cards[MAIMBOT].cost = 4;
-    cards[MAIMBOT].value = 3;
-    cards[MAIMBOT].mnemosprite =      {1, 1, 1,
+    cards[MAIMDROID].cost = 3;
+    cards[MAIMDROID].value = 3;
+    cards[MAIMDROID].mnemosprite =    {0, 1, 1,
                                        1, 1, 0,
                                        0, 1, 1,
-                                       1, 1, 0,
+                                       1, 0, 1,
                                        1, 0, 0};
     //______________________________
-    cards[ARCHON].name = "Omnitank";
-    cards[ARCHON].type = CTYPE_UNIT;
-    cards[ARCHON].flavor_text = "High-performance Death Mech. Banned in 43 countries.";
-    cards[ARCHON].ability_text = "Advantage 1";
+    cards[OMNITANK].name = "Omnitank";
+    cards[OMNITANK].type = CTYPE_UNIT;
+    cards[OMNITANK].flavor_text = "High-performance Death Mech. Banned in 43 countries.";
+    cards[OMNITANK].ability_text = "Advantage 1";
 
-    cards[ARCHON].cost = 7;
-    cards[ARCHON].value = 5;
-    cards[ARCHON].mnemosprite =       {1, 0, 1,
+    cards[OMNITANK].cost = 7;
+    cards[OMNITANK].value = 5;
+    cards[OMNITANK].mnemosprite =     {1, 0, 1,
                                        1, 1, 0,
                                        1, 1, 1,
                                        1, 0, 1,
                                        1, 0, 1};
     //______________________________
-    cards[MACHINEPARTS].name = "Machine Shop";
+    cards[MACHINEPARTS].name = "Machine Parts";
     cards[MACHINEPARTS].type = CTYPE_CONTRACT;
     cards[MACHINEPARTS].flavor_text = "Produces the nerve and bone of our age.";
 
-    cards[MACHINEPARTS].cost = 3;
-    cards[MACHINEPARTS].value = 7;
-    cards[MACHINEPARTS].mnemosprite = {1, 1, 0,
+    cards[MACHINEPARTS].cost = 4;
+    cards[MACHINEPARTS].value = 6;
+    cards[MACHINEPARTS].mnemosprite = {1, 1, 1,
+                                       1, 0, 0,
                                        1, 1, 1,
-                                       0, 0, 0,
-                                       1, 1, 0,
-                                       0, 1, 0};
+                                       0, 0, 1,
+                                       1, 1, 1};
     //______________________________
     cards[GUNKFOOD].name = "Gunkfood";
     cards[GUNKFOOD].type = CTYPE_CONTRACT;
     cards[GUNKFOOD].flavor_text = "Synthetic food. It's got electrolytes.";
 
-    cards[GUNKFOOD].cost = 1;
-    cards[GUNKFOOD].value = 4; 
+    cards[GUNKFOOD].cost = 2;
+    cards[GUNKFOOD].value = 3; 
     cards[GUNKFOOD].mnemosprite =     {0, 0, 1,
-                                       1, 0, 0,
-                                       1, 1, 0,
-                                       1, 1, 0,
-                                       0, 1, 0};
+                                       0, 1, 1,
+                                       0, 1, 1,
+                                       0, 0, 1,
+                                       1, 1, 0};
     //______________________________
     cards[FISSION].name = "Nuclear Fission";
     cards[FISSION].type = CTYPE_CONTRACT;
     cards[FISSION].flavor_text = "Get pure energy from thin air.";
 
-    cards[FISSION].cost = 5;
-    cards[FISSION].value = 10;
-    cards[FISSION].mnemosprite =      {1, 1, 1,
-                                       0, 1, 1,
-                                       0, 0, 1,
+    cards[FISSION].cost = 6;
+    cards[FISSION].value = 9;
+    cards[FISSION].mnemosprite =      {1, 0, 0,
                                        1, 1, 0,
-                                       1, 0, 0};
+                                       0, 0, 1,
+                                       0, 1, 1,
+                                       1, 1, 1};
+    //______________________________
+    cards[DEMOLITIONIST].name = "Trashpunk Brute";
+    cards[DEMOLITIONIST].type = CTYPE_CONTRACT;
+    cards[DEMOLITIONIST].flavor_text = "Explosive expert with grave lack of fingers.";
+    cards[DEMOLITIONIST].ability_text = "Advantage -1";
+
+    cards[DEMOLITIONIST].cost = 2;
+    cards[DEMOLITIONIST].value = 6;
+    cards[DEMOLITIONIST].mnemosprite = {1, 1, 1,
+                                        0, 0, 1,
+                                        1, 0, 1,
+                                        1, 0, 0,
+                                        1, 0, 0};
     //______________________________
     // cards[UNITANK].name = "Unicyclone";
     // cards[UNITANK].type = CTYPE_UNIT;

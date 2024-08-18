@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 
-Game_master::Player::Player(int playerid, Deck& deck) : id(playerid), deck(deck)
+Game_master::Player::Player(int player_id, Deck& p_deck) : id(player_id), deck(p_deck)
 {
     std::cout << "created player with ID " << id << " at " << this <<  std::endl;
 

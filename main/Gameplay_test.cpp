@@ -11,12 +11,12 @@ int main()
     {
         BOUNTYHUNTER,
         BOUNTYHUNTER,
-        HENCHMAN,
-        HENCHMAN,
-        COMMANDO,
+        BOUNTYHUNTER,
+        TERRORGUARD,
+        TERRORGUARD,
         OPPRESSOR,
-        MAIMBOT,
-        MAIMBOT,
+        MAIMDROID,
+        MAIMDROID,
         GUNKFOOD,
         GUNKFOOD,
         MACHINEPARTS,
@@ -26,12 +26,12 @@ int main()
     {
         BOUNTYHUNTER,
         BOUNTYHUNTER,
-        HENCHMAN,
-        HENCHMAN,
-        COMMANDO,
+        BOUNTYHUNTER,
+        TERRORGUARD,
+        TERRORGUARD,
         OPPRESSOR,
-        MAIMBOT,
-        MAIMBOT,
+        MAIMDROID,
+        MAIMDROID,
         GUNKFOOD,
         GUNKFOOD,
         MACHINEPARTS,
@@ -39,16 +39,23 @@ int main()
     };
 
     CLI_commander cmd1, cmd2;
-
-    std::vector<commander_ref> commander_refs = {std::ref(cmd1), std::ref(cmd2)};
     std::vector<std::vector<int>> deck_images = {deck1, deck2};
 
-    Game_master gm(commander_refs, deck_images);
+    Game_master gm(deck_images);
 
-    while(gm.game_loop())
+    cmd1.static_game_info = gm.get_static_game_info();
+    cmd2.static_game_info = gm.get_static_game_info();
+
+    while(true)
     {
-        // cmd1.apply_updates();
-        // cmd2.apply_updates();
+        cmd1.game_status = gm.get_status(0);
+        cmd2.game_status = gm.get_status(1);
+        if (gm.get_turn() % 2 == 0){
+            int order_code = gm.exec_order(0, cmd1.get_order());
+        }
+        else {
+            int order_code = gm.exec_order(1, cmd2.get_order());
+        }
     }
     
     return 0;

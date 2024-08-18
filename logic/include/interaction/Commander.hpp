@@ -26,27 +26,27 @@ public:
         short points;
         short funds;
 
-        short deck_total_size;
-        short library_size;
-        short discard_size;
-        short hand_size;
+        unsigned short deck_total_size;
+        unsigned short library_size;
+        unsigned short discard_size;
+        unsigned short hand_size;
 
         Player_info() = default;
     };
     struct Card_info // Card information to be exchanged between commanders and the master
     {
-        short card_id;
-        short entity_id;
+        unsigned short card_id;
+        unsigned short entity_id;
         char owner_id;
 
-        short x, y;
+        unsigned short x, y;
 
         bool can_attack;
         bool can_move;
         bool is_overwhelmed;
 
-        short value;
-        short cost;
+        unsigned short value;
+        unsigned short cost;
         short advantage;
         char type;
 
@@ -54,7 +54,7 @@ public:
     };
     struct Commander_message // Data structure that represents the player's in-game actions.
     {
-        int type;
+        unsigned short type;
         enum order_type 
         {
             ORD_NOTHING, 
@@ -66,9 +66,9 @@ public:
             ORD_CHOICE,
             ORD_ABILITY
         };
-        enum order_error_codes
+        enum order_feedback
         {
-            INVORD_NONE,
+            ORDER_SUCCESS,
             INVORD_UNKNOWN,
             INVORD_INVTYPE,
             INVORD_INVARGS,
@@ -81,8 +81,7 @@ public:
         enum event_type 
         {
             EV_DUMMY,
-            EV_ORDER_CONFIRM,
-            EV_ORDER_INVALID,
+            EV_ORDER_FEEDBACK,
             EV_GAME_WON_BY,
             EV_TURN_PASSED_TO,
             EV_PLAYER_DEPLOYS,
@@ -98,21 +97,33 @@ public:
         std::vector<int> data;
 
         Commander_message() : type(ORD_NOTHING), data(0) {}
+        Commander_message(unsigned short type, std::vector<int> data) : type(type), data(data) {}
         const std::vector<char> packed();
         Commander_message(const std::vector<char>& packed);
     };
-    typedef Commander_message Order;
+
+    struct Static_game_info
+    {
+    std::unordered_map<unsigned int, Card_info> card_manifest;
+    std::pair<int, int> grid_params;
+    };
+
+    struct Game_status
+    {
+        int turn, turn_absolute;
+        std::vector<Card_info> active_cards;
+        std::vector<Player_info> players;
+        std::vector<std::vector<Card_info>> hands;
+    };
+
+    typedef Commander_message Order; // Command issued by player
     typedef Commander_message Event; // Message describing a happening in game.
 
-    int active_id; // The player that commander is controlling at the moment
     std::vector<int> controlled_ids; // All players controlled by the commander
+    int active_id;    
 
-    int grid_width, grid_height;         
-    int turn, turn_absolute;     
-
-    std::vector<Card_info> active_cards;            // Cards placed on the battlefield and visible to everyone.
-    std::vector<std::vector<Card_info>> hands;      // Known cards in players' hands
-    std::vector<Player_info> players;               // Known data about other players: their funds, hand size, graveyard, etc.
+    Static_game_info static_game_info;
+    Game_status game_status;
 
     virtual Order get_order() = 0;         // Called by the Game Master to receive player input.
     virtual void process_event(Event event) = 0; // Called by the Game Master to communicate a game event

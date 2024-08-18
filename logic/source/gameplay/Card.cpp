@@ -6,20 +6,20 @@
 #include "Misc_functions.hpp"
 class Game_master;
 
-Game_master::Card::Card(int id, int oid) : entity_id(), card_id(id), owner_id(oid)
+Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), card_id(id), owner_id(oid)
 {
     // Initialize abilities
     switch (card_id)
     {
         case BOUNTYHUNTER:
-        case HENCHMAN:
-        case COMMANDO:
+        case TERRORGUARD:
         case OPPRESSOR:
-        case MAIMBOT:
-        case ARCHON:
+        case MAIMDROID:
+        case OMNITANK:
         case GUNKFOOD:
         case MACHINEPARTS:
         case FISSION:
+        case DEMOLITIONIST:
         break;
     }
 
@@ -43,54 +43,54 @@ void Game_master::Card::reset()
         cost = 1;
         value = 2;
         break;
-    case HENCHMAN:
-        type = CTYPE_UNIT;
-
-        cost = 2;
-        value = 3;
-        break;
-    case COMMANDO:
+    case TERRORGUARD:
         type = CTYPE_UNIT;
 
         cost = 3;
-        value = 4;
+        value = 5;
         break;
     case OPPRESSOR:
         type = CTYPE_UNIT;
 
-        cost = 4;
-        value = 5;
+        cost = 5;
+        value = 8;
         break;
-    case MAIMBOT:
+    case MAIMDROID:
         type = CTYPE_UNIT;
 
-        cost = 4;
+        cost = 3;
         value = 3;
         advantage = 1;
         break;
-    case ARCHON:
+    case OMNITANK:
         type = CTYPE_UNIT;
 
-        cost = 7;
-        value = 5;
+        cost = 6;
+        value = 7;
         advantage = 1;
         break;
+    case DEMOLITIONIST:
+        type = CTYPE_UNIT;
+
+        cost = 2;
+        value = 6;
+        advantage = -1;
     case GUNKFOOD:
         type = CTYPE_CONTRACT;
 
-        cost = 1;
-        value = 4; 
+        cost = 2;
+        value = 3; 
     case MACHINEPARTS:
         type = CTYPE_CONTRACT;
 
-        cost = 3;
-        value = 7;
+        cost = 4;
+        value = 6;
         break;
     case FISSION:
         type = CTYPE_CONTRACT;
 
-        cost = 5;
-        value = 10;
+        cost = 6;
+        value = 9;
         break;
     }
 }

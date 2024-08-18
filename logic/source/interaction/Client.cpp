@@ -38,7 +38,7 @@ void Client::process_msgs(int limit)
                         if (entry_it == discovered_servers.end()) { // New server discovered
                             Server_list_entry new_entry = {inbound.sender, \
                                                         SERVER_UPKEEP_COUNTDOWN, \
-                                                        unpack_struct<Server_info>({inbound.msg.begin()+2, inbound.msg.begin()+DISCOVER_REPLY_SIZE})};
+                                                        deserialize_struct<Server_info>({inbound.msg.begin()+2, inbound.msg.begin()+DISCOVER_REPLY_SIZE})};
                             discovered_servers.push_back(new_entry);
                         }
                         else { // Refresh existing

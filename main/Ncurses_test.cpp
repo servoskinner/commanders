@@ -34,7 +34,7 @@ int main()
     merc.advantage = 1;
     merc.x = 5;
     merc.y = 5;
-    merc.card_id = MAIMBOT;
+    merc.card_id = MAIMDROID;
     commander.active_cards.push_back(merc);
     commander.hands[0].push_back(merc);
 
@@ -43,7 +43,7 @@ int main()
     commander.hands[0].push_back(merc);
     merc.card_id = MACHINEPARTS;
     commander.hands[0].push_back(merc);
-    merc.card_id = ARCHON;
+    merc.card_id = OMNITANK;
     merc.type = CTYPE_UNIT;
     commander.hands[0].push_back(merc);
 
