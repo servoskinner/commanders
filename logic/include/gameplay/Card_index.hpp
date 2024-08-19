@@ -4,7 +4,7 @@ enum cardIds
 {
     BOUNTYHUNTER,
     TERRORGUARD,
-    OPPRESSOR,
+    MEGALO,
     MAIMDROID,
     OMNITANK,
     GUNKFOOD,

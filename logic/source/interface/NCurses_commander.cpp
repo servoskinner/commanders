@@ -2,15 +2,7 @@
 
 NCurses_commander::NCurses_commander()
 {
-    on = true;
-    hands = {};
-    initscr();
-
-    raw();                  // No line buffering for keys
-    noecho();               // Do not echo characters in terminal
-    curs_set(0);            // Hide cursor   
-
-    start_color();     
+    on = true;  
 
     init_pair(CPAIR_INVERTED,       COLOR_BLACK,        COLOR_WHITE);
     init_pair(CPAIR_ACCENT,         COLOR_BRIGHT_BLACK, COLOR_BLACK);
@@ -108,7 +100,6 @@ NCurses_commander::NCurses_commander()
 NCurses_commander::~NCurses_commander()
 {
     on = false;
-    endwin();
 }
 
 Commander::Order NCurses_commander::get_order()
@@ -122,7 +113,10 @@ Commander::Order NCurses_commander::get_order()
     }
 }
 
-void NCurses_commander::process_order_feedback(Commander::Event event)
+void NCurses_commander::process_event(Commander::Event event)
+{ }
+
+void NCurses_commander::process_order_feedback(int code)
 {
     switch (event.type)
     {
@@ -227,16 +221,6 @@ void NCurses_commander::apply_updates()
     }
 
     render_UI();
-}
-
-unsigned NCurses_commander::get_input()
-{
-    timeout(0);
-    unsigned ch = getch();
-    if (ch == ERR) {
-        return 0;
-    }
-    return ch;
 }
 
 void NCurses_commander::render_UI()
@@ -359,8 +343,8 @@ void NCurses_commander::render_hand()
     int hand_center_origin_y = grid_height_sym + Y_HAND_OFFSET + Y_GRID_OFFSET;
 
     if (hands[active_id].size() == 0) {
-        Rect empty_marker;
-        Text_box empty_text = {"HAND IS EMPTY"};
+        TUI::Rect empty_marker;
+        TUI::Text_box empty_text = {"HAND IS EMPTY"};
         
         empty_marker.x = hand_center_origin_x;
         empty_marker.y = hand_center_origin_y;
@@ -433,130 +417,6 @@ void NCurses_commander::render_hand()
             hand_cards_right.draw();
             hand_cards_right.x += HAND_INACTIVE_CARD_WIDTH;
         }
-    }
-}
-
-void NCurses_commander::UI_Object::draw(int orig_y, int orig_x)
-{
-    for (UIobj_ref& child : children) {
-        if (child.get().visible) {
-            if (child.get().use_absolute_position) {
-                child.get().draw(child.get().y, child.get().x);
-            }
-            else {
-                child.get().draw(child.get().y + orig_y, child.get().x + orig_x);
-            }
-        }
-    }
-    draw_self(orig_y + y, orig_x + x);
-}
-
-inline void NCurses_commander::Rect::set_color(int color)
-{
-    fill_color   = color;
-    border_color = color;
-}
-
-inline void NCurses_commander::Rect::set_hborders(unsigned symbol)
-{
-    t_border = symbol;
-    b_border = symbol;
-}
-
-inline void NCurses_commander::Rect::set_vborders(unsigned symbol)
-{
-    l_border = symbol;
-    r_border = symbol;
-}
-
-inline void NCurses_commander::Rect::set_borders(unsigned symbol)
-{
-    t_border = symbol;
-    b_border = symbol;
-    l_border = symbol;
-    r_border = symbol;
-}
-
-inline void NCurses_commander::Rect::set_corners(unsigned symbol)
-{
-    tl_corner = symbol;
-    tr_corner = symbol;
-    bl_corner = symbol;
-    br_corner = symbol;
-} 
-
-inline void NCurses_commander::Rect::set_all(unsigned symbol)
-{
-    set_borders(symbol);
-    set_corners(symbol);
-    fill = symbol;
-} 
-
-void NCurses_commander::Rect::draw_self(int orig_y, int orig_x)
-{
-        // Border ______________
-        if (border_color != 0) {
-            attron(COLOR_PAIR(border_color));
-        }
-        // Horizontal borders
-        for (int i = orig_x+1; i < orig_x+width-1; i++) {
-            mvaddch(orig_y, i, t_border);
-            mvaddch(orig_y+height-1, i, b_border);
-        }
-        // Vertical borders
-        for (int i = orig_y+1; i < orig_y+height-1; i++) {
-            mvaddch(i, orig_x, l_border);
-            mvaddch(i, orig_x+width-1, r_border);
-        }
-        // Corners
-        if (width > 0 && height > 0)
-        {
-        mvaddch(orig_y, orig_x, tl_corner);
-        mvaddch(orig_y, orig_x+width-1, tr_corner);
-        mvaddch(orig_y+height-1, orig_x, bl_corner);
-        mvaddch(orig_y+height-1, orig_x+width-1, br_corner);
-        }
-        if (border_color != 0) {
-            attroff(COLOR_PAIR(border_color));
-        }
-        // Fill ________________
-        if(draw_filled)
-        {
-            if (fill_color != 0) {
-                attron(COLOR_PAIR(fill_color));
-            }
-            for (int i = orig_y+1; i < orig_y+height-1; i++)
-            {
-                for (int j = orig_x+1; j < orig_x+width-1; j++)
-                {
-                    mvaddch(i, j, fill);
-                }
-            }
-            if (fill_color != 0) {
-                attroff(COLOR_PAIR(fill_color));
-            }
-        }
-}
-
-void NCurses_commander::Text_box::draw_self(int orig_y, int orig_x)
-{
-    if (color != 0) {
-        attron(COLOR_PAIR(color));
-    }
-    if (width > 0)
-    {
-        std::vector<std::string> lines = wrap_text(text, width);
-        int n_lines = (height > 0 && lines.size() > height) ? height : lines.size();
-
-        for (int i = 0; i < n_lines; i++) {
-            mvprintw(orig_y+i, orig_x, lines[i].c_str());
-        }
-    }
-    else {
-        mvprintw(orig_y, orig_x, text.c_str());
-    }
-    if (color != 0) {
-        attroff(COLOR_PAIR(color));
     }
 }
 

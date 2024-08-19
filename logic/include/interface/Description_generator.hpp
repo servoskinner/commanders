@@ -22,7 +22,7 @@ public:
         int type = -1;
         std::array<bool, 15> mnemosprite = {};
     };
-    inline const Card_descr& get_card_instance(int index);
+    Card_descr get_card_instance(int index);
     static Description_generator& get();
 
 private:
