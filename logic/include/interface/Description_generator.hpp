@@ -22,12 +22,10 @@ public:
         int type = -1;
         std::array<bool, 15> mnemosprite = {};
     };
-    Card_descr get_card_instance(int index);
-    static Description_generator& get();
+    static Card_descr get_card_instance(int index);
 
 private:
-    Description_generator();
-
+    Description_generator() = delete;
     Description_generator(const Description_generator&) = delete;
     Description_generator& operator=(const Description_generator&) = delete;
 };

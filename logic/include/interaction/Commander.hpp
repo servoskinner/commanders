@@ -57,10 +57,10 @@ public:
         unsigned short type;
         enum order_type 
         {
-            ORD_NOTHING, 
+            ORD_DO_NOTHING, 
             ORD_PASS, 
             ORD_SURRENDER, 
-            ORD_PLAY, 
+            ORD_PLAY_CARD, 
             ORD_MOVE, 
             ORD_ATTACK, 
             ORD_CHOICE,
@@ -68,15 +68,15 @@ public:
         };
         enum order_feedback
         {
-            ORDER_SUCCESS,
-            INVORD_UNKNOWN,
-            INVORD_INVTYPE,
-            INVORD_INVARGS,
-            INVORD_PERMISSION,
-            INVORD_NOSELECT,
-            INVORD_NOTARGET,
-            INVORD_EXHAUSTED,
-            INVORD_NOFUNDS
+            ORD_SUCCESS,
+            ORD_UNKNOWN,
+            ORD_INVTYPE,
+            ORD_INVARGS,
+            ORD_PERMISSION,
+            ORD_NOSELECT,
+            ORD_NOTARGET,
+            ORD_EXHAUSTED,
+            ORD_NOFUNDS
         };
         enum event_type 
         {
@@ -96,7 +96,7 @@ public:
         };
         std::vector<int> data;
 
-        Commander_message() : type(ORD_NOTHING), data(0) {}
+        Commander_message() : type(ORD_DO_NOTHING), data(0) {}
         Commander_message(unsigned short type, std::vector<int> data) : type(type), data(data) {}
         const std::vector<char> packed();
         Commander_message(const std::vector<char>& packed);

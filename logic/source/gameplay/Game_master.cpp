@@ -211,7 +211,7 @@ int Game_master::exec_order(int player_id, const Commander::Order& order)
         case Commander::Order::ORD_PASS:
         { // ends turn: self-explanatory
         end_turn(); // Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
-        return Commander::Order::ORDER_SUCCESS;
+        return Commander::Order::ORD_SUCCESS;
         }
         break;
 
@@ -221,12 +221,12 @@ int Game_master::exec_order(int player_id, const Commander::Order& order)
 
             // check whether all arguments are present
             if(order.data[0] < 0 || order.data[1] < 0 || order.data[2] < 0 || order.data[3] < 0) {
-                return Commander::Order::INVORD_INVARGS;
+                return Commander::Order::ORD_INVARGS;
 			}
             // check for out-of-bounds arguments
             if(order.data[0] >= grid.size() || order.data[1] >= grid[0].size() || \
             order.data[2] >= grid.size() || order.data[3] >= grid[0].size()) {
-                return Commander::Order::INVORD_INVARGS;
+                return Commander::Order::ORD_INVARGS;
 			}
             // determine direction and check if it is invalid
             delta_x = order.data[2] - order.data[0];
@@ -237,31 +237,31 @@ int Game_master::exec_order(int player_id, const Commander::Order& order)
             else if(delta_x ==  0 && delta_y ==  1) { direction = Tile::RIGHT; }
             else if(delta_x ==  0 && delta_y == -1) { direction = Tile::LEFT; }
             else {
-                return Commander::Order::INVORD_INVARGS;
+                return Commander::Order::ORD_INVARGS;
             }
 
             // check that an unit was selected
             if(!grid[order.data[0]][order.data[1]].card.has_value()) { 
-                return Commander::Order::INVORD_NOSELECT; 	
+                return Commander::Order::ORD_NOSELECT; 	
             }
             // check that target tile is vacant
             if(grid[order.data[2]][order.data[3]].card.has_value()) { 
-                return Commander::Order::INVORD_NOTARGET; 	
+                return Commander::Order::ORD_NOTARGET; 	
             }
             // check ownership permissions
             if(grid[order.data[0]][order.data[1]].card->get().controller_id != turn) {
-                return Commander::Order::INVORD_PERMISSION; 
+                return Commander::Order::ORD_PERMISSION; 
             }
             // check if ability was exhausted
             if(!grid[order.data[0]][order.data[1]].card->get().can_move) { 
-                return Commander::Order::INVORD_EXHAUSTED; 	
+                return Commander::Order::ORD_EXHAUSTED; 	
             }
             // execute order
             if(!resolve_movement(grid[order.data[0]][order.data[1]].card.value(), direction)) {
-                return Commander::Order::INVORD_UNKNOWN;
+                return Commander::Order::ORD_UNKNOWN;
             }
             // push feedback
-            return Commander::Order::ORDER_SUCCESS;
+            return Commander::Order::ORD_SUCCESS;
         }
         break;
         
@@ -270,12 +270,12 @@ int Game_master::exec_order(int player_id, const Commander::Order& order)
         {
             // ensure all arguments are present
             if(order.data[0] < 0 || order.data[1] < 0 || order.data[2] < 0 || order.data[3] < 0) {
-                return Commander::Order::INVORD_INVARGS;
+                return Commander::Order::ORD_INVARGS;
 			}
             // check for out-of-bounds arguments
             if(order.data[0] >= grid.size() || order.data[1] >= grid[0].size() || \
             order.data[2] >= grid.size() || order.data[3] >= grid[0].size()) {
-                return Commander::Order::INVORD_INVARGS;
+                return Commander::Order::ORD_INVARGS;
 			}
             // determine direction and check if it is invalid
                 delta_x = order.data[2] - order.data[0];
@@ -291,69 +291,69 @@ int Game_master::exec_order(int player_id, const Commander::Order& order)
                 else if(delta_x == -1 && delta_y ==  1) { direction = Tile::UPRIGHT;	}
                 else if(delta_x == -1 && delta_y == -1) { direction =   Tile::UPLEFT;	}
                 else   { //invalid
-                    return Commander::Order::INVORD_INVARGS;
+                    return Commander::Order::ORD_INVARGS;
                 }
 
             // check that unit was selected
             if(!grid[order.data[0]][order.data[1]].card.has_value()) { 
-                return Commander::Order::INVORD_NOSELECT; 	
+                return Commander::Order::ORD_NOSELECT; 	
             }
             // check target legality
             if(!grid[order.data[2]][order.data[3]].card.has_value()) { 
-                return Commander::Order::INVORD_NOTARGET; 	
+                return Commander::Order::ORD_NOTARGET; 	
             }
             // check ownership permissions
             if(grid[order.data[0]][order.data[1]].card->get().controller_id != turn) { 
-                return Commander::Order::INVORD_PERMISSION; 
+                return Commander::Order::ORD_PERMISSION; 
             }
             // check if ability was exhausted
             if(!grid[order.data[0]][order.data[1]].card->get().can_attack) { 
-                return Commander::Order::INVORD_EXHAUSTED; 	
+                return Commander::Order::ORD_EXHAUSTED; 	
             }
 
             // process order
             if(!resolve_attack(grid[order.data[0]][order.data[1]].card.value(), direction)) {
-            	return Commander::Order::INVORD_UNKNOWN;
+            	return Commander::Order::ORD_UNKNOWN;
 			}
             // push feedback
-            return Commander::Order::ORDER_SUCCESS;
+            return Commander::Order::ORD_SUCCESS;
         }
         break;
 
         //  PLAY  _________________________________________________
-        case Commander::Order::ORD_PLAY:
+        case Commander::Order::ORD_PLAY_CARD:
         {
         
             if(order.data[0] < 0 || order.data[0] >= players[turn].hand.size()) {                
-            	return Commander::Order::INVORD_INVARGS;
+            	return Commander::Order::ORD_INVARGS;
 			}
             // Check for out-of-bounds arguments for unit deployment
             std::optional<tile_ref> deployment_site; // Get tile reference for unit deployment
             if(players[turn].hand[order.data[0]].get().type == CTYPE_UNIT)
             {
                 if(order.data[1] < 0 || order.data[2] < 0) { 
-                    return Commander::Order::INVORD_INVARGS;
+                    return Commander::Order::ORD_INVARGS;
                 }
                 if(order.data[1] >= grid.size() || order.data[2] >= grid[0].size()) {
-                    return Commander::Order::INVORD_INVARGS;
+                    return Commander::Order::ORD_INVARGS;
 				}
                 deployment_site = std::ref(grid[order.data[1]][order.data[2]]);
             }
             // Ensure player has sufficient money
             if(players[turn].hand[order.data[0]].get().cost > players[turn].funds) {
-                return Commander::Order::INVORD_NOFUNDS;
+                return Commander::Order::ORD_NOFUNDS;
 			}
             // Finally, perform the action and check for proper execution.
             if(!play_card(turn, order.data[0], deployment_site)) {
-                return Commander::Order::INVORD_NOTARGET;
+                return Commander::Order::ORD_NOTARGET;
 			}
-            return Commander::Order::ORDER_SUCCESS; // Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
+            return Commander::Order::ORD_SUCCESS; // Mind that even if player ID is changed BEFORE returning, the error handler is not triggered.
         }
         break;
 
         //  INVALID TYPE ____________________________________________
         default:
-            return Commander::Order::INVORD_INVTYPE;
+            return Commander::Order::ORD_INVTYPE;
         break;
     }
 }
@@ -721,14 +721,14 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<tile_re
                    tptr->get().card->get().controller_id == player_id)
                     nearFriendly = true;
 
-            if(!nearFriendly) return Commander::Order::INVORD_NOTARGET;
+            if(!nearFriendly) return Commander::Order::ORD_NOTARGET;
 
             // Check if there are no enemies on surrounding tiles
             for(std::optional<tile_ref> tptr : get_8neighbors(target.value()))
                 if(tptr.has_value() && \
                    tptr->get().card.has_value() && 
                    tptr->get().card->get().controller_id != player_id)
-                    return Commander::Order::INVORD_NOTARGET;
+                    return Commander::Order::ORD_NOTARGET;
         }
     }
 

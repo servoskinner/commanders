@@ -25,7 +25,7 @@ add_executable(game_test main/Gameplay_test.cpp logic/source/gameplay/Ability.cp
                logic/source/gameplay/Player.cpp logic/source/gameplay/Tile.cpp logic/source/interface/CLI_commander.cpp 
                logic/source/interface/Description_generator.cpp logic/source/utility/Unique.cpp logic/source/utility/Misc_functions.cpp)
 add_executable(ncurses_test logic/source/interface/NCurses_commander.cpp logic/source/utility/Misc_functions.cpp 
-               logic/source/interface/Description_generator.cpp main/Ncurses_test.cpp)
+               logic/source/interface/Description_generator.cpp logic/source/utility/Focus.cpp logic/source/utility/TUI.cpp main/Ncurses_test.cpp)
 
 add_executable(socket_test_p2p logic/source/network/UDP_wrapper.cpp main/Socket_test_p2p.cpp )
 add_executable(tcp_client logic/source/network/TCP_client.cpp main/TCP_test_client.cpp)

@@ -118,41 +118,31 @@ void NCurses_commander::process_event(Commander::Event event)
 
 void NCurses_commander::process_order_feedback(int code)
 {
-    switch (event.type)
+    switch (code)
     {
-    case Commander::Event::EV_ORDER_CONFIRM:
-        status_message.text = "Order executed successfully. Standing by.";
+    case Commander::Order::ORD_SUCCESS:
+        status_message.text = "Executed";
         break;
-    case Commander::Event::EV_ORDER_INVALID:
-        if (event.data.size() == 0) {
-            status_message.text = "Invalid order: no reason specified.";
-            break;
-        }
-        switch (event.data[0])
-        {
-        case Commander::Event::INVORD_INVARGS:
-            status_message.text = "Invalid order arguments!";
-            break;
-        case Commander::Event::INVORD_INVTYPE:
-            status_message.text = "Invalid order type!";
-            break;
-        case Commander::Event::INVORD_EXHAUSTED:
-            status_message.text = "Invalid order: action exhausted!";
-            break;
-        case Commander::Event::INVORD_NOFUNDS:
-            status_message.text = "Invalid order: insufficient funds!";
-            break;
-        case Commander::Event::INVORD_NOSELECT:
-            status_message.text = "Invalid order: no subject specified!";
-            break;
-        case Commander::Event::INVORD_NOTARGET:
-            status_message.text = "Invalid order: no target specified!";
-            break;
-        case Commander::Event::INVORD_PERMISSION:
-            status_message.text = "Invalid order: you don't have permission!";
-            break;
-        }
-    default:
+    case Commander::Order::ORD_INVARGS:
+        status_message.text = "Invalid order arguments!";
+        break;
+    case Commander::Order::ORD_INVTYPE:
+        status_message.text = "Invalid order type!";
+        break;
+    case Commander::Order::ORD_EXHAUSTED:
+        status_message.text = "Invalid order: action exhausted!";
+        break;
+    case Commander::Order::ORD_NOFUNDS:
+        status_message.text = "Invalid order: insufficient funds!";
+        break;
+    case Commander::Order::ORD_NOSELECT:
+        status_message.text = "Invalid order: no subject specified!";
+        break;
+    case Commander::Order::ORD_NOTARGET:
+        status_message.text = "Invalid order: no target specified!";
+        break;
+    case Commander::Order::ORD_PERMISSION:
+        status_message.text = "Invalid order: you don't have permission!";
         break;
     }
 }
@@ -178,13 +168,13 @@ void NCurses_commander::apply_updates()
         break;
     case 's':
     case 'S':
-        if(focus_y != grid_height-1) {
+        if(focus_y != game_params.grid_size.second-1) {
             focus_y++;
         }
         break;
     case 'd':
     case 'D':
-        if (focus_x != grid_width-1) {
+        if (focus_x != game_params.grid_size.first-1) {
         focus_x++;
         }
         break;
@@ -197,8 +187,8 @@ void NCurses_commander::apply_updates()
     case 'e':
     case 'E':
         focus_hand_id++;
-        if (focus_hand_id >= hands[active_id].size()) {
-            focus_hand_id = hands[active_id].size() - 1;
+        if (focus_hand_id >= game_status.hands[active_id].size()) {
+            focus_hand_id = game_status.hands[active_id].size() - 1;
         }
         break;
     case ' ':
@@ -241,10 +231,10 @@ void NCurses_commander::render_UI()
 void NCurses_commander::render_grid()
 {
     // Get window params
-    int grid_width_sym = grid_width*(x_scale-1)+1;
-    int grid_height_sym = grid_height*(y_scale-1)+1;
+    int grid_width_chars = game_params.grid_size.first*(x_scale-1)+1;
+    int grid_height_chars = game_params.grid_size.second*(y_scale-1)+1;
 
-    int grid_origin_x = (x_term_size - grid_width_sym) / 2;
+    int grid_origin_x = (x_term_size - game_params.grid_size.first) / 2;
     if (grid_origin_x < 0) {
         grid_origin_x = 0;
     }
@@ -254,8 +244,8 @@ void NCurses_commander::render_grid()
     grid_cell.width  = x_scale;
     grid_cell.height = y_scale;
     
-    for (int x = 0; x < grid_width; x++) {
-        for (int y = 0; y < grid_height; y++) 
+    for (int x = 0; x < game_params.grid_size.first; x++) {
+        for (int y = 0; y < game_params.grid_size.second; y++) 
         {
             grid_cell.x = grid_origin_x + x*(x_scale-1);
             grid_cell.y = grid_origin_y + y*(y_scale-1);
@@ -266,23 +256,23 @@ void NCurses_commander::render_grid()
     grid_border.x = grid_origin_x;
     grid_border.y = grid_origin_y;
 
-    grid_border.width = grid_width_sym;
-    grid_border.height = grid_height_sym;
+    grid_border.width = grid_width_chars;
+    grid_border.height = grid_height_chars;
 
     grid_border.draw();
     // Capture area highlight
     // change this dynamically:
-    grid_capture_area.x = grid_origin_x + (grid_width / 2 - 1)*(x_scale-1);
+    grid_capture_area.x = grid_origin_x + (game_params.grid_size.first / 2 - 1)*(x_scale-1);
     grid_capture_area.y = grid_origin_y;
 
-    grid_capture_area.width = (2 + grid_width % 2)*(x_scale-1)+1;
-    grid_capture_area.height = grid_height_sym;
+    grid_capture_area.width = (2 + game_params.grid_size.first % 2)*(x_scale-1)+1;
+    grid_capture_area.height = grid_height_chars;
 
     grid_capture_area.draw();
     // ___
     // Render units on grid
     Unit_sprite unit_stencil;
-    for (const Card_info& c_info : active_cards) {
+    for (const Card_info& c_info : game_status.active_cards) {
         if (c_info.type == CTYPE_UNIT)
         {
             unit_stencil.darken_name = !(c_info.owner_id == active_id);
@@ -296,7 +286,7 @@ void NCurses_commander::render_grid()
     // Render cursors
     if(focus_group == FGROUP_FIELD)
     {
-        if(focus_x < 0 || focus_y < 0 || focus_x >= grid_width || focus_y >= grid_height) {
+        if(focus_x < 0 || focus_y < 0 || focus_x >= game_params.grid_size.first || focus_y >= game_params.grid_size.second) {
             throw std::runtime_error("NCurses_commander: Invalid grid focus coordinates");
         }
         grid_highlight.width = x_scale;
@@ -330,19 +320,19 @@ void NCurses_commander::render_grid()
 
     status_message.y = 1;
     status_message.x = grid_origin_x;
-    status_message.width = grid_width_sym;
+    status_message.width = game_params.grid_size.first;
     status_message.draw();
 }
 
 void NCurses_commander::render_hand()
 {
-    int grid_width_sym = grid_width*(x_scale-1)+1;
-    int grid_height_sym = grid_height*(y_scale-1)+1;
+    int grid_width_chars = game_params.grid_size.first*(x_scale-1)+1;
+    int grid_height_chars = game_params.grid_size.second*(y_scale-1)+1;
 
     int hand_center_origin_x = x_term_size / 2 - x_scale;
-    int hand_center_origin_y = grid_height_sym + Y_HAND_OFFSET + Y_GRID_OFFSET;
+    int hand_center_origin_y = grid_height_chars + Y_HAND_OFFSET + Y_GRID_OFFSET;
 
-    if (hands[active_id].size() == 0) {
+    if (game_status.hands[active_id].size() == 0) {
         TUI::Rect empty_marker;
         TUI::Text_box empty_text = {"HAND IS EMPTY"};
         
@@ -362,10 +352,10 @@ void NCurses_commander::render_hand()
         empty_text.draw();
     }
     else {
-        if (focus_hand_id >= hands[active_id].size()) {
-            focus_hand_id = hands[active_id].size() - 1;
+        if (focus_hand_id >= game_status.hands[active_id].size()) {
+            focus_hand_id = game_status.hands[active_id].size() - 1;
         }
-        Card_sprite focused_card(hands[active_id][focus_hand_id]);
+        Card_sprite focused_card(game_status.hands[active_id][focus_hand_id]);
 
         focused_card.x = hand_center_origin_x;
         focused_card.y = hand_center_origin_y;
@@ -407,13 +397,13 @@ void NCurses_commander::render_hand()
         // Render cards to the left
         hand_cards_left.x -= HAND_INACTIVE_CARD_WIDTH * focus_hand_id;
         for (int i = 0; i < focus_hand_id; i++) {   
-            hand_cards_left.set_color(type_colors[hands[active_id][i].type]);
+            hand_cards_left.set_color(type_colors[game_status.hands[active_id][i].type]);
             hand_cards_left.draw();
             hand_cards_left.x += HAND_INACTIVE_CARD_WIDTH;
         }
         // Render cards to the right
-        for (int i = focus_hand_id+1; i < hands[active_id].size(); i++) {
-            hand_cards_right.set_color(type_colors[hands[active_id][i].type]);
+        for (int i = focus_hand_id+1; i < game_status.hands[active_id].size(); i++) {
+            hand_cards_right.set_color(type_colors[game_status.hands[active_id][i].type]);
             hand_cards_right.draw();
             hand_cards_right.x += HAND_INACTIVE_CARD_WIDTH;
         }
@@ -456,7 +446,7 @@ NCurses_commander::Unit_sprite::Unit_sprite(Card_info c_info)
 void NCurses_commander::Unit_sprite::set_card(Card_info c_info)
 {
     card_info = c_info;
-    name.text = Description_generator::get().get_card_instance(card_info.card_id).name;
+    name.text = Description_generator::get_card_instance(card_info.card_id).name;
 
     value.text = std::to_string(card_info.value);
     advantage.text = card_info.advantage > 0 ? std::to_string(card_info.advantage) : "";
@@ -466,7 +456,7 @@ void NCurses_commander::Unit_sprite::set_card(Card_info c_info)
     indicator.text += card_info.is_overwhelmed ? "!" : " ";
 }
 
-void NCurses_commander::Unit_sprite::draw_self(int orig_y, int orig_x)
+void NCurses_commander::Unit_sprite::draw_self(unsigned input, int orig_y, int orig_x)
 {
     rect.width = x_scale;
     rect.height = y_scale;
@@ -540,7 +530,7 @@ void NCurses_commander::Card_sprite::set_card(Card_info c_info)
     set_desc(c_info.card_id);
 }
 
-void NCurses_commander::Card_sprite::draw_self(int orig_y, int orig_x)
+void NCurses_commander::Card_sprite::draw_self(unsigned input, int orig_y, int orig_x)
 {
     rect.width = x_scale*2;
     rect.height = y_scale*2;

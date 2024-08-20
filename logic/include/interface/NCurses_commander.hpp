@@ -33,6 +33,7 @@ class NCurses_commander : public Commander
 
     Order get_order() override;
     void process_event(Event event) override;
+    void process_order_feedback(int code);
     void apply_updates();
 
     private:
@@ -51,7 +52,7 @@ class NCurses_commander : public Commander
 
         private:
         Card_info card_info;
-        virtual void draw_self(int y, int x) override;
+        virtual void draw_self(unsigned input, int y, int x) override;
 
         TUI::Rect rect;
         TUI::Text_box name, value, advantage, indicator;
@@ -60,11 +61,11 @@ class NCurses_commander : public Commander
     {
         public:
         Card_sprite(Description_generator::Card_descr c_descr = {});
-        Card_sprite(Card_info c_info) : Card_sprite(Description_generator::get().get_card_instance(c_info.card_id)) { card_info = c_info;}
-        Card_sprite(int id) : Card_sprite(Description_generator::get().get_card_instance(id)) {}
+        Card_sprite(Card_info c_info) : Card_sprite(Description_generator::get_card_instance(c_info.card_id)) { card_info = c_info;}
+        Card_sprite(int id) : Card_sprite(Description_generator::get_card_instance(id)) {}
 
         void set_desc(Description_generator::Card_descr c_descr);
-        void set_desc(int id) { set_desc(Description_generator::get().get_card_instance(id));};
+        void set_desc(int id) { set_desc(Description_generator::get_card_instance(id));};
         inline const Description_generator::Card_descr get_desc() { return card_descr;}
 
         void set_card(Card_info c_info);
@@ -80,7 +81,7 @@ class NCurses_commander : public Commander
         std::array<bool, 15> mnemosprite;
         int sprite_color;
 
-        virtual void draw_self(int orig_y, int orig_x) override;
+        virtual void draw_self(unsigned input, int orig_y, int orig_x) override;
 
         TUI::Rect rect;
         TUI::Text_box name, cost, value, ability_text, flavor_text;
@@ -121,5 +122,5 @@ class NCurses_commander : public Commander
     void change_focus_area(int focusarea);
     void change_grid_focus(int x, int y);
 
-    unsigned get_input();
+    inline unsigned get_input() { TUI::get().get_input();};
 };

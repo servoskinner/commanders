@@ -137,8 +137,3 @@ Description_generator::Card_descr Description_generator::get_card_instance(int i
     }
     return card_desc;
 }
-Description_generator& Description_generator::get() // Get active singleton instance of Description_generator;
-{
-    static Description_generator instance;
-    return instance;
-}

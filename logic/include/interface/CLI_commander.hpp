@@ -17,7 +17,6 @@ class CLI_commander : public Commander
     CLI_commander();
 
     private:
-    Description_generator& desc_gen;
     void render_UI();
 
     void highlight_tile_bold(std::string &buffer, int g_width, int x, int y);

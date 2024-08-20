@@ -7,8 +7,6 @@
 #define TILE_WIDTH_CHARS	6
 #define TILE_HEIGHT_CHARS	6
 
-CLI_commander::CLI_commander() : desc_gen(Description_generator::get()) {}
-
 void CLI_commander::render_UI()
 {
    // GRID _________________________________________
@@ -45,7 +43,7 @@ void CLI_commander::render_UI()
      // Render Units
    for(Card_info card : game_status.active_cards)
    {
-      Description_generator::Card_descr original = desc_gen.get_card_instance(card.card_id);
+      Description_generator::Card_descr original = Description_generator::get_card_instance(card.card_id);
       if(card.type == CTYPE_UNIT)
       {
          if(card.y == 3 || card.y == 4) //in capture zone
@@ -104,7 +102,7 @@ void CLI_commander::render_UI()
 
    for(int i=0; i<game_status.hands[active_id].size(); i++)
    {
-      Description_generator::Card_descr original = desc_gen.get_card_instance(game_status.hands[active_id][i].card_id);
+      Description_generator::Card_descr original = Description_generator::get_card_instance(game_status.hands[active_id][i].card_id);
 
       std::cout  << "[" << i << "] $" << game_status.hands[active_id][i].cost << " " << original.name << " (";
       			 (game_status.hands[active_id][i].value >= 0 ? std::cout << game_status.hands[active_id][i].value : std::cout << "T") \
@@ -118,7 +116,7 @@ void CLI_commander::render_UI()
    {
       if(card.type == CTYPE_CONTRACT && card.owner_id == active_id)
       {
-         Description_generator::Card_descr origin = desc_gen.get_card_instance(card.entity_id);
+         Description_generator::Card_descr origin = Description_generator::get_card_instance(card.entity_id);
          std::cout << origin.name << " (" << card.value << ")\n";
       }
    }
@@ -174,7 +172,7 @@ while(true)
 
       case 'd': case 'D': //Deploy
          order.data.resize(1);
-         order.type = Order::ORD_PLAY;
+         order.type = Order::ORD_PLAY_CARD;
          std::cout << "SPECIFY CARD NO.:" << std::endl;
          std::cin >> order.data[0];
          if(order.data[0] >= 0 && order.data[0] < game_status.hands[active_id].size() && game_status.hands[active_id][order.data[0]].type == CTYPE_UNIT)
@@ -199,39 +197,39 @@ void CLI_commander::process_order_feedback(int code)
    //enum invalidAction {INVORD_NONE, INVTYPE, NOARGS, INVARGS, PERMISSION, NOSELECT, NOTARGET, EXHAUSTED, NOFUNDS};
    switch(code)
    {
-      case Order::ORDER_SUCCESS:
+      case Order::ORD_SUCCESS:
          std::cout << "\nExecuted\n" << std::endl;
          break;
 
-      case Order::INVORD_INVTYPE:
+      case Order::ORD_INVTYPE:
          std::cout << "\nInvalid command type...\n" << std::endl;
          break;
 
-      case Order::INVORD_INVARGS:
+      case Order::ORD_INVARGS:
          std::cout << "\nInvalid argument(s)...\n" << std::endl;
          break;
 
-      case Order::INVORD_PERMISSION:
+      case Order::ORD_PERMISSION:
          std::cout << "\nYou don't have permission...\n" << std::endl;
          break;
 
-      case Order::INVORD_NOSELECT:
+      case Order::ORD_NOSELECT:
          std::cout << "\nNo unit has been selected...\n" << std::endl;
          break;
 
-      case Order::INVORD_NOTARGET:
+      case Order::ORD_NOTARGET:
          std::cout << "\nNo target has been specified...\n" << std::endl;
          break;
 
-      case Order::INVORD_EXHAUSTED:
+      case Order::ORD_EXHAUSTED:
          std::cout << "\nOption exhausted...\n" << std::endl;
          break;
       
-      case Order::INVORD_NOFUNDS:
+      case Order::ORD_NOFUNDS:
          std::cout << "\nInsufficient funds...\n" << std::endl;
          break;
 
-      case Order::INVORD_UNKNOWN:
+      case Order::ORD_UNKNOWN:
          std::cout << "\nAn unknown error occurred...\n" << std::endl;
          break;
 

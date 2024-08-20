@@ -5,10 +5,10 @@ int main()
 {
     NCurses_commander commander;
     commander.active_id = 0;
-    commander.grid_height = 6;
-    commander.grid_width = 8;
+    commander.game_params.grid_size.second = 6;
+    commander.game_params.grid_size.first = 8;
 
-    commander.hands.push_back({});
+    commander.game_status.hands.push_back({});
 
     Commander::Card_info merc;
     merc.type = CTYPE_UNIT;
@@ -19,15 +19,15 @@ int main()
     merc.y = 2;
     merc.owner_id = 1;
 
-    commander.active_cards.push_back(merc);
+    commander.game_status.active_cards.push_back(merc);
     merc.y = 3;
     merc.owner_id = 0;
-    commander.active_cards.push_back(merc);
-    commander.hands[0].push_back(merc);
+    commander.game_status.active_cards.push_back(merc);
+    commander.game_status.hands[0].push_back(merc);
     merc.x = 2;
     merc.y = 4;
     merc.owner_id = 1;
-    commander.active_cards.push_back(merc);
+    commander.game_status.active_cards.push_back(merc);
 
     merc.owner_id = 0;
     merc.value = 3;
@@ -35,17 +35,17 @@ int main()
     merc.x = 5;
     merc.y = 5;
     merc.card_id = MAIMDROID;
-    commander.active_cards.push_back(merc);
-    commander.hands[0].push_back(merc);
+    commander.game_status.active_cards.push_back(merc);
+    commander.game_status.hands[0].push_back(merc);
 
     merc.type = CTYPE_CONTRACT;
     merc.card_id = FISSION;
-    commander.hands[0].push_back(merc);
+    commander.game_status.hands[0].push_back(merc);
     merc.card_id = MACHINEPARTS;
-    commander.hands[0].push_back(merc);
+    commander.game_status.hands[0].push_back(merc);
     merc.card_id = OMNITANK;
     merc.type = CTYPE_UNIT;
-    commander.hands[0].push_back(merc);
+    commander.game_status.hands[0].push_back(merc);
 
     bool is_running = true;
     while (is_running)
