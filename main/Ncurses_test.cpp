@@ -1,56 +1,59 @@
 #include "NCurses_commander.hpp"
 #include "Card_index.hpp"
+#include "Game_master.hpp"
+
+#include <thread>
+
 
 int main()
 {
     NCurses_commander commander;
-    commander.active_id = 0;
-    commander.game_params.grid_size.second = 6;
-    commander.game_params.grid_size.first = 8;
 
-    commander.game_status.hands.push_back({});
-
-    Commander::Card_info merc;
-    merc.type = CTYPE_UNIT;
-    merc.card_id = BOUNTYHUNTER;
-    merc.value = 2;
-    merc.advantage = 0;
-    merc.x = 1;
-    merc.y = 2;
-    merc.owner_id = 1;
-
-    commander.game_status.active_cards.push_back(merc);
-    merc.y = 3;
-    merc.owner_id = 0;
-    commander.game_status.active_cards.push_back(merc);
-    commander.game_status.hands[0].push_back(merc);
-    merc.x = 2;
-    merc.y = 4;
-    merc.owner_id = 1;
-    commander.game_status.active_cards.push_back(merc);
-
-    merc.owner_id = 0;
-    merc.value = 3;
-    merc.advantage = 1;
-    merc.x = 5;
-    merc.y = 5;
-    merc.card_id = MAIMDROID;
-    commander.game_status.active_cards.push_back(merc);
-    commander.game_status.hands[0].push_back(merc);
-
-    merc.type = CTYPE_CONTRACT;
-    merc.card_id = FISSION;
-    commander.game_status.hands[0].push_back(merc);
-    merc.card_id = MACHINEPARTS;
-    commander.game_status.hands[0].push_back(merc);
-    merc.card_id = OMNITANK;
-    merc.type = CTYPE_UNIT;
-    commander.game_status.hands[0].push_back(merc);
-
-    bool is_running = true;
-    while (is_running)
+    std::vector<int> deck1 =
     {
-        commander.apply_updates();
-        is_running = commander.is_on();
+        BOUNTYHUNTER,
+        BOUNTYHUNTER,
+        BOUNTYHUNTER,
+        TERRORGUARD,
+        TERRORGUARD,
+        MEGALO,
+        MAIMDROID,
+        MAIMDROID,
+        GUNKFOOD,
+        GUNKFOOD,
+        MACHINEPARTS,
+        FISSION
+    };
+    std::vector<int> deck2 =
+    {
+        BOUNTYHUNTER,
+        BOUNTYHUNTER,
+        BOUNTYHUNTER,
+        TERRORGUARD,
+        TERRORGUARD,
+        MEGALO,
+        MAIMDROID,
+        MAIMDROID,
+        GUNKFOOD,
+        GUNKFOOD,
+        MACHINEPARTS,
+        FISSION
+    };
+
+    std::vector<std::vector<int>> deck_images = {deck1, deck2};
+    Game_master gm(deck_images);
+
+    commander.set_params(gm.get_static_game_info());
+
+    while(gm.is_on())
+    {
+        int turn = gm.get_turn();
+        commander.update_state(gm.get_game_state(turn));
+        commander.active_id = turn;
+        commander.run();
+
+        int order_code = gm.exec_order(turn, commander.get_order());
+        commander.process_order_feedback(order_code);
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 }

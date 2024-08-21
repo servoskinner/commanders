@@ -41,7 +41,7 @@ void CLI_commander::render_UI()
      }
 
      // Render Units
-   for(Card_info card : game_status.active_cards)
+   for(Card_info card : game_state.active_cards)
    {
       Description_generator::Card_descr original = Description_generator::get_card_instance(card.card_id);
       if(card.type == CTYPE_UNIT)
@@ -88,31 +88,31 @@ void CLI_commander::render_UI()
    }
    std::cout << buffer << std::endl;
 
-   std::cout << "Turn " << game_status.turn_absolute + 1 << "\n";
-   std::cout << "P1: $" << game_status.players[0].funds << "       " << game_status.players[0].points << " DP       " << game_status.players[0].hand_size << " in hand\n";
-   std::cout << "P2: $" << game_status.players[1].funds << "       " << game_status.players[1].points << " DP       " << game_status.players[1].hand_size << " in hand\n";
+   std::cout << "Turn " << game_state.turn_absolute + 1 << "\n";
+   std::cout << "P1: $" << game_state.players[0].funds << "       " << game_state.players[0].points << " DP       " << game_state.players[0].hand_size << " in hand\n";
+   std::cout << "P2: $" << game_state.players[1].funds << "       " << game_state.players[1].points << " DP       " << game_state.players[1].hand_size << " in hand\n";
 
    // HAND __________________________________________
    
-   std::cout << "HAND: " << game_status.hands[active_id].size() \
-               << "/??    DECK: " << game_status.players[active_id].library_size \
-               << "    DISCARD: " << game_status.players[active_id].discard_size << "\n";
+   std::cout << "HAND: " << game_state.hands[active_id].size() \
+               << "/??    DECK: " << game_state.players[active_id].library_size \
+               << "    DISCARD: " << game_state.players[active_id].discard_size << "\n";
    std::cout << "HAND:____________________________\n";
-   std::cout << "YOU HAVE $" << game_status.players[active_id].funds << ":\n\n";
+   std::cout << "YOU HAVE $" << game_state.players[active_id].funds << ":\n\n";
 
-   for(int i=0; i<game_status.hands[active_id].size(); i++)
+   for(int i=0; i<game_state.hands[active_id].size(); i++)
    {
-      Description_generator::Card_descr original = Description_generator::get_card_instance(game_status.hands[active_id][i].card_id);
+      Description_generator::Card_descr original = Description_generator::get_card_instance(game_state.hands[active_id][i].card_id);
 
-      std::cout  << "[" << i << "] $" << game_status.hands[active_id][i].cost << " " << original.name << " (";
-      			 (game_status.hands[active_id][i].value >= 0 ? std::cout << game_status.hands[active_id][i].value : std::cout << "T") \
+      std::cout  << "[" << i << "] $" << game_state.hands[active_id][i].cost << " " << original.name << " (";
+      			 (game_state.hands[active_id][i].value >= 0 ? std::cout << game_state.hands[active_id][i].value : std::cout << "T") \
       			 << ")" << "\n|   " << original.ability_text << "\n\n";
    }
    
    std::cout << "CONTRACTS:_______________________\n";
    
    // CONTRACTS _____________________________________
-   for(Card_info card : game_status.active_cards)
+   for(Card_info card : game_state.active_cards)
    {
       if(card.type == CTYPE_CONTRACT && card.owner_id == active_id)
       {
@@ -175,7 +175,7 @@ while(true)
          order.type = Order::ORD_PLAY_CARD;
          std::cout << "SPECIFY CARD NO.:" << std::endl;
          std::cin >> order.data[0];
-         if(order.data[0] >= 0 && order.data[0] < game_status.hands[active_id].size() && game_status.hands[active_id][order.data[0]].type == CTYPE_UNIT)
+         if(order.data[0] >= 0 && order.data[0] < game_state.hands[active_id].size() && game_state.hands[active_id][order.data[0]].type == CTYPE_UNIT)
          {
             order.data.resize(3);
             std::cout << "SPECIFY DEPLOYMENT COORDINATES:" << std::endl;
@@ -241,7 +241,7 @@ void CLI_commander::process_order_feedback(int code)
 
 void CLI_commander::apply_updates()
 {
-   if(game_status.turn == active_id)
+   if(game_state.turn == active_id)
       render_UI();
 }
 

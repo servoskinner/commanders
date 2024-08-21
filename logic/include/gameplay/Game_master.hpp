@@ -19,7 +19,7 @@
 
 #define BASIC_INCOME 			1
 #define BONUS_INCOME            1
-#define BONUS_INCOME_THRESHOLD  1
+#define BONUS_INCOME_THRESHOLD  2
 #define STARTING_HAND_SIZE 		4 
 #define POINTS_REQ_FOR_VICTORY 	10
 
@@ -59,7 +59,7 @@ public: // _____________________________________________________________________
         GM_2V2
     };
     // Handle commander requests
-    const Commander::Game_status get_status(int player_id);
+    const Commander::Game_state get_game_state(int player_id);
     int get_turn() { return turn; }
     int get_absolute_turn() { return turn_absolute; }
     bool is_on() { return game_is_on; }

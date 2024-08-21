@@ -23,7 +23,7 @@ Description_generator::Card_descr Description_generator::get_card_instance(int i
     case TERRORGUARD:
     card_desc.name = "Terrorguard";
     card_desc.type = CTYPE_UNIT;
-    card_desc.flavor_text = "Advanced augmentoid infantry. Kicks more ass than average.";
+    card_desc.flavor_text = "Advanced cyborg infantry. Kicks more ass than average.";
 
     card_desc.cost = 3;
     card_desc.value = 5;
@@ -78,10 +78,10 @@ Description_generator::Card_descr Description_generator::get_card_instance(int i
                              1, 0, 1};
     break;
     //______________________________
-    case MACHINEPARTS:
-    card_desc.name = "Machine Parts";
+    case MACHINESHOP:
+    card_desc.name = "Machine Shop";
     card_desc.type = CTYPE_CONTRACT;
-    card_desc.flavor_text = "Produces the nerve and bone of our age.";
+    card_desc.flavor_text = "Wire and steel are the new flesh and bone.";
 
     card_desc.cost = 4;
     card_desc.value = 6;
@@ -92,10 +92,10 @@ Description_generator::Card_descr Description_generator::get_card_instance(int i
                              1, 1, 1};
     break;
     //______________________________
-    case GUNKFOOD:
-    card_desc.name = "Gunkfood";
+    case PEPTANE:
+    card_desc.name = "Peptane Fields";
     card_desc.type = CTYPE_CONTRACT;
-    card_desc.flavor_text = "Synthetic food. It's got electrolytes.";
+    card_desc.flavor_text = "Bacterial fuel. It's got electrolytes.";
 
     card_desc.cost = 2;
     card_desc.value = 3; 
@@ -122,8 +122,8 @@ Description_generator::Card_descr Description_generator::get_card_instance(int i
     //______________________________
     case DEMOLITIONIST:
     card_desc.name = "Trashpunk Brute";
-    card_desc.type = CTYPE_CONTRACT;
-    card_desc.flavor_text = "Explosive expert with grave lack of fingers.";
+    card_desc.type = CTYPE_UNIT;
+    card_desc.flavor_text = "Explosives expert with grave lack of fingers.";
     card_desc.ability_text = "Advantage -1";
 
     card_desc.cost = 2;

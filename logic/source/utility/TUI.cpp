@@ -39,67 +39,69 @@ unsigned TUI::get_input()
 
 void TUI::UI_Object::draw(unsigned input, int orig_y, int orig_x)
 {
+    draw_self(input, orig_y + y, orig_x + x);
     for (UIobj_ref& child : children) {
         if (child.get().visible) {
             if (child.get().use_absolute_position) {
-                child.get().draw(input, child.get().y, child.get().x);
+                child.get().draw(input, orig_y, orig_x);
             }
             else {
-                child.get().draw(input, child.get().y + orig_y, child.get().x + orig_x);
+                child.get().draw(input, y + orig_y, x + orig_x);
             }
         }
     }
-    draw_self(input, orig_y + y, orig_x + x);
 }
 
 
 void TUI::Rect::draw_self(unsigned input, int orig_y, int orig_x)
 {
         // Border ______________
-        if (border_color != 0) {
-            attron(COLOR_PAIR(border_color));
-        }
         // Horizontal borders
+        attron(COLOR_PAIR(t_border.color));
         for (int i = orig_x+1; i < orig_x+width-1; i++) {
-            mvaddch(orig_y, i, t_border);
-            mvaddch(orig_y+height-1, i, b_border);
+            mvaddch(orig_y, i, t_border.symbol);
         }
+        attroff(COLOR_PAIR(t_border.color));
+        attron(COLOR_PAIR(b_border.color));
+        for (int i = orig_x+1; i < orig_x+width-1; i++) {
+            mvaddch(orig_y+height-1, i, b_border.symbol);
+        }
+        attroff(COLOR_PAIR(b_border.color));
+
         // Vertical borders
+        attron(COLOR_PAIR(l_border.color));
         for (int i = orig_y+1; i < orig_y+height-1; i++) {
-            mvaddch(i, orig_x, l_border);
-            mvaddch(i, orig_x+width-1, r_border);
+            mvaddch(i, orig_x, l_border.symbol);
         }
+        attroff(COLOR_PAIR(l_border.color));
+        attron(COLOR_PAIR(r_border.color));
+        for (int i = orig_y+1; i < orig_y+height-1; i++) {
+            mvaddch(i, orig_x+width-1, r_border.symbol);
+        }
+        attroff(COLOR_PAIR(r_border.color));
+
         // Corners
         if (width > 0 && height > 0)
         {
-        mvaddch(orig_y, orig_x, tl_corner);
-        mvaddch(orig_y, orig_x+width-1, tr_corner);
-        mvaddch(orig_y+height-1, orig_x, bl_corner);
-        mvaddch(orig_y+height-1, orig_x+width-1, br_corner);
-        }
-        if (border_color != 0) {
-            attroff(COLOR_PAIR(border_color));
+        tui.draw_glyph(orig_y, orig_x, tl_corner);
+        tui.draw_glyph(orig_y, orig_x+width-1, tr_corner);
+        tui.draw_glyph(orig_y+height-1, orig_x, bl_corner);
+        tui.draw_glyph(orig_y+height-1, orig_x+width-1, br_corner);
         }
         // Fill ________________
         if(draw_filled)
         {
-            if (fill_color != 0) {
-                attron(COLOR_PAIR(fill_color));
-            }
-            for (int i = orig_y+1; i < orig_y+height-1; i++)
-            {
-                for (int j = orig_x+1; j < orig_x+width-1; j++)
-                {
-                    mvaddch(i, j, fill);
+            attron(COLOR_PAIR(fill.color));
+            for (int i = orig_y+1; i < orig_y+height-1; i++) {
+                for (int j = orig_x+1; j < orig_x+width-1; j++) {
+                    mvaddch(i, j, fill.symbol);
                 }
             }
-            if (fill_color != 0) {
-                attroff(COLOR_PAIR(fill_color));
-            }
+            attroff(COLOR_PAIR(fill.color));
         }
 }
 
-void TUI::Text_box::draw_self(unsigned input, int orig_y, int orig_x)
+void TUI::Text::draw_self(unsigned input, int orig_y, int orig_x)
 {
     if (color != 0) {
         attron(COLOR_PAIR(color));
@@ -121,7 +123,7 @@ void TUI::Text_box::draw_self(unsigned input, int orig_y, int orig_x)
     }
 }
 
-void TUI::Scroll_box::draw_self(unsigned input, int orig_y, int orig_x)
+void TUI::Scrollable_text::draw_self(unsigned input, int orig_y, int orig_x)
 {
     if (color != 0) {
         attron(COLOR_PAIR(color));
@@ -137,7 +139,6 @@ void TUI::Scroll_box::draw_self(unsigned input, int orig_y, int orig_x)
             }
         }
         else {
-            if (focus.has_control()) {
                 switch (input)
                 {
                 case 'w':
@@ -151,7 +152,6 @@ void TUI::Scroll_box::draw_self(unsigned input, int orig_y, int orig_x)
                     scroll_pos++;
                     break;
                 }
-            }
             int hidden_lines = std::max(0, (int)lines.size() - height);
             scroll_pos = std::min(scroll_pos, hidden_lines);
 
@@ -169,4 +169,35 @@ void TUI::Scroll_box::draw_self(unsigned input, int orig_y, int orig_x)
         attroff(COLOR_PAIR(color));
     }
 
+}
+
+TUI::Sprite::Sprite(int width, int height)
+{
+    if (width < 1 || height < 1) {
+        throw std::invalid_argument("TUI::Sprite::Sprite(): width and height must be greater than zero");
+    }
+
+    sprite = std::vector<std::vector<Glyph>>(height, std::vector<Glyph>(width));
+}
+
+void TUI::Sprite::draw_self(unsigned input, int orig_y, int orig_x)
+{
+
+}
+
+void TUI::Text_input::draw_self(unsigned input, int orig_y, int orig_x)
+{
+    int capacity = -1;
+    if (width > 0 && height > 0) {
+        capacity = width * height;
+    }
+
+    if (is_printable_char(input) && (text.size() < capacity || capacity == -1)) {
+        *std::back_inserter(text) = input;
+    }
+    if (text.size() > 0 && (input == 127)) {
+        text.resize(text.size() - 1);
+    }
+
+    Text::draw_self(input, orig_y, orig_x);
 }

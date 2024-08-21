@@ -8,17 +8,33 @@
 int main()
 {
     TUI::Rect rect;
-    TUI::Scroll_box scroll;
+    TUI::Scrollable_text scroll;
+    TUI::Text_input input_box;
     TUI& tui = TUI::get();
 
-    tui.set_color_pair(1, COLOR_BLACK, COLOR_CYAN);
+    tui.set_color_pair(1, COLOR_BRIGHT_WHITE, COLOR_BLACK);
+    tui.set_color_pair(2, COLOR_BRIGHT_BLUE, COLOR_BLACK);
+    tui.set_color_pair(3, COLOR_MAGENTA, COLOR_BLACK);
     
-    rect.x = 1, rect.y = 1;
-    rect.border_color = 1;
+    rect.x = 10, rect.y = 10;
 
-    scroll.x = 2; scroll.y = 2;
+    rect.tl_corner.color = 1;
+    rect.t_border.color = 1;
+    rect.tr_corner.color = 1;
+    rect.set_vborders({ACS_VLINE, 2});
+    rect.bl_corner.color = 3;
+    rect.b_border.color = 3;
+    rect.br_corner.color = 3;
+
+    scroll.x = 11; scroll.y = 11;
     rect.width = 20, rect.height = 5;
     scroll.width = 18, scroll.height = 3;
+
+    input_box.x = 1;
+    input_box.y = 17;
+    input_box.width = 30;
+    input_box.height = 5;
+    input_box.color = 3;
 
 
     scroll.text = \
@@ -29,8 +45,6 @@ int main()
     dolor in reprehenderit in voluptate velit esse cillum dolore eu \
     fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, \
     sunt in culpa qui officia deserunt mollit anim id est laborum.";
-                   
-    scroll.focus.claim_control();
 
     while (true) {
         tui.clear();
@@ -41,6 +55,7 @@ int main()
         }
         rect.draw(input);
         scroll.draw(input);
+        input_box.draw(input);
 
         tui.render();
 

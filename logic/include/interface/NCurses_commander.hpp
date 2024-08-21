@@ -4,6 +4,7 @@
 #include "Description_generator.hpp"
 #include "Misc_functions.hpp"
 #include "TUI.hpp"
+#include "Focus.hpp"
 
 #include <optional>
 #include <iostream>
@@ -18,6 +19,45 @@
 
 #define Y_GRID_OFFSET   2
 #define Y_HAND_OFFSET   1
+
+#define X_CONTRACTS_OFFSET 4
+
+#define CHAT_X              2
+#define CHAT_BOTTOM_OFFSET  3
+#define CHAT_WIDTH          30
+#define CHAT_HEIGHT         16
+
+#define CPAIR_NORMAL            0
+#define CPAIR_INVERTED          1
+#define CPAIR_DARK              2
+#define CPAIR_INVERTED_DARK     3
+#define CPAIR_BRIGHT            4
+#define CPAIR_INVERTED_BRIGHT   5
+#define CPAIR_HIGHLIT           6
+#define CPAIR_HIGHLIT_SUBTLE    7
+
+#define CPAIR_BLUE              8
+#define CPAIR_BRIGHT_BLUE       9
+#define CPAIR_CYAN              10
+#define CPAIR_BRIGHT_CYAN       11
+
+#define CPAIR_GRIDCURSOR        12
+#define CPAIR_GRIDSELECTION     13
+#define CPAIR_GRIDCURSOR_OL     14
+#define CPAIR_CARD_UNIT         15
+#define CPAIR_CARD_CONTRACT     16
+#define CPAIR_CARD_TACTIC       17   
+#define CPAIR_CARD_UNIT_INV     18
+#define CPAIR_CARD_CONTRACT_INV 19 
+#define CPAIR_CARD_TACTIC_INV   20
+
+#define CPAIR_UNIT_VALUE        21
+#define CPAIR_UNIT_ADVANTAGE    22
+#define CPAIR_CONTRACT_VALUE    23
+#define CPAIR_CARD_COST         24
+
+#define CPAIR_TEAM_1_POINTS     25
+#define CPAIR_TEAM_2_POINTS     26
 
 class NCurses_commander : public Commander
 {
@@ -34,7 +74,10 @@ class NCurses_commander : public Commander
     Order get_order() override;
     void process_event(Event event) override;
     void process_order_feedback(int code);
-    void apply_updates();
+    
+    void run();
+    void update_state(Game_state state) override;
+    void set_params(Game_params params) override;
 
     private:
     bool on;
@@ -55,7 +98,7 @@ class NCurses_commander : public Commander
         virtual void draw_self(unsigned input, int y, int x) override;
 
         TUI::Rect rect;
-        TUI::Text_box name, value, advantage, indicator;
+        TUI::Text name, value, advantage, indicator;
     };
     class Card_sprite : public TUI::UI_Object
     {
@@ -84,19 +127,12 @@ class NCurses_commander : public Commander
         virtual void draw_self(unsigned input, int orig_y, int orig_x) override;
 
         TUI::Rect rect;
-        TUI::Text_box name, cost, value, ability_text, flavor_text;
+        TUI::Text name, cost, value, ability_text, flavor_text;
     };
 
-    enum focus_areas {
-        FGROUP_HAND,
-        FGROUP_FIELD,
-        FGROUP_GAME_INFO,
-        FGROUP_CONTROLS_INFO,
-        FGROUP_CHAT
-    };
+    Focus focus_field, focus_confirm_pass, focus_examine_card, focus_examine_players, focus_menu, focus_chat;
 
-    int focus_group;
-    int focus_x, focus_y, focus_hand_id;
+    int cursor_x, cursor_y, cursor_hand_id;
     bool selected;
     bool hand_highlit;
     int selection_x, selection_y;
@@ -107,20 +143,36 @@ class NCurses_commander : public Commander
     TUI::Rect grid_highlight;
     TUI::Rect hand_highlight;
 
+    TUI::Text funds_indicator;
+
+    TUI::Text contract_name;
+    TUI::Text contract_duration;
+
+    TUI::Rect points_indicator;
+    TUI::Text turn_indicator;
+
     TUI::Rect hand_cards_left, hand_cards_right;
-    TUI::Text_box bottom_line;
-    TUI::Text_box hand_tooltip_r, hand_tooltip_l;
-    TUI::Text_box status_message;
+    TUI::Text bottom_line;
+    TUI::Text hand_tooltip_r, hand_tooltip_l;
+    TUI::Text status_message;
 
-    Order pending_order;
-    bool order_is_ready;
+    TUI::Rect confirm_pass_border;
+    TUI::Text confirm_pass_text;
+    TUI::Text confirm_pass_subtext;
 
-    void render_UI();
+    TUI::Rect chat_border;
+    TUI::Rect chat_input_border;
+    TUI::Rect chat_input_border_active;
+    TUI::Text chat_heading;
+
+    std::optional<Order> pending_order;
+    std::vector<std::vector<std::optional<Card_info>>> grid;
+
+    void render_UI(unsigned input);
     void render_hand();
     void render_grid();
+    void render_peripheral(unsigned input);
 
     void change_focus_area(int focusarea);
     void change_grid_focus(int x, int y);
-
-    inline unsigned get_input() { TUI::get().get_input();};
 };

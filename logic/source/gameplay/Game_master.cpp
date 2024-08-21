@@ -62,7 +62,7 @@ Game_master::Game_master(const std::vector<std::vector<int>>& deck_images,
         nplayers = 4;
     }
     // Reserve space for all entities to prevent re-allocation
-    event_queues = {nplayers, std::queue<Commander::Event>()};
+    event_queues = std::vector<std::queue<Commander::Event>>(nplayers, std::queue<Commander::Event>());
     decks.reserve(deck_images.size());
     players.reserve(nplayers);
 
@@ -150,7 +150,7 @@ void Game_master::end_turn()
     turn_absolute++;
 
 	// Players starting their turn with zero money get a bonus
-	if (players[turn].funds == 0) 
+	if (players[turn].funds <= BONUS_INCOME_THRESHOLD) 
     {
 		players[turn].funds += BONUS_INCOME;
 	}
@@ -207,6 +207,9 @@ int Game_master::exec_order(int player_id, const Commander::Order& order)
 
     switch(order.type)
     {
+        //  EMPTY _________________________________________________
+        case Commander::Order::ORD_DO_NOTHING:
+        return Commander::Order::ORD_SUCCESS;
         //  PASS  _________________________________________________
         case Commander::Order::ORD_PASS:
         { // ends turn: self-explanatory
@@ -365,9 +368,11 @@ void Game_master::fire_trigger(Trigger& trigger, std::vector<int> args = {})
     }
 }
 
-const Commander::Game_status Game_master::get_status(int player_id)
+const Commander::Game_state Game_master::get_game_state(int player_id)
 {
-    Commander::Game_status status;
+    Commander::Game_state status;
+    status.turn = turn;
+    status.turn_absolute = turn_absolute;
         
     status.active_cards = std::vector<Commander::Card_info>(active_cards.size());
     for(int i = 0; i < active_cards.size(); i++) {
@@ -656,7 +661,7 @@ bool Game_master::resolve_draw(int player_id)
         }
     }
     if(player.deck.get().library.back().get().status != Card::CSTATUS_LIBRARY) {
-        std::clog << "Warning: drawing card that has not been marked as \"In deck\"" << std::endl;
+       // std::clog << "Warning: drawing card that has not been marked as \"In deck\"" << std::endl;
     }
 
     player.hand.push_back(player.deck.get().library.back());

@@ -20,12 +20,11 @@ file(GLOB SOURCES "logic/source/*/*.cpp")
 find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 
 # Creates executables based on the source files listed in the SOURCES variable.
-add_executable(game_test main/Gameplay_test.cpp logic/source/gameplay/Ability.cpp logic/source/gameplay/Ability.cpp
+add_executable(game_test logic/source/gameplay/Ability.cpp logic/source/gameplay/Ability.cpp
                logic/source/gameplay/Card.cpp logic/source/gameplay/Deck.cpp logic/source/gameplay/Effects.cpp logic/source/gameplay/Game_master.cpp
-               logic/source/gameplay/Player.cpp logic/source/gameplay/Tile.cpp logic/source/interface/CLI_commander.cpp 
-               logic/source/interface/Description_generator.cpp logic/source/utility/Unique.cpp logic/source/utility/Misc_functions.cpp)
-add_executable(ncurses_test logic/source/interface/NCurses_commander.cpp logic/source/utility/Misc_functions.cpp 
-               logic/source/interface/Description_generator.cpp logic/source/utility/Focus.cpp logic/source/utility/TUI.cpp main/Ncurses_test.cpp)
+               logic/source/gameplay/Player.cpp logic/source/gameplay/Tile.cpp logic/source/interface/Description_generator.cpp 
+               logic/source/utility/Unique.cpp logic/source/utility/Misc_functions.cpp logic/source/interface/NCurses_commander.cpp 
+               logic/source/utility/Focus.cpp logic/source/utility/TUI.cpp main/Ncurses_test.cpp)
 
 add_executable(socket_test_p2p logic/source/network/UDP_wrapper.cpp main/Socket_test_p2p.cpp )
 add_executable(tcp_client logic/source/network/TCP_client.cpp main/TCP_test_client.cpp)
@@ -43,13 +42,12 @@ add_executable(generic_server_test logic/source/network/TCP_server.cpp logic/sou
 
 # Links the "corporatewars" executable target with the SFML libraries.
 # target_link_libraries(game sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
-target_link_libraries(ncurses_test PRIVATE ncurses)
+target_link_libraries(game_test PRIVATE ncurses)
 target_link_libraries(tui_test PRIVATE ncurses)
 
 # Adds a preprocessor definition called TESTING for the "test" target, which is only visible when compiling this target.
 target_compile_definitions(game_test PRIVATE TESTING)
 target_compile_definitions(socket_test_p2p PRIVATE TESTING)
-target_compile_definitions(ncurses_test PRIVATE TESTING)
 
 # Sets the directory where CMake will place all runtime targets (executables) after building, relative to the binary directory of the project.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)

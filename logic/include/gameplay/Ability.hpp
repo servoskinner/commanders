@@ -4,6 +4,7 @@
 #include <functional>
 #include <utility>
 #include <optional>
+#include <list>
 
 #include "Game_master.hpp"
 #include "Unique.hpp"
@@ -50,5 +51,5 @@ class Game_master::Ability_simple : Game_master::Ability
     Ability_simple(Game_master& gm, Card& card, std::vector<std::pair<Trigger&, Reaction>> effects);
 
     protected:
-    std::vector<Binding> bindings;
+    std::list<Binding> bindings;
 };

@@ -13,11 +13,11 @@ Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), car
     {
         case BOUNTYHUNTER:
         case TERRORGUARD:
-        case OPPRESSOR:
+        case MEGALO:
         case MAIMDROID:
         case OMNITANK:
-        case GUNKFOOD:
-        case MACHINEPARTS:
+        case PEPTANE:
+        case MACHINESHOP:
         case FISSION:
         case DEMOLITIONIST:
         break;
@@ -49,7 +49,7 @@ void Game_master::Card::reset()
         cost = 3;
         value = 5;
         break;
-    case OPPRESSOR:
+    case MEGALO:
         type = CTYPE_UNIT;
 
         cost = 5;
@@ -75,12 +75,14 @@ void Game_master::Card::reset()
         cost = 2;
         value = 6;
         advantage = -1;
-    case GUNKFOOD:
+        break;
+    case PEPTANE:
         type = CTYPE_CONTRACT;
 
         cost = 2;
         value = 3; 
-    case MACHINEPARTS:
+        break;
+    case MACHINESHOP:
         type = CTYPE_CONTRACT;
 
         cost = 4;

@@ -43,12 +43,12 @@ int main()
 
     Game_master gm(deck_images);
 
-    commander.game_params = gm.get_static_game_info();
+    commander.set_params(gm.get_static_game_info());
 
     while(gm.is_on())
     {
         int turn = gm.get_turn();
-        commander.game_status = gm.get_status(turn);
+        commander.update_state(gm.get_game_state(turn));
         commander.active_id = turn;
         commander.apply_updates();
 

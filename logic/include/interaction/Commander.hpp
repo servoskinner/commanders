@@ -108,7 +108,7 @@ public:
     std::pair<int, int> grid_size;
     };
 
-    struct Game_status
+    struct Game_state
     {
         int turn, turn_absolute;
         std::vector<Card_info> active_cards;
@@ -123,8 +123,12 @@ public:
     int active_id;    
 
     Game_params game_params;
-    Game_status game_status;
+    Game_state game_state;
 
-    virtual Order get_order() = 0;         // Called by the Game Master to receive player input.
-    virtual void process_event(Event event) = 0; // Called by the Game Master to communicate a game event
+    virtual Order get_order() = 0;         
+    virtual void process_event(Event event) = 0;
+    virtual void process_order_feedback(int code) = 0;
+
+    virtual void update_state(Game_state state) { game_state = state;}
+    virtual void set_params(Game_params params) { game_params = params;}
 };
