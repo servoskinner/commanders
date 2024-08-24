@@ -82,7 +82,8 @@ Units can move to any *adjacent* tile (also known as *4-neighbourhood*: up, down
 A player can make two controlled adjacent units exchange places, if they both are eligible to move. (*NOT IMPLEMENTED YET*)
 
 *To move your unit, select it with cursor by pressing space, then select a tile to move it to:*
-![move-preview](https://imgur.com/a/5yhlAQG)
+![move-preview](https://github.com/user-attachments/assets/10913a76-8b5f-4ac4-b978-028dde4e8de0)
+
 
 *a **tilda** (~) below the unit's name shows that this unit's move ability has been exhausted on this turn.)
 
