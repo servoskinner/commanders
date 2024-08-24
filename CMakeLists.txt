@@ -17,7 +17,7 @@ include_directories(${INCLUDE})
 file(GLOB SOURCES "logic/source/*/*.cpp")
 
 # Looks for and configures the SFML package, requiring at least version 2.5 and the specified components (system, window, graphics, network, audio).
-find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
+# find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 
 # Creates executables based on the source files listed in the SOURCES variable.
 add_executable(game_test logic/source/gameplay/Ability.cpp logic/source/gameplay/Ability.cpp

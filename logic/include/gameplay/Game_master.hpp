@@ -68,8 +68,13 @@ public: // _____________________________________________________________________
 
     int exec_order(int player_id, const Commander::Order &action);
     
-    inline Commander::Event get_event(int player_id) { return event_queues[player_id].front();}
-    inline void pop_event(int player_id);
+    std::optional<Commander::Event> get_event(int player_id);
+    inline void pop_event(int player_id)
+    {
+        if (!event_queues[player_id].empty()) {
+            event_queues[player_id].pop();
+        }
+    }
 
 
     std::vector<std::function<void(Commander::Event)>> on_event_broadcast;
@@ -111,7 +116,7 @@ private: // ____________________________________________________________________
     inline void broadcast_event(const Commander::Event& event);
 
     // Card actions
-    bool deploy_card(Card &card, std::optional<tile_ref> target);         // Place a card in play.
+    bool deploy_card(Card &card, int player, std::optional<tile_ref> target = {});         // Place a card in play.
     bool resolve_movement(Card &card, const int &direction);   // Move a card in specified direction.
     void resolve_destruction(Card &card);                      // Remove a card from play and discard it.
     bool resolve_attack(Card &card, const int &direction); // Resolve an attack from one tile to another.

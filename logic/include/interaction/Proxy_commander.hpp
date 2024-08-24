@@ -6,16 +6,18 @@
 class Proxy_commander : Commander
 {
     public:
-    void queue_order(Order order);
-    void process_order_feedback(Event event) override;
+    inline bool queue_order(Order order) {};
+    inline void process_event(Event event) override { event_queue.push(event);}
+    inline void process_order_feedback(int code) override;
 
-    Order get_order() override;
-    Event get_event();
+    inline std::optional<Order> get_order() override { return queued_order;};
+    std::optional<Event> get_event();
 
     int events_size() { return event_queue.size();}
-    int orders_size() { return order_queue.size();}
 
     private:
-    std::queue<Order> order_queue;
+    std::optional<int> order_feedback;
+    std::optional<Order> queued_order;
+
     std::queue<Event> event_queue;
 };

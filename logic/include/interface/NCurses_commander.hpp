@@ -59,6 +59,8 @@
 #define CPAIR_TEAM_1_POINTS     25
 #define CPAIR_TEAM_2_POINTS     26
 
+#define CPAIR_HIGHLIGHT_GREEN   27
+
 class NCurses_commander : public Commander
 {
     private: 
@@ -71,11 +73,11 @@ class NCurses_commander : public Commander
     NCurses_commander();
     ~NCurses_commander();
 
-    Order get_order() override;
+    std::optional<Order> get_order() override;
     void process_event(Event event) override;
     void process_order_feedback(int code);
     
-    void run();
+    void render(unsigned input);
     void update_state(Game_state state) override;
     void set_params(Game_params params) override;
 
@@ -130,7 +132,9 @@ class NCurses_commander : public Commander
         TUI::Text name, cost, value, ability_text, flavor_text;
     };
 
-    Focus focus_field, focus_confirm_pass, focus_examine_card, focus_examine_players, focus_menu, focus_chat;
+    Focus focus_field, focus_confirm_pass, focus_game_end;
+    Focus focus_examine_players, focus_examine_card;
+    Focus focus_menu, focus_chat;
 
     int cursor_x, cursor_y, cursor_hand_id;
     bool selected;
@@ -156,9 +160,10 @@ class NCurses_commander : public Commander
     TUI::Text hand_tooltip_r, hand_tooltip_l;
     TUI::Text status_message;
 
-    TUI::Rect confirm_pass_border;
-    TUI::Text confirm_pass_text;
-    TUI::Text confirm_pass_subtext;
+    TUI::Rect urgent_message_border;
+    TUI::Text urgent_message_text;
+    TUI::Text urgent_message_subtext;
+    int winning_player;
 
     TUI::Rect chat_border;
     TUI::Rect chat_input_border;

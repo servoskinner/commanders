@@ -125,7 +125,7 @@ public:
     Game_params game_params;
     Game_state game_state;
 
-    virtual Order get_order() = 0;         
+    virtual std::optional<Order> get_order() = 0;         
     virtual void process_event(Event event) = 0;
     virtual void process_order_feedback(int code) = 0;
 

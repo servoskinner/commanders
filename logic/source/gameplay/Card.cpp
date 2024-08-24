@@ -6,7 +6,7 @@
 #include "Misc_functions.hpp"
 class Game_master;
 
-Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), card_id(id), owner_id(oid)
+Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), card_id(id), owner_id(oid), controller_id(-1)
 {
     // Initialize abilities
     switch (card_id)

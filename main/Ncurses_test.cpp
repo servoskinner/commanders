@@ -14,15 +14,16 @@ int main()
         BOUNTYHUNTER,
         BOUNTYHUNTER,
         BOUNTYHUNTER,
+        BOUNTYHUNTER,
         TERRORGUARD,
         TERRORGUARD,
-        MEGALO,
         MAIMDROID,
         MAIMDROID,
-        GUNKFOOD,
-        GUNKFOOD,
-        MACHINEPARTS,
-        FISSION
+        PEPTANE,
+        PEPTANE,
+        MACHINESHOP,
+        MACHINESHOP,
+        DEMOLITIONIST
     };
     std::vector<int> deck2 =
     {
@@ -34,10 +35,11 @@ int main()
         MEGALO,
         MAIMDROID,
         MAIMDROID,
-        GUNKFOOD,
-        GUNKFOOD,
-        MACHINEPARTS,
-        FISSION
+        PEPTANE,
+        PEPTANE,
+        MACHINESHOP,
+        FISSION,
+        DEMOLITIONIST
     };
 
     std::vector<std::vector<int>> deck_images = {deck1, deck2};
@@ -45,15 +47,28 @@ int main()
 
     commander.set_params(gm.get_static_game_info());
 
-    while(gm.is_on())
+    while(commander.is_on())
     {
         int turn = gm.get_turn();
         commander.update_state(gm.get_game_state(turn));
-        commander.active_id = turn;
-        commander.run();
 
-        int order_code = gm.exec_order(turn, commander.get_order());
-        commander.process_order_feedback(order_code);
+        // process all events
+        std::optional<Commander::Event> ev = gm.get_event(turn);
+        while (ev.has_value()) {
+            commander.process_event(ev.value());
+            gm.pop_event(turn);
+            ev = gm.get_event(turn);
+        }
+
+        unsigned input = TUI::get().get_input();
+        commander.active_id = turn;
+        commander.render(input);
+
+        std::optional<Commander::Order> ord = commander.get_order();
+        if (ord.has_value()) {
+            int order_code = gm.exec_order(turn, ord.value());
+            commander.process_order_feedback(order_code);
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 }

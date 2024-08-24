@@ -117,10 +117,13 @@ std::optional<Game_master::card_ref> Game_master::find_card(unsigned int entity_
     return card;
 }
 
-inline void Game_master::pop_event(int player_id)
+std::optional<Commander::Event> Game_master::get_event(int player_id)
 {
-    if (!event_queues[player_id].empty()) {
-        event_queues[player_id].pop();
+    if (event_queues[player_id].empty()) {
+        return {};
+    }
+    else {
+        return {event_queues[player_id].back()};
     }
 }
 
@@ -424,7 +427,7 @@ bool Game_master::check_dominance(int playerId)
     return unit_count_difference > 0;
 }
 
-bool Game_master::deploy_card(Card& card, std::optional<tile_ref> target)
+bool Game_master::deploy_card(Card& card, int player, std::optional<tile_ref> target)
 {
     if(card.type == CTYPE_UNIT && !target.has_value()) throw std::runtime_error("No deployment site provided for unit");
     if(card.status == Card::CSTATUS_BATTLEFIELD) std::clog << "WARNING: Deploying card marked as \"IN PLAY\"";
@@ -448,6 +451,7 @@ bool Game_master::deploy_card(Card& card, std::optional<tile_ref> target)
     {   // Update status
         card.status = Card::CSTATUS_BATTLEFIELD;
         active_cards.push_back(std::ref(card));
+        card.controller_id = player;
     }
 
     fire_trigger(card.enters_play, {});
@@ -468,8 +472,9 @@ bool Game_master::resolve_movement(Card& card, const int& direction)
     auto options = get_4neighbors(grid[card.x][card.y]);
 
     // TODO add mutual exchange movement option (stack movement operations up until a card is moved on an empty space)
+
     // Check if tile is occupied
-    if(options[direction]->get().card)
+    if(options[direction]->get().card.has_value())
         return false;
 
     fire_trigger(card.before_move, {direction});
@@ -517,6 +522,7 @@ void Game_master::resolve_destruction(Card& card)
 
     // Restore default power and linked triggers
     card.reset();
+    card.controller_id = -1;
 
     if (card.type != CTYPE_TACTIC) {
         // Broadcast event if the card is not a tactic (in that case, deployment event is enough)
@@ -743,7 +749,7 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<tile_re
     players[player_id].funds -= players[player_id].hand[hand_index].get().cost;
     
     pop_index(players[player_id].hand, hand_index);
-    bool res = deploy_card(played, target);
+    bool res = deploy_card(played, player_id, target);
 
 
     if (res) {

@@ -34,8 +34,10 @@ NCurses_commander::NCurses_commander()
     tui.set_color_pair(CPAIR_CONTRACT_VALUE, COLOR_BRIGHT_CYAN,      COLOR_BLACK);
     tui.set_color_pair(CPAIR_CARD_COST,      COLOR_YELLOW,           COLOR_BLACK);
 
-    tui.set_color_pair(CPAIR_TEAM_1_POINTS,  COLOR_BLACK,           COLOR_BRIGHT_RED);
-    tui.set_color_pair(CPAIR_TEAM_2_POINTS,  COLOR_BLACK,           COLOR_CYAN);
+    tui.set_color_pair(CPAIR_TEAM_1_POINTS,  COLOR_BRIGHT_RED,       COLOR_BLACK);
+    tui.set_color_pair(CPAIR_TEAM_2_POINTS,  COLOR_CYAN,             COLOR_BLACK);
+
+    tui.set_color_pair(CPAIR_HIGHLIGHT_GREEN, COLOR_BRIGHT_CYAN, COLOR_GREEN);
     
     // Stencil Rect used to render grid cells
     grid_cell.set_corners({'+'});
@@ -82,22 +84,16 @@ NCurses_commander::NCurses_commander()
     hand_tooltip_r.color = CPAIR_DARK;
     hand_tooltip_r.text = "[E] >";
 
-    confirm_pass_border.set_border_color(CPAIR_HIGHLIT);
-    confirm_pass_border.fill.color = CPAIR_HIGHLIT;
-    confirm_pass_border.draw_filled = true;
-    confirm_pass_border.width = 30;
-    confirm_pass_border.height = 9;
+    urgent_message_border.draw_filled = true;
+    urgent_message_border.width = 30;
+    urgent_message_border.height = 9;
 
-    confirm_pass_border.children = {confirm_pass_text, confirm_pass_subtext};
+    urgent_message_border.children = {urgent_message_text, urgent_message_subtext};
 
-    confirm_pass_text.text = "PRESS ENTER TO PASS TURN";
-    confirm_pass_text.color = CPAIR_HIGHLIT;
-    confirm_pass_text.x = 3;
-    confirm_pass_text.y = 3;
-    confirm_pass_subtext.text = "any other key to cancel";
-    confirm_pass_subtext.color = CPAIR_HIGHLIT;
-    confirm_pass_subtext.x = 3;
-    confirm_pass_subtext.y = 5;
+    urgent_message_text.x = 3;
+    urgent_message_text.y = 3;
+    urgent_message_subtext.x = 3;
+    urgent_message_subtext.y = 5;
 
     chat_border.children = {chat_input_border, chat_heading};
     chat_input_border.children = {chat_input_border_active};
@@ -157,20 +153,21 @@ NCurses_commander::~NCurses_commander()
     on = false;
 }
 
-Commander::Order NCurses_commander::get_order()
+std::optional<Commander::Order> NCurses_commander::get_order()
 {
-    if (pending_order.has_value()) {
-        Order ord = pending_order.value();
-        pending_order.reset();
-        return ord;
-    }
-    else {
-        return {};
-    }
+    std::optional<Order> ord = pending_order;
+    pending_order.reset();
+    return ord;
 }
 
 void NCurses_commander::process_event(Commander::Event event)
-{ }
+{ 
+    if(event.type == Event::EV_GAME_WON_BY && event.data.size() > 0)
+    {
+        winning_player = event.data[0];
+        focus_game_end.claim_control();
+    }
+}
 
 void NCurses_commander::process_order_feedback(int code)
 {
@@ -200,11 +197,8 @@ void NCurses_commander::process_order_feedback(int code)
     }
 }
 
-void NCurses_commander::run()
+void NCurses_commander::render(unsigned input)
 {
-    // Process input
-    unsigned input = TUI::get().get_input();
-
     if (focus_field.has_control()) {
         switch (input)
         {
@@ -285,6 +279,12 @@ void NCurses_commander::run()
         }
     }
 
+    if (focus_game_end.has_control()) {
+        if (input == ' ') {
+            on = false;
+        }
+    }
+
     if (focus_confirm_pass.has_control()) {
         if (input == 10 && !pending_order.has_value()) { // enter key
             // pass order
@@ -296,7 +296,7 @@ void NCurses_commander::run()
         }
     }
     else {
-        if (input == 10) {
+        if (input == 10 && focus_field.has_control()) {
             focus_confirm_pass.claim_control();
         }
     }
@@ -304,7 +304,6 @@ void NCurses_commander::run()
     if (input == '`' || input == '~') {// exit
         on = false;
     }
-
 
     render_UI(input);
 }
@@ -474,14 +473,14 @@ void NCurses_commander::render_grid()
     player_stats_text.draw();
 
     // Render victory points
-    points_indicator.width = game_state.players[0].points*2;
+    points_indicator.width = game_state.players[0].points;
     points_indicator.x = grid_origin_x+1;
-    points_indicator.set_all({'|', CPAIR_TEAM_1_POINTS});
+    points_indicator.set_all({'*', CPAIR_TEAM_1_POINTS});
     points_indicator.draw();
 
-    points_indicator.width = game_state.players[1].points*2;
+    points_indicator.width = game_state.players[1].points;
     points_indicator.x = grid_origin_x + grid_width_sym - points_indicator.width - 1;
-    points_indicator.set_all({'|', CPAIR_TEAM_2_POINTS});
+    points_indicator.set_all({'*', CPAIR_TEAM_2_POINTS});
     points_indicator.draw();
 
     // Render cursors
@@ -633,11 +632,29 @@ void NCurses_commander::render_peripheral(unsigned input)
     chat_input_border_active.visible = focus_chat.has_control();
     chat_border.draw();
 
-    if (focus_confirm_pass.has_control()) {
-        confirm_pass_border.y = Y_GRID_OFFSET + (grid_height_sym - confirm_pass_border.height) / 2;
-        confirm_pass_border.x = (x_term_size - confirm_pass_border.width) / 2;
-
-        confirm_pass_border.draw();
+    if (focus_confirm_pass.has_control()) 
+    {
+        urgent_message_border.set_border_color(CPAIR_HIGHLIT);
+        urgent_message_border.fill.color = CPAIR_HIGHLIT;
+        urgent_message_text.text = "PRESS ENTER TO PASS TURN";
+        urgent_message_text.color = CPAIR_HIGHLIT;
+        urgent_message_subtext.text = "any other key to cancel";
+        urgent_message_subtext.color = CPAIR_HIGHLIT;
+    }
+    if (focus_game_end.has_control())
+    {
+        urgent_message_border.set_border_color(CPAIR_HIGHLIGHT_GREEN);
+        urgent_message_border.fill.color = CPAIR_HIGHLIGHT_GREEN;
+        urgent_message_text.text = "      PLAYER " + std::to_string(winning_player) + " WINS";
+        urgent_message_text.color = CPAIR_HIGHLIGHT_GREEN;
+        urgent_message_subtext.text = "   press space to exit";
+        urgent_message_subtext.color = CPAIR_HIGHLIGHT_GREEN;
+    }
+    if (focus_confirm_pass.has_control() || focus_game_end.has_control())
+    {
+        urgent_message_border.y = Y_GRID_OFFSET + (grid_height_sym - urgent_message_border.height) / 2;
+        urgent_message_border.x = (x_term_size - urgent_message_border.width) / 2;
+        urgent_message_border.draw();
     }
 
     turn_indicator.text = "Turn " + std::to_string(game_state.turn_absolute) + ": Player " + std::to_string(game_state.turn);
@@ -709,7 +726,7 @@ void NCurses_commander::Unit_sprite::set_card(Card_info c_info)
     name.text = Description_generator::get_card_instance(card_info.card_id).name;
 
     value.text = std::to_string(card_info.value);
-    advantage.text = card_info.advantage > 0 ? std::to_string(card_info.advantage) : "";
+    advantage.text = card_info.advantage != 0 ? std::to_string(card_info.advantage) : "";
 
     indicator.text = "";
     indicator.text += card_info.can_move ? " " : (card_info.can_attack ? "~" : "X");
