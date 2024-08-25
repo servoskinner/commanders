@@ -9,8 +9,8 @@ public: // _____________________________________________________________________
     Deck(Game_master& master, const std::vector<int>& deck_image, int player_id = -1);
 
     std::list<Card> all;           // All cards associated with this deck. Original cards are stored here.
-    std::vector<card_ref> graveyard; // Cards that have been removed after being put into play.
-    std::vector<card_ref> library;   // Cards that can be drawn.
+    std::vector<Card_ref> graveyard; // Cards that have been removed after being put into play.
+    std::vector<Card_ref> library;   // Cards that can be drawn.
 
     void shuffle();
     void refresh();

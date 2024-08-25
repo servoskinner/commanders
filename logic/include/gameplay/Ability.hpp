@@ -29,20 +29,6 @@ class Game_master::Ability
     public:
     Unique entity_id;
     Ability(Game_master& gm, Card& card) : master(gm), attached_to(card) {} 
-
-    template <int amount>
-    void draw_cards(std::vector<int> args)
-    {
-        for (int i = 0; i < amount; i++) {
-            master.resolve_draw(attached_to.owner_id);
-        }
-    }
-
-    template <int amount>
-    void gain_credits(std::vector<int> args)
-    {
-        master.players[attached_to.owner_id].funds += amount;
-    }
 };
 
 class Game_master::Ability_simple : Game_master::Ability

@@ -30,17 +30,17 @@ class Game_master
 protected:
 
     class Card;
+    typedef std::reference_wrapper<Game_master::Card>   Card_ref;
     class Deck;
+    typedef std::reference_wrapper<Game_master::Deck>   Deck_ref;
     class Player;
+    typedef std::reference_wrapper<Game_master::Player> Player_ref;
     class Tile;
-
-    typedef std::reference_wrapper<Game_master::Player> player_ref;
-    typedef std::reference_wrapper<Game_master::Deck>   deck_ref;
-    typedef std::reference_wrapper<Game_master::Card>   card_ref;
-    typedef std::reference_wrapper<Game_master::Tile>   tile_ref;
+    typedef std::reference_wrapper<Game_master::Tile>   Tile_ref;
 
     typedef std::function<void(std::vector<int>)> Reaction;
     typedef std::unordered_map<int, Reaction> Trigger;
+    typedef std::reference_wrapper<Game_master::Trigger>   Trigger_ref;
 
     class Ability;
     class Binding;
@@ -87,7 +87,7 @@ private: // ____________________________________________________________________
     std::vector<Deck> decks;
     // Playing field
     std::vector<std::vector<Tile>> grid; // The playing field. (0,0) is top left corner; X axis is vertical, Y is horizontal.
-    std::vector<Game_master::card_ref> active_cards;   // Cards that are currently on the playing field.
+    std::vector<Game_master::Card_ref> active_cards;   // Cards that are currently on the playing field.
 
     // Global triggers
     Trigger any_turn_start;
@@ -108,7 +108,7 @@ private: // ____________________________________________________________________
 
     void end_turn();  // Pass the turn to next player and process the necessary triggers.
 
-    std::optional<card_ref> find_card(unsigned int entity_id);
+    std::optional<Card_ref> find_card(unsigned int entity_id);
     inline void fire_trigger(Trigger& trigger, std::vector<int> args);
     bool check_dominance(int playerId);
 
@@ -116,7 +116,7 @@ private: // ____________________________________________________________________
     inline void broadcast_event(const Commander::Event& event);
 
     // Card actions
-    bool deploy_card(Card &card, int player, std::optional<tile_ref> target = {});         // Place a card in play.
+    bool deploy_card(Card &card, int player, std::optional<Tile_ref> target = {});         // Place a card in play.
     bool resolve_movement(Card &card, const int &direction);   // Move a card in specified direction.
     void resolve_destruction(Card &card);                      // Remove a card from play and discard it.
     bool resolve_attack(Card &card, const int &direction); // Resolve an attack from one tile to another.
@@ -129,14 +129,14 @@ private: // ____________________________________________________________________
         COMBAT_LOSE
     };
     // Tile functions
-    std::vector<std::optional<Game_master::tile_ref>> get_4neighbors(const Tile &tile);
-    std::vector<std::optional<Game_master::tile_ref>> get_8neighbors(const Tile &tile);
+    std::vector<std::optional<Game_master::Tile_ref>> get_4neighbors(const Tile &tile);
+    std::vector<std::optional<Game_master::Tile_ref>> get_8neighbors(const Tile &tile);
 
     // Players
-    bool resolve_draw(int playerId);                             // Returns whether deck is empty or not
+    bool resolve_draw(int player_id);                             // Returns whether deck is empty or not
+    bool resolve_draw_multi(int player_id, int n_cards);
     bool discard(int playerId, int handIndex);                // Returns whether discarding this card was possible
-    bool play_card(int playerId, int handIndex, std::optional<tile_ref> target); // Perform rule checks and deploy card
-
+    bool play_card(int playerId, int handIndex, std::optional<Tile_ref> target); // Perform rule checks and deploy card
 };
 
 #include "Card.hpp"

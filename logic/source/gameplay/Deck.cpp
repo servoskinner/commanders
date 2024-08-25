@@ -29,7 +29,7 @@ void Game_master::Deck::refresh()
 {
     library.insert(library.end(), graveyard.begin(), graveyard.end()); // Move discard to library
    
-    for (card_ref cref : library)
+    for (Card_ref cref : library)
         cref.get().status = Card::CSTATUS_LIBRARY;
 
     shuffle();

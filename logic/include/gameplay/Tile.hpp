@@ -32,5 +32,5 @@ public: // _____________________________________________________________________
         TERR_DISADV = -6
     }; // Non-negatives refer to deploy zones of players with same IDs
 
-    std::optional<card_ref> card;
+    std::optional<Card_ref> card;
 };

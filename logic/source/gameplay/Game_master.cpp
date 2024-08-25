@@ -97,9 +97,9 @@ Game_master::Game_master(const std::vector<std::vector<int>>& deck_images,
     end_turn(); // end -1st turn
 }
 
-std::optional<Game_master::card_ref> Game_master::find_card(unsigned int entity_id)
+std::optional<Game_master::Card_ref> Game_master::find_card(unsigned int entity_id)
 {
-    std::optional<card_ref> card = {};
+    std::optional<Card_ref> card = {};
     for (Deck& deck : decks)
     {
         auto iter = std::find_if(deck.all.begin(), deck.all.end(), [entity_id](Card& card){ return card.entity_id == entity_id;} );
@@ -183,7 +183,7 @@ void Game_master::end_turn()
         }
     }
 
-    for(card_ref cref : active_cards)
+    for(Card_ref cref : active_cards)
     {
         if(cref.get().type == CTYPE_UNIT && cref.get().controller_id == turn) // Un-overwhelm units and refresh move and attack
         {
@@ -334,7 +334,7 @@ int Game_master::exec_order(int player_id, const Commander::Order& order)
             	return Commander::Order::ORD_INVARGS;
 			}
             // Check for out-of-bounds arguments for unit deployment
-            std::optional<tile_ref> deployment_site; // Get tile reference for unit deployment
+            std::optional<Tile_ref> deployment_site; // Get tile reference for unit deployment
             if(players[turn].hand[order.data[0]].get().type == CTYPE_UNIT)
             {
                 if(order.data[1] < 0 || order.data[2] < 0) { 
@@ -416,7 +416,7 @@ Commander::Game_params Game_master::get_static_game_info()
 bool Game_master::check_dominance(int playerId)
 {
     int unit_count_difference = 0;
-    for(card_ref cref : active_cards) // Find active cards within capture zone
+    for(Card_ref cref : active_cards) // Find active cards within capture zone
         if(cref.get().type == CTYPE_UNIT && grid[cref.get().x][cref.get().y].type == Tile::OBJECTIVE)
         {
             if(cref.get().controller_id == turn)
@@ -427,7 +427,7 @@ bool Game_master::check_dominance(int playerId)
     return unit_count_difference > 0;
 }
 
-bool Game_master::deploy_card(Card& card, int player, std::optional<tile_ref> target)
+bool Game_master::deploy_card(Card& card, int player, std::optional<Tile_ref> target)
 {
     if(card.type == CTYPE_UNIT && !target.has_value()) throw std::runtime_error("No deployment site provided for unit");
     if(card.status == Card::CSTATUS_BATTLEFIELD) std::clog << "WARNING: Deploying card marked as \"IN PLAY\"";
@@ -504,8 +504,8 @@ void Game_master::resolve_destruction(Card& card)
         if(card.x > 0 && card.y > 0)
             grid[card.x][card.y].card.reset();
 
-        std::function<bool(card_ref&, Card&)> compare_origins = \
-                    [](card_ref& cr, Card& c){ return &cr.get() == &c; };
+        std::function<bool(Card_ref&, Card&)> compare_origins = \
+                    [](Card_ref& cr, Card& c){ return &cr.get() == &c; };
             
         if(!pop_element(active_cards, card, compare_origins))
             std::clog << "WARNING: killing card that was not in activeCards" << std::endl;
@@ -538,7 +538,7 @@ bool Game_master::resolve_attack(Card& card, const int& direction)
     if(!grid[card.x][card.y].card.has_value() || \
         grid[card.x][card.y].card->get().entity_id != card.entity_id) throw std::runtime_error("Attacking with card with bad position");
 
-    std::vector<std::optional<tile_ref>> options = get_8neighbors(grid[card.x][card.y]);
+    std::vector<std::optional<Tile_ref>> options = get_8neighbors(grid[card.x][card.y]);
     // Check if there is a target in this direction.
     if(!options[direction].has_value() || !(options[direction]->get().card.has_value()))
         return false;
@@ -611,9 +611,9 @@ int Game_master::resolve_combat(Card& attacker, Card& defender)
     }
 }
 
-std::vector<std::optional<Game_master::tile_ref>> Game_master::get_4neighbors(const Tile& tile)    
+std::vector<std::optional<Game_master::Tile_ref>> Game_master::get_4neighbors(const Tile& tile)    
 {
-    std::vector<std::optional<Game_master::tile_ref>> res(4);
+    std::vector<std::optional<Game_master::Tile_ref>> res(4);
     // Check boundary conditions and add all possible options to res.
     if(tile.x > 0)                  { res[Tile::UP]    = std::ref(grid[tile.x-1][tile.y]); }
     if(tile.y < grid[0].size() - 1) { res[Tile::RIGHT] = std::ref(grid[tile.x][tile.y+1]); }
@@ -623,9 +623,9 @@ std::vector<std::optional<Game_master::tile_ref>> Game_master::get_4neighbors(co
     return res;
 }
 
-std::vector<std::optional<Game_master::tile_ref>> Game_master::get_8neighbors(const Tile& tile)
+std::vector<std::optional<Game_master::Tile_ref>> Game_master::get_8neighbors(const Tile& tile)
 {
-    std::vector<std::optional<tile_ref>> res(8);
+    std::vector<std::optional<Tile_ref>> res(8);
     // Check boundary conditions and add all possible options to res.
     if(tile.x > 0)
     {
@@ -683,6 +683,16 @@ bool Game_master::resolve_draw(int player_id)
     return true;
 }
 
+bool Game_master::resolve_draw_multi(int playerId, int n_cards)
+{
+    for (int i = 0; i < n_cards; i++) {
+        if (!resolve_draw(playerId)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool Game_master::discard(int player_id, int hand_index)
 {
     if(player_id < 0 || player_id >= players.size()) throw std::out_of_range("playerId out of range");
@@ -704,7 +714,7 @@ bool Game_master::discard(int player_id, int hand_index)
     return true;
 }
 
-bool Game_master::play_card(int player_id, int hand_index, std::optional<tile_ref> target) // Returns false if there are insufficient funds.
+bool Game_master::play_card(int player_id, int hand_index, std::optional<Tile_ref> target) // Returns false if there are insufficient funds.
 {
     Card& played = players[player_id].hand[hand_index];
     // Check index correctness
@@ -726,7 +736,7 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<tile_re
         {
             // Check if there is at least one friendly unit on adjacent tiles
             bool nearFriendly = false;
-            for(std::optional<tile_ref> tptr : get_4neighbors(target.value()))
+            for(std::optional<Tile_ref> tptr : get_4neighbors(target.value()))
                 if(tptr.has_value() && \
                    tptr->get().card.has_value() && \
                    tptr->get().card->get().controller_id == player_id)
@@ -735,7 +745,7 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<tile_re
             if(!nearFriendly) return Commander::Order::ORD_NOTARGET;
 
             // Check if there are no enemies on surrounding tiles
-            for(std::optional<tile_ref> tptr : get_8neighbors(target.value()))
+            for(std::optional<Tile_ref> tptr : get_8neighbors(target.value()))
                 if(tptr.has_value() && \
                    tptr->get().card.has_value() && 
                    tptr->get().card->get().controller_id != player_id)
