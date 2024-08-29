@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "Misc_functions.hpp"
+#include "Ability.hpp"
 class Game_master;
 
 Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), card_id(id), owner_id(oid), controller_id(-1)
@@ -20,6 +21,23 @@ Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), car
         case MACHINESHOP:
         case FISSION:
         case DEMOLITIONIST:
+        break;
+
+        case UNICYCLONE:
+        {
+            // std::unique_ptr<Ability_simple> ability = std::make_unique<Ability_simple>(master, *this, std::pair<Trigger_ref, Reaction>
+            //                                                         (std::ref(leaves_play), 
+            //                                                         [this, &master](RArgs _){ master.players[this->controller_id].funds += 2;}));
+            // abilities.push_back(std::move(ability));
+        }
+        break;
+        case LOGISTICS:
+        {
+            // std::unique_ptr<Ability_simple> ability = std::make_unique<Ability_simple>(master, *this, std::pair<Trigger_ref, Reaction>
+            //                                                         (std::ref(leaves_play), 
+            //                                                         [this, &master](RArgs _){ master.players[this->controller_id].funds += 2;}));
+            // abilities.push_back(std::move(ability));
+        }
         break;
     }
 
@@ -94,6 +112,16 @@ void Game_master::Card::reset()
         cost = 6;
         value = 9;
         break;
+    case UNICYCLONE:
+        type = CTYPE_UNIT;
+
+        cost = 3;
+        value = 3;
+        break;
+    case LOGISTICS:
+        type = CTYPE_TACTIC;
+
+        cost = 1;
     }
 }
 

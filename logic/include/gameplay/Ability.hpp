@@ -29,13 +29,14 @@ class Game_master::Ability
     public:
     Unique entity_id;
     Ability(Game_master& gm, Card& card) : master(gm), attached_to(card) {} 
+    ~Ability() = default;
 };
 
-class Game_master::Ability_simple : Game_master::Ability
+class Game_master::Ability_simple : public Game_master::Ability
 {
     public:
-    Ability_simple(Game_master& gm, Card& card, std::vector<std::pair<Trigger&, Reaction>> effects);
+    Ability_simple(Game_master& gm, Card& card, std::pair<Trigger_ref, Reaction> effect) : Ability(gm, card), binding(effect.first, effect.second) {}
 
-    protected:
-    std::list<Binding> bindings;
+    private:
+    Binding binding;
 };

@@ -39,6 +39,7 @@ protected:
     typedef std::reference_wrapper<Game_master::Tile>   Tile_ref;
 
     typedef std::function<void(std::vector<int>)> Reaction;
+    typedef std::vector<int> RArgs;
     typedef std::unordered_map<int, Reaction> Trigger;
     typedef std::reference_wrapper<Game_master::Trigger>   Trigger_ref;
 
@@ -117,16 +118,17 @@ private: // ____________________________________________________________________
 
     // Card actions
     bool deploy_card(Card &card, int player, std::optional<Tile_ref> target = {});         // Place a card in play.
-    bool resolve_movement(Card &card, const int &direction);   // Move a card in specified direction.
+    bool resolve_movement(Card &card, int direction);   // Move a card in specified direction.
     void resolve_destruction(Card &card);                      // Remove a card from play and discard it.
-    bool resolve_attack(Card &card, const int &direction); // Resolve an attack from one tile to another.
+    bool resolve_attack(Card &card, int direction); // Resolve an attack from one tile to another.
+    bool inflict_damage(Card &card, int amount);
 
     int resolve_combat(Card &attacker, Card &defender); // Resolve combat between two units.
     enum combat_outcome
     {
-        COMBAT_WIN,
-        COMBAT_TIE,
-        COMBAT_LOSE
+        COMBAT_WIN = 1,
+        COMBAT_TIE = 0,
+        COMBAT_LOSE = -1
     };
     // Tile functions
     std::vector<std::optional<Game_master::Tile_ref>> get_4neighbors(const Tile &tile);

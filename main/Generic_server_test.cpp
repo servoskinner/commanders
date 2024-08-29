@@ -1,4 +1,6 @@
 #include "Socket_wrappers.hpp"
+#include "Serialization.hpp"
+
 #include <iostream>
 #include <string>
 #include <thread>
@@ -61,7 +63,7 @@ int main()
                 std::cout << "forwarded successfully to" << i << std::endl;
             }
         }
-        std::this_thread::sleep_for(10);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     return 0;
 }

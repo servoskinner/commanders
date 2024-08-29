@@ -193,12 +193,8 @@ void Game_master::end_turn()
         }
         if(cref.get().type == CTYPE_CONTRACT && cref.get().controller_id == turn) // Gain profit for each contract and decrement their duration
         {
-            cref.get().value--;
+            inflict_damage(cref.get(), 1);
             players[turn].funds++;
-
-            if(cref.get().value <= 0) {
-                resolve_destruction(cref);
-            } 
         }
     }
 };
@@ -426,7 +422,6 @@ bool Game_master::check_dominance(int playerId)
         }
     return unit_count_difference > 0;
 }
-
 bool Game_master::deploy_card(Card& card, int player, std::optional<Tile_ref> target)
 {
     if(card.type == CTYPE_UNIT && !target.has_value()) throw std::runtime_error("No deployment site provided for unit");
@@ -462,7 +457,7 @@ bool Game_master::deploy_card(Card& card, int player, std::optional<Tile_ref> ta
     return true;
 }
 
-bool Game_master::resolve_movement(Card& card, const int& direction)
+bool Game_master::resolve_movement(Card& card, int direction)
 {   
     // Check if direction is valid
     if(direction < 0 || direction > 3) throw std::invalid_argument("invalid direction");
@@ -501,7 +496,7 @@ void Game_master::resolve_destruction(Card& card)
 {   
     if(card.type != CTYPE_TACTIC)
     {
-        if(card.x > 0 && card.y > 0)
+        if(card.x >= 0 && card.y >= 0)
             grid[card.x][card.y].card.reset();
 
         std::function<bool(Card_ref&, Card&)> compare_origins = \
@@ -531,7 +526,7 @@ void Game_master::resolve_destruction(Card& card)
     }
 }
 
-bool Game_master::resolve_attack(Card& card, const int& direction)
+bool Game_master::resolve_attack(Card& card, int direction)
 {
     // Check if card's position on grid is OK
     if(direction < 0 || direction > 7) throw std::invalid_argument("Invalid direction");
@@ -543,77 +538,87 @@ bool Game_master::resolve_attack(Card& card, const int& direction)
     if(!options[direction].has_value() || !(options[direction]->get().card.has_value()))
         return false;
 
-    fire_trigger(card.before_attack, {direction});
-
     int combat_result = resolve_combat(card, options[direction]->get().card.value());
 
     // Broadcast event
     Commander::Event attack_event = {Commander::Event::EV_CARD_ATTACKS, {card.x, card.y, options[direction]->get().x, options[direction]->get().y}};
     broadcast_event(attack_event);
     // Process triggers
-    fire_trigger(card.after_attack, {direction, combat_result});
 
     return true;
 }
 
 int Game_master::resolve_combat(Card& attacker, Card& defender)
 {
+    fire_trigger(attacker.before_attack, {(int)defender.entity_id.get_id()});
+    fire_trigger(defender.before_attacked, {(int)attacker.entity_id.get_id()});
+
     int advantage_difference = attacker.advantage - defender.advantage;
     // set advantage bonus if defender is overwhelmed
     if(defender.is_overwhelmed) { advantage_difference++; }
     // tile type advantage
-    if(defender.x > 0 && defender.y > 0)
+    if(defender.x >= 0 && defender.y >= 0)
     {
         if(grid[defender.x][defender.y].type = Tile::TERR_ADV)    { advantage_difference--; }
         if(grid[defender.x][defender.y].type = Tile::TERR_DISADV) { advantage_difference++; }
     }
-    if(attacker.x > 0 && attacker.y > 0)
+    if(attacker.x >= 0 && attacker.y >= 0)
     {
         if(grid[attacker.x][attacker.y].type = Tile::TERR_ADV)    { advantage_difference--; }
         if(grid[attacker.x][attacker.y].type = Tile::TERR_DISADV) { advantage_difference++; }
     }
+
+    
     // advantage resolution
     if(advantage_difference > 0)
-        {
-        defender.value -= advantage_difference;
-        if(defender.value < 0) defender.value = 0;
+    {
+        bool defender_destroyed = inflict_damage(defender, advantage_difference);
+        if (defender_destroyed) {
+            fire_trigger(attacker.after_attack,   {(int)defender.entity_id.get_id(), Game_master::COMBAT_WIN});
+            fire_trigger(defender.after_attacked, {(int)attacker.entity_id.get_id(), Game_master::COMBAT_LOSE});
+            return Game_master::COMBAT_WIN;
         }
-    else
-        {
-        attacker.value += advantage_difference;
-        if(attacker.value < 0) attacker.value = 0;
+    }
+    else if(advantage_difference < 0)
+    {
+        bool attacker_destroyed = inflict_damage(attacker, -advantage_difference);
+        if (attacker_destroyed) {
+            fire_trigger(attacker.after_attack,   {(int)defender.entity_id.get_id(), Game_master::COMBAT_LOSE});
+            fire_trigger(defender.after_attacked, {(int)attacker.entity_id.get_id(), Game_master::COMBAT_WIN});
+            return Game_master::COMBAT_LOSE;
         }
+    }
+    int attacker_value = attacker.value;
+    int defender_value = defender.value;
+
+    bool defender_destroyed = inflict_damage(defender, attacker_value);
+    bool attacker_destroyed = inflict_damage(attacker, defender_value);
+
+    int combat_outcome;
+
+    if (defender_destroyed && !attacker_destroyed) {
+        combat_outcome = Game_master::COMBAT_WIN;
+    }
+    else if (attacker_destroyed && !defender_destroyed) {
+        combat_outcome = Game_master::COMBAT_LOSE;
+    }
+    else {
+        combat_outcome = Game_master::COMBAT_TIE;
+    }
     // set status effects
     attacker.can_attack = false;
     attacker.can_move   = false;
     defender.is_overwhelmed = true;
 
-    // raw damage resolution
-    if(attacker.value > defender.value)
-    {
-        attacker.value -= defender.value;
-        defender.value = 0;
-        resolve_destruction(defender);
-        return Game_master::COMBAT_WIN;
-    }
-    else if(attacker.value < defender.value)
-    {
-        defender.value -= attacker.value;
-        attacker.value = 0;
-        resolve_destruction(attacker);
-        return Game_master::COMBAT_LOSE;
-    }
-    else // attacker.value == defender.value
-    {
-        resolve_destruction(defender);
-        resolve_destruction(attacker);
-        return Game_master::COMBAT_TIE;
-    }
+    fire_trigger(attacker.after_attack,   {(int)defender.entity_id.get_id(), combat_outcome});
+    fire_trigger(defender.after_attacked, {(int)attacker.entity_id.get_id(), -combat_outcome});
+
+    return combat_outcome;
 }
 
 std::vector<std::optional<Game_master::Tile_ref>> Game_master::get_4neighbors(const Tile& tile)    
 {
-    std::vector<std::optional<Game_master::Tile_ref>> res(4);
+    std::vector<std::optional<Tile_ref>> res(4);
     // Check boundary conditions and add all possible options to res.
     if(tile.x > 0)                  { res[Tile::UP]    = std::ref(grid[tile.x-1][tile.y]); }
     if(tile.y < grid[0].size() - 1) { res[Tile::RIGHT] = std::ref(grid[tile.x][tile.y+1]); }
@@ -647,6 +652,20 @@ std::vector<std::optional<Game_master::Tile_ref>> Game_master::get_8neighbors(co
     if(tile.y < grid[0].size() - 1)     { res[Tile::RIGHT]     = std::ref(grid[tile.x][tile.y+1]); }
 
     return res;
+}
+
+bool Game_master::inflict_damage(Game_master::Card& card, int amount)
+{
+    if (card.type == CTYPE_TACTIC) {
+        throw std::runtime_error("inflict_damage(): cannot inflict damage to tactic");
+    }
+
+    card.value -= amount;
+    if (card.value <= 0) {
+        resolve_destruction(card);
+        return true;
+    }
+    return false;
 }
 
 bool Game_master::resolve_draw(int player_id)
@@ -742,27 +761,29 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<Tile_re
                    tptr->get().card->get().controller_id == player_id)
                     nearFriendly = true;
 
-            if(!nearFriendly) return Commander::Order::ORD_NOTARGET;
-
+            if(!nearFriendly) {
+                return false;
+            }
             // Check if there are no enemies on surrounding tiles
             for(std::optional<Tile_ref> tptr : get_8neighbors(target.value()))
                 if(tptr.has_value() && \
                    tptr->get().card.has_value() && 
-                   tptr->get().card->get().controller_id != player_id)
-                    return Commander::Order::ORD_NOTARGET;
+                   tptr->get().card->get().controller_id != player_id) {
+                        return false;
+                   }
         }
     }
 
     if(played.status != Card::CSTATUS_HAND)
         std::clog << "Warning: trying to play card that has not been marked as \"In hand\"" << std::endl;
 
-    players[player_id].funds -= players[player_id].hand[hand_index].get().cost;
-    
-    pop_index(players[player_id].hand, hand_index);
     bool res = deploy_card(played, player_id, target);
 
+    if (res) 
+    {
+        players[player_id].funds -= players[player_id].hand[hand_index].get().cost;
+        pop_index(players[player_id].hand, hand_index);
 
-    if (res) {
         played.controller_id = player_id;
 
         fire_trigger(players[player_id].deploys);
@@ -776,7 +797,6 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<Tile_re
         Commander::Event deploy_event = {Commander::Event::EV_PLAYER_DEPLOYS, {player_id, (int)played.entity_id.get_id(), target_x, target_y}};
         broadcast_event(deploy_event);
     }
-
     return res;
 }
 

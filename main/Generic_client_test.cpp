@@ -1,4 +1,6 @@
 #include "Socket_wrappers.hpp"
+#include "Serialization.hpp"
+
 #include <iostream>
 #include <string>
 
@@ -105,7 +107,7 @@ int main()
             case 'S':
             case 's':
             {
-                if (client_socket.is_connected()) {
+                if (client_socket.get_connection().has_value()) {
                     std::string message;
                     std::cout << ">" << std::endl;
                     std::cin >> message;

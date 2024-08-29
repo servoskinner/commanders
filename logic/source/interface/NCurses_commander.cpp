@@ -24,10 +24,10 @@ NCurses_commander::NCurses_commander()
 
     tui.set_color_pair(CPAIR_CARD_UNIT,      COLOR_BRIGHT_WHITE, COLOR_MAGENTA);
     tui.set_color_pair(CPAIR_CARD_CONTRACT,  COLOR_BRIGHT_WHITE, COLOR_GREEN);
-    tui.set_color_pair(CPAIR_CARD_TACTIC,    COLOR_BRIGHT_WHITE, COLOR_CYAN);
+    tui.set_color_pair(CPAIR_CARD_TACTIC,    COLOR_BRIGHT_WHITE, COLOR_BLUE);
     tui.set_color_pair(CPAIR_CARD_UNIT_INV,      COLOR_MAGENTA,      COLOR_BLACK);
     tui.set_color_pair(CPAIR_CARD_CONTRACT_INV,  COLOR_GREEN,        COLOR_BLACK);
-    tui.set_color_pair(CPAIR_CARD_TACTIC_INV,    COLOR_CYAN,         COLOR_BLACK);
+    tui.set_color_pair(CPAIR_CARD_TACTIC_INV,    COLOR_BLUE,         COLOR_BLACK);
 
     tui.set_color_pair(CPAIR_UNIT_VALUE,     COLOR_BRIGHT_MAGENTA,   COLOR_BLACK);
     tui.set_color_pair(CPAIR_UNIT_ADVANTAGE, COLOR_BRIGHT_GREEN,     COLOR_BLACK);

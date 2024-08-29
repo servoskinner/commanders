@@ -17,9 +17,9 @@ int main()
         MEGALO,
         MAIMDROID,
         MAIMDROID,
-        GUNKFOOD,
-        GUNKFOOD,
-        MACHINEPARTS,
+        PEPTANE,
+        PEPTANE,
+        MACHINESHOP,
         FISSION
     };
     std::vector<int> deck2 =
@@ -32,10 +32,12 @@ int main()
         MEGALO,
         MAIMDROID,
         MAIMDROID,
-        GUNKFOOD,
-        GUNKFOOD,
-        MACHINEPARTS,
-        FISSION
+        PEPTANE,
+        PEPTANE,
+        MACHINESHOP,
+        FISSION,
+        LOGISTICS
+
     };
 
     CLI_commander commander;

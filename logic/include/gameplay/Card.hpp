@@ -40,7 +40,7 @@ public: // _____________________________________________________________________
     bool can_move;
     bool is_overwhelmed;
 
-    std::vector<std::shared_ptr<Ability>> abilities;
+    std::list<std::unique_ptr<Ability>> abilities;
     // Event triggers
     Trigger enters_play;
     Trigger leaves_play;

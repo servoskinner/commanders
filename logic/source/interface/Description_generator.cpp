@@ -134,6 +134,36 @@ Description_generator::Card_descr Description_generator::get_card_instance(int i
                              1, 0, 0,
                              1, 0, 0};
     break;
+    //______________________________
+    case UNICYCLONE:
+    card_desc.name = "Unicyclone";
+    card_desc.type = CTYPE_UNIT;
+    card_desc.flavor_text = "Unicycle tank.";
+    card_desc.ability_text = "When destroyed, gain #2.";
+
+    card_desc.cost = 3;
+    card_desc.value = 3;
+    card_desc.mnemosprite = {1, 1, 1,
+                             1, 0, 0,
+                             0, 1, 0,
+                             0, 0, 1,
+                             1, 0, 0};
+    break;
+    //______________________________
+    case LOGISTICS:
+    card_desc.name = "Gray Logistics";
+    card_desc.type = CTYPE_TACTIC;
+    card_desc.flavor_text = "Acquire state-of-the-art weaponry by questionable means.";
+    card_desc.ability_text = "Draw three cards.";
+
+    card_desc.cost = 2;
+    card_desc.value = 6;
+    card_desc.mnemosprite = {0, 0, 1,
+                             1, 0, 0,
+                             1, 0, 0,
+                             1, 0, 0,
+                             1, 1, 1};
+    break;
     }
     return card_desc;
 }

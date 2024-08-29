@@ -23,7 +23,12 @@ int main()
         PEPTANE,
         MACHINESHOP,
         MACHINESHOP,
-        DEMOLITIONIST
+        DEMOLITIONIST,
+        LOGISTICS,
+        LOGISTICS,
+        LOGISTICS,
+        UNICYCLONE,
+        UNICYCLONE
     };
     std::vector<int> deck2 =
     {
@@ -39,7 +44,12 @@ int main()
         PEPTANE,
         MACHINESHOP,
         FISSION,
-        DEMOLITIONIST
+        DEMOLITIONIST,
+        LOGISTICS,
+        LOGISTICS,
+        LOGISTICS,
+        UNICYCLONE,
+        UNICYCLONE
     };
 
     std::vector<std::vector<int>> deck_images = {deck1, deck2};
