@@ -15,23 +15,35 @@ void Event_timer::process()
     if (delta_time < 0.0) { // overflow
         delta_time = (float)(__LONG_MAX__/CLOCKS_PER_SEC) - prev_time + cur_time;
     }
-    for (Timed_event& event : events)
+    for (int ev_id = 0;ev_id < events.size(); ev_id++)
     {
-        event.countdown -= delta_time;
-        while(event.countdown <= 0.0)
+        events[ev_id].countdown -= delta_time;
+        while(events[ev_id].countdown <= 0.0)
         {
             // Lock mutex if provided
             std::optional<std::lock_guard<std::mutex>> opt_lock;
-            if(event.mutex.has_value()) {
-                opt_lock.emplace(event.mutex->get());
+            if(events[ev_id].mutex.has_value()) {
+                opt_lock.emplace(events[ev_id].mutex->get());
             }
-            event.event();
+
+            if (events[ev_id].n_repeat > 0) {
+                events[ev_id].n_repeat--;
+            }
+            else if (events[ev_id].n_repeat == 0) {
+                events.erase(events.begin() + ev_id);
+                ev_id--;
+                break;
+            }
+            
+
+            events[ev_id].event();
+
 
             if (skip_stalled) {
-                event.countdown = event.t_seconds;
+                events[ev_id].countdown = events[ev_id].t_seconds;
             }
             else {
-                event.countdown += event.t_seconds;
+                events[ev_id].countdown += events[ev_id].t_seconds;
             }
         }
     }

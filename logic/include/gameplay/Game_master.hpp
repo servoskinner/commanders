@@ -81,6 +81,8 @@ public: // _____________________________________________________________________
     std::vector<std::function<void(Commander::Event)>> on_event_broadcast;
 
 private: // _____________________________________________________________________________
+    std::optional<Commander::Order> processed_order;
+
     std::vector<std::queue<Commander::Event>> event_queues;
 
     std::list<Card> tokens;

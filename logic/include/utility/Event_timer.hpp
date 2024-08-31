@@ -22,9 +22,11 @@ class Event_timer
         std::optional<std::reference_wrapper<std::mutex>> mutex;
         float t_seconds = 0.0;
         float countdown = 0.0;
+        int n_repeat = -1;
 
-        Timed_event(std::function<void(void)> event, float t_seconds) : event(event), t_seconds(t_seconds), \
-                                                                        countdown(t_seconds), mutex() {}
+        Timed_event(std::function<void(void)> event, float t_seconds, int n_repeat = -1) : event(event), t_seconds(t_seconds), \
+                                                                                           countdown(t_seconds), mutex(),
+                                                                                           n_repeat(n_repeat) {}
     };
 
     void process();

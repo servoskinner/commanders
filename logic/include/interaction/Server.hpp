@@ -25,6 +25,7 @@ class Server
     std::vector<Socket_info> get_peers();
 
     void force_disconnect(Socket_info peer);
+    
     std::string description;
     Server_info get_info();
 
