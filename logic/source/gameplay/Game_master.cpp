@@ -442,6 +442,8 @@ bool Game_master::deploy_card(Card& card, int player, std::optional<Tile_ref> ta
         card.is_overwhelmed = false;
     }
     
+    card.controller_id = player;
+
     if(card.type != CTYPE_TACTIC)
     {   // Update status
         card.status = Card::CSTATUS_BATTLEFIELD;
@@ -702,10 +704,10 @@ bool Game_master::resolve_draw(int player_id)
     return true;
 }
 
-bool Game_master::resolve_draw_multi(int playerId, int n_cards)
+bool Game_master::resolve_draw_multi(int player_id, int n_cards)
 {
     for (int i = 0; i < n_cards; i++) {
-        if (!resolve_draw(playerId)) {
+        if (!resolve_draw(player_id)) {
             return false;
         }
     }
@@ -783,8 +785,6 @@ bool Game_master::play_card(int player_id, int hand_index, std::optional<Tile_re
     {
         players[player_id].funds -= players[player_id].hand[hand_index].get().cost;
         pop_index(players[player_id].hand, hand_index);
-
-        played.controller_id = player_id;
 
         fire_trigger(players[player_id].deploys);
 

@@ -25,18 +25,18 @@ Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), car
 
         case UNICYCLONE:
         {
-            // std::unique_ptr<Ability_simple> ability = std::make_unique<Ability_simple>(master, *this, std::pair<Trigger_ref, Reaction>
-            //                                                         (std::ref(leaves_play), 
-            //                                                         [this, &master](RArgs _){ master.players[this->controller_id].funds += 2;}));
-            // abilities.push_back(std::move(ability));
+            std::unique_ptr<Ability_simple> ability = std::make_unique<Ability_simple>(master, std::ref(*this), std::pair<Trigger_ref, Reaction>
+                                                                    (std::ref(leaves_play), 
+                                                                    [this, &master](RArgs _){ master.players[this->controller_id].funds += 2;}));
+            abilities.push_back(std::move(ability));
         }
         break;
         case LOGISTICS:
         {
-            // std::unique_ptr<Ability_simple> ability = std::make_unique<Ability_simple>(master, *this, std::pair<Trigger_ref, Reaction>
-            //                                                         (std::ref(leaves_play), 
-            //                                                         [this, &master](RArgs _){ master.players[this->controller_id].funds += 2;}));
-            // abilities.push_back(std::move(ability));
+            std::unique_ptr<Ability_simple> ability = std::make_unique<Ability_simple>(master, std::ref(*this), std::pair<Trigger_ref, Reaction>
+                                                                    (std::ref(enters_play), 
+                                                                    [this, &master](RArgs _){ master.resolve_draw_multi(this->controller_id, 3);}));
+            abilities.push_back(std::move(ability));
         }
         break;
     }

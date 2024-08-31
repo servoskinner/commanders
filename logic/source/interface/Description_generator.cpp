@@ -156,8 +156,7 @@ Description_generator::Card_descr Description_generator::get_card_instance(int i
     card_desc.flavor_text = "Acquire state-of-the-art weaponry by questionable means.";
     card_desc.ability_text = "Draw three cards.";
 
-    card_desc.cost = 2;
-    card_desc.value = 6;
+    card_desc.cost = 1;
     card_desc.mnemosprite = {0, 0, 1,
                              1, 0, 0,
                              1, 0, 0,
