@@ -16,9 +16,9 @@ Use less and better pointers
 
 TUI overhaul using ncurses
 
---- **WE ARE HERE** --- 
+Basic trigger-event based mechanics and Tactic cards (overhaul finished)
 
-Basic trigger-event based mechanics and Tactic cards **(ROLLED BACK, ON OVERHAUL)**
+--- **WE ARE HERE** --- 
 
 Client-server support
 
@@ -43,6 +43,8 @@ Console TUI edition
 - Generate makefile: ```cmake -G "Unix Makefiles"``` for linux, ```MinGW Makefiles``` or ```NMake Makefiles``` for Windows)
 - Run ```make game_test``` to build and launch the application. (For Windows use ```mingw32-make``` or ```nmake``` depending on your previous choice)
 - Run the application once it has been compiled: ```./game_test```
+
+  **It is highly recommended to use a font with 1:1 character ratio, such as C64 Pro. Otherwise, the interface may appear stretched.**
 
 # Basic rules
 ## Objective
