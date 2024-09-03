@@ -182,7 +182,21 @@ TUI::Sprite::Sprite(int width, int height)
 
 void TUI::Sprite::draw_self(unsigned input, int orig_y, int orig_x)
 {
+    TUI& tui = TUI::get();
+    for (int i = 0; i < sprite.size(); i++){
+        for(int j = 0; j < sprite[i].size(); j++) {
+            tui.draw_glyph(orig_y + i, orig_x + j, sprite[i][j]);
+        }
+    }
+}
 
+void TUI::Sprite::set_all(Glyph glyph)
+{
+    for (int i = 0; i < sprite.size(); i++){
+        for(int j = 0; j < sprite[i].size(); j++) {
+            sprite[i][j] = glyph;
+        }
+    }
 }
 
 void TUI::Text_input::draw_self(unsigned input, int orig_y, int orig_x)

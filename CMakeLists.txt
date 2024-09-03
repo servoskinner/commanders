@@ -33,7 +33,7 @@ add_executable(tcp_server logic/source/network/TCP_server.cpp main/TCP_test_serv
 add_executable(timer_test logic/source/utility/Event_timer.cpp main/Timer_test.cpp)
 add_executable(unique_test logic/source/utility/Unique.cpp main/Unique_test.cpp)
 add_executable(tui_test logic/source/utility/TUI.cpp logic/source/utility/Focus.cpp
-               logic/source/utility/Misc_functions.cpp main/TUI_test.cpp)
+               logic/source/utility/Misc_functions.cpp logic/source/utility/Animations.cpp logic/source/utility/Event_timer.cpp main/TUI_test.cpp)
 
 add_executable(generic_client_test logic/source/network/TCP_client.cpp logic/source/network/UDP_wrapper.cpp 
                logic/source/network/Socket_wrappers.cpp main/Generic_client_test.cpp)

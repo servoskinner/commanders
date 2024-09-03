@@ -13,7 +13,7 @@ void Server::manage_upkeep()
             slot->upkeep--;
             if (slot->upkeep <= 0)
             {
-                force_disconnect(slot_);
+                force_disconnect(slot.value().sock_info);
             }
         }
     }

@@ -1,5 +1,6 @@
 #include "TUI.hpp"
 #include "Focus.hpp"
+#include "Animations.hpp"
 
 #include <ncurses.h>
 #include <thread>
@@ -12,11 +13,16 @@ int main()
     TUI::Text_input input_box;
     TUI& tui = TUI::get();
 
+    Crazy_box crazy_box(0.0005);
+
     tui.set_color_pair(1, COLOR_BRIGHT_WHITE, COLOR_BLACK);
     tui.set_color_pair(2, COLOR_BRIGHT_BLUE, COLOR_BLACK);
     tui.set_color_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+
+    tui.set_color_pair(4, COLOR_BLACK, COLOR_BRIGHT_YELLOW);
+    tui.set_color_pair(5, COLOR_BLACK, COLOR_BRIGHT_BLACK);
     
-    rect.x = 10, rect.y = 10;
+    rect.x = 10, rect.y = 17;
 
     rect.tl_corner.color = 1;
     rect.t_border.color = 1;
@@ -26,12 +32,12 @@ int main()
     rect.b_border.color = 3;
     rect.br_corner.color = 3;
 
-    scroll.x = 11; scroll.y = 11;
+    scroll.x = 11; scroll.y = 18;
     rect.width = 20, rect.height = 5;
     scroll.width = 18, scroll.height = 3;
 
-    input_box.x = 1;
-    input_box.y = 17;
+    input_box.x = 15;
+    input_box.y = 1;
     input_box.width = 30;
     input_box.height = 5;
     input_box.color = 3;
@@ -46,6 +52,12 @@ int main()
     fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, \
     sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
+    crazy_box.text = "crazy box";
+    crazy_box.rect.x = 1;
+    crazy_box.rect.y = 1;
+    crazy_box.rect.width = 10;
+    crazy_box.rect.height = 8;
+
     while (true) {
         tui.clear();
 
@@ -56,6 +68,7 @@ int main()
         rect.draw(input);
         scroll.draw(input);
         input_box.draw(input);
+        crazy_box.draw(input);
 
         tui.render();
 

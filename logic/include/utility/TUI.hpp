@@ -148,8 +148,9 @@ class TUI
         Sprite(int width, int height);
 
         inline std::pair<int, int> get_size() { return {sprite.size(), sprite[0].size()};};
-        Glyph get_glyph(int y_loc, int x_loc);
-        void set_glyph(int y_loc, int x_loc, Glyph glyph);
+        inline Glyph get_glyph(int y, int x) { return sprite[y][x];};
+        inline void set_glyph(int y, int x, Glyph glyph) { sprite[y][x] = glyph;};
+        void set_all(Glyph glyph);
 
         private:
         std::vector<std::vector<Glyph>> sprite;
