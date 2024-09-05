@@ -60,6 +60,15 @@ class TUI
     inline void set_color_pair(short id, short foreground, short background) { 
         init_pair(id, foreground, background);
     }
+
+    inline std::pair<int, int> get_size() { 
+        return {getmaxy(stdscr), getmaxx(stdscr)};
+    }
+
+    inline std::pair<int, int> get_center() { 
+        return {getmaxy(stdscr)/2, getmaxx(stdscr)/2};
+    }
+
     unsigned get_input();
 
     struct Glyph

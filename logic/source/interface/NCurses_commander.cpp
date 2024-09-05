@@ -165,7 +165,8 @@ void NCurses_commander::process_event(Commander::Event event)
     if(event.type == Event::EV_GAME_WON_BY && event.data.size() > 0)
     {
         winning_player = event.data[0];
-        focus_game_end.claim_control();
+        focus_message.claim_control();
+        focus_game_result.claim_control();
     }
 }
 
@@ -197,49 +198,65 @@ void NCurses_commander::process_order_feedback(int code)
     }
 }
 
-void NCurses_commander::render(unsigned input)
+void NCurses_commander::draw(unsigned input)
 {
-    if (focus_field.has_control()) {
-        switch (input)
+    // Reset focuses here
+    if (input != 0) {
+        if (focus_message.has_control() && focus_end_turn.has_control() && input != KEY_ENTR ||
+            focus_examine.has_control()) 
         {
-        case 'w':
-        case 'W':
-            if(cursor_y != 0) {
-                cursor_y--;
-            }
-            break;
-        case 'a':
-        case 'A': // Move cursor 
-            if(cursor_x != 0) {
-                cursor_x--;
-            }
-            break;
-        case 's':
-        case 'S': // Move cursor down
-            if(cursor_y != game_params.grid_size.first-1) {
-                cursor_y++;
-            }
-            break;
-        case 'd':
-        case 'D': // Move cursor to the right
-            if (cursor_x != game_params.grid_size.second-1) {
-            cursor_x++;
-            }
-            break;
-        case 'q':
-        case 'Q': // Move hand cursor to the left 
-            if (cursor_hand_id != 0) {
-            cursor_hand_id--;
-            }
-            break;
-        case 'e':
-        case 'E': // Move hand cursor to the right
-            cursor_hand_id++;
-            if (cursor_hand_id >= game_state.hands[active_id].size()) {
-                cursor_hand_id = game_state.hands[active_id].size() - 1;
-            }
-            break;
-        case ' ':
+            focus_field.claim_control();
+        }
+        // ...
+    }
+
+    switch (input)
+    { // Grid cursor movement _____________________
+    case 'w':
+    case 'W':
+        if(focus_field.has_control() && cursor_y != 0) {
+            cursor_y--;
+        }
+        break;
+
+    case 'a':
+    case 'A': // Move cursor 
+        if(focus_field.has_control() && cursor_x != 0) {
+            cursor_x--;
+        }
+        break;
+
+    case 's':
+    case 'S': // Move cursor down
+        if(focus_field.has_control() && cursor_y != game_params.grid_size.first-1) {
+            cursor_y++;
+        }
+        break;
+
+    case 'd':
+    case 'D': // Move cursor to the right
+        if (focus_field.has_control() && cursor_x != game_params.grid_size.second-1) {
+        cursor_x++;
+        }
+        break;
+    // Hand selection movement _________________________
+    case 'q':
+    case 'Q': // Move hand cursor to the left 
+        if (focus_field.has_control() && cursor_hand_id != 0) {
+        cursor_hand_id--;
+        }
+        break;
+
+    case 'e':
+    case 'E': // Move hand cursor to the right
+        cursor_hand_id++;
+        if (focus_field.has_control() && cursor_hand_id >= game_state.hands[active_id].size()) {
+            cursor_hand_id = game_state.hands[active_id].size() - 1;
+        }
+        break;
+    // Selection ______________________________________
+    case ' ':
+        if (focus_field.has_control()) {
             if (selected) {
                 // Move, attack, deploy order
                 selected = false;
@@ -267,42 +284,50 @@ void NCurses_commander::render(unsigned input)
                 }
             }
             else {
-            selection_x = cursor_x;
-            selection_y = cursor_y;
-            selected = true;
+                selection_x = cursor_x;
+                selection_y = cursor_y;
+                selected = true;
             }
-            break;
-        case 'c':
-        case 'C':
-            selected = false;
-            break;
         }
-    }
-
-    if (focus_game_end.has_control()) {
-        if (input == ' ') {
+        if (focus_message.has_control() && focus_game_result.has_control()) {
             on = false;
+        }   
+        break;
+    // Open chat _________________________________________
+    case 'c':
+    case 'C':
+        if (focus_field.has_control()) {
+            focus_chat.claim_control();
         }
-    }
+        break;
+    // Examine card ______________________________________
+    case 'z':
+    case 'Z':
+        if (focus_field.has_control() && grid[cursor_y][cursor_x].has_value()) {
+            focus_examine.claim_control();
+        }
+        break;
 
-    if (focus_confirm_pass.has_control()) {
-        if (input == 10 && !pending_order.has_value()) { // enter key
+    case KEY_ENTR:
+        if (focus_message.has_control() && focus_end_turn.has_control() && !pending_order.has_value()) {
             // pass order
             Order ord = {Order::ORD_PASS, {}};
             pending_order.emplace(ord);
-        }
-        if (input != 0) {
             focus_field.claim_control();
         }
-    }
-    else {
-        if (input == 10 && focus_field.has_control()) {
-            focus_confirm_pass.claim_control();
+        else if (focus_field.has_control()) {
+            focus_message.claim_control();
+            focus_end_turn.claim_control();
         }
-    }
-    
-    if (input == '`' || input == '~') {// exit
+        if (focus_chat.has_control()) {
+            focus_field.claim_control();
+        }
+        break;
+
+    case '`':
+    case '~':
         on = false;
+        break;
     }
 
     render_UI(input);
@@ -311,8 +336,10 @@ void NCurses_commander::render(unsigned input)
 void NCurses_commander::render_UI(unsigned input)
 {
     erase();
-    x_term_size = getmaxx(stdscr);
-    y_term_size = getmaxy(stdscr);
+    TUI& tui = TUI::get();
+
+    int x_term_size = tui.get_size().second;
+    int y_term_size = tui.get_size().first;
 
     if (x_term_size < 0 || y_term_size < 0) {
         throw std::runtime_error("Screen not initialized");
@@ -351,6 +378,10 @@ void NCurses_commander::render_UI(unsigned input)
 
 void NCurses_commander::render_grid()
 {
+    TUI& tui = TUI::get();
+
+    int x_term_size = tui.get_size().second;
+    int y_term_size = tui.get_size().first;
     // Get window params
     int grid_width_sym = game_params.grid_size.second*(x_scale-1)+1;
     int grid_height_sym = game_params.grid_size.first*(y_scale-1)+1;
@@ -360,7 +391,6 @@ void NCurses_commander::render_grid()
         grid_origin_x = 0;
     }
     int grid_origin_y = Y_GRID_OFFSET;
-    
     // Render cells
     grid_cell.width  = x_scale;
     grid_cell.height = y_scale;
@@ -526,6 +556,11 @@ void NCurses_commander::render_grid()
 
 void NCurses_commander::render_hand()
 {
+    TUI& tui = TUI::get();
+
+    int x_term_size = tui.get_size().second;
+    int y_term_size = tui.get_size().first;
+
     int grid_width_sym = game_params.grid_size.second*(x_scale-1)+1;
     int grid_height_sym = game_params.grid_size.first*(y_scale-1)+1;
 
@@ -618,6 +653,11 @@ void NCurses_commander::render_hand()
 
 void NCurses_commander::render_peripheral(unsigned input)
 {
+    TUI& tui = TUI::get();
+
+    int x_term_size = tui.get_size().second;
+    int y_term_size = tui.get_size().first;
+
     int grid_width_sym = game_params.grid_size.first*(x_scale-1)+1;
     int grid_height_sym = game_params.grid_size.second*(y_scale-1)+1;
 
@@ -632,7 +672,7 @@ void NCurses_commander::render_peripheral(unsigned input)
     chat_input_border_active.visible = focus_chat.has_control();
     chat_border.draw();
 
-    if (focus_confirm_pass.has_control()) 
+    if (focus_end_turn.has_control()) 
     {
         urgent_message_border.set_border_color(CPAIR_HIGHLIT);
         urgent_message_border.fill.color = CPAIR_HIGHLIT;
@@ -641,7 +681,7 @@ void NCurses_commander::render_peripheral(unsigned input)
         urgent_message_subtext.text = "any other key to cancel";
         urgent_message_subtext.color = CPAIR_HIGHLIT;
     }
-    if (focus_game_end.has_control())
+    if (focus_game_result.has_control())
     {
         urgent_message_border.set_border_color(CPAIR_HIGHLIGHT_GREEN);
         urgent_message_border.fill.color = CPAIR_HIGHLIGHT_GREEN;
@@ -650,11 +690,43 @@ void NCurses_commander::render_peripheral(unsigned input)
         urgent_message_subtext.text = "   press space to exit";
         urgent_message_subtext.color = CPAIR_HIGHLIGHT_GREEN;
     }
-    if (focus_confirm_pass.has_control() || focus_game_end.has_control())
+    if (focus_message.has_control())
     {
         urgent_message_border.y = Y_GRID_OFFSET + (grid_height_sym - urgent_message_border.height) / 2;
         urgent_message_border.x = (x_term_size - urgent_message_border.width) / 2;
         urgent_message_border.draw();
+    }
+    if (focus_examine.has_control() && grid[cursor_y][cursor_x].has_value()) {
+        Card_sprite examined;
+        Card_info info = grid[cursor_y][cursor_x].value();
+        examined.set_card(info);
+
+        // position the card, centering it above sprite
+        examined.x = grid_origin_x + info.y*(x_scale-1) - x_scale*3/2;
+        examined.y = grid_origin_y + info.x*(y_scale-1) - y_scale/2;
+
+        if(cursor_x < game_params.grid_size.second/2) {
+            if (cursor_y < game_params.grid_size.first/2) {
+                examined.x += x_scale;
+                examined.y += y_scale;
+            }
+            else {
+                examined.x += x_scale;
+                examined.y -= y_scale;
+            }
+        }
+        else {
+            if (cursor_y < game_params.grid_size.first/2) {
+                examined.x -= x_scale;
+                examined.y += y_scale;
+            }
+            else {
+                examined.x -= x_scale;
+                examined.y -= y_scale;
+            }
+        }
+
+        examined.draw();
     }
 
     turn_indicator.text = "Turn " + std::to_string(game_state.turn_absolute) + ": Player " + std::to_string(game_state.turn);
@@ -700,7 +772,9 @@ NCurses_commander::Unit_sprite::Unit_sprite(Card_info c_info)
     rect.bl_corner = {ACS_LLCORNER};
     rect.br_corner = {ACS_LRCORNER};
 
-    rect.draw_filled = false;
+    rect.draw_filled = true;
+    rect.fill = {' ', 0};
+
     rect.set_border_color(CPAIR_NORMAL);
 
     name.x = 1;
@@ -765,6 +839,9 @@ NCurses_commander::Card_sprite::Card_sprite(Description_generator::Card_descr c_
     rect.tr_corner = {ACS_URCORNER};
     rect.bl_corner = {ACS_LLCORNER};
     rect.br_corner = {ACS_LRCORNER};
+
+    rect.draw_filled = true;
+    rect.fill = {' ', 0};
 
     name.x = 1;
     name.y = 2;

@@ -51,7 +51,7 @@ std::pair<int, int> Crazy_box::position_character(int position)
 void Crazy_box::draw_self(unsigned input, int orig_y, int orig_x)
 {
     timer.process();
-    rect.draw();
+    rect.draw(input, orig_y, orig_x);
     TUI& tui = TUI::get();
     TUI::Glyph glyph = {'\0', text_color};
 
@@ -61,7 +61,7 @@ void Crazy_box::draw_self(unsigned input, int orig_y, int orig_x)
         }
         glyph.symbol = text[i];
         std::pair<int, int> pos = position_character(i);
-        tui.draw_glyph(pos.first, pos.second, glyph);
+        tui.draw_glyph(pos.first + orig_y, pos.second + orig_x, glyph);
     }
 }
 
@@ -71,4 +71,11 @@ void Rolling_text::tick()
     if (n_drawn_chars > origin_text.size()) {
         n_drawn_chars = origin_text.size();
     }
+}
+
+void Rolling_text::draw_self(unsigned input, int orig_y, int orig_x)
+{
+    timer.process();
+    text.text = {origin_text.begin(), origin_text.begin() + n_drawn_chars};
+    text.draw(input, orig_x, orig_y);
 }

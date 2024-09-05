@@ -4,5 +4,12 @@
 
 #include <string>
 
-Focus intro_callsign_prompt_
-void draw_callsign_prompt();
+class MenuManager {
+    public:
+
+    void draw_callsign_prompt();
+
+    private:
+    MenuManager(MenuManager& other) = delete;
+    
+};

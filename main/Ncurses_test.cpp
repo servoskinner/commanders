@@ -72,7 +72,7 @@ int main()
 
         unsigned input = TUI::get().get_input();
         commander.active_id = turn;
-        commander.render(input);
+        commander.draw(input);
 
         std::optional<Commander::Order> ord = commander.get_order();
         if (ord.has_value()) {

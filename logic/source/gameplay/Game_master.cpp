@@ -570,6 +570,10 @@ int Game_master::resolve_combat(Card& attacker, Card& defender)
         if(grid[attacker.x][attacker.y].type = Tile::TERR_DISADV) { advantage_difference++; }
     }
 
+    // apply statuses
+    attacker.can_attack = false;
+    attacker.can_move   = false;
+    defender.is_overwhelmed = true;
     
     // advantage resolution
     if(advantage_difference > 0)
@@ -608,9 +612,6 @@ int Game_master::resolve_combat(Card& attacker, Card& defender)
         combat_outcome = Game_master::COMBAT_TIE;
     }
     // set status effects
-    attacker.can_attack = false;
-    attacker.can_move   = false;
-    defender.is_overwhelmed = true;
 
     fire_trigger(attacker.after_attack,   {(int)defender.entity_id.get_id(), combat_outcome});
     fire_trigger(defender.after_attacked, {(int)attacker.entity_id.get_id(), -combat_outcome});

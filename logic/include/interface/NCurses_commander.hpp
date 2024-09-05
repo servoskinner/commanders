@@ -77,13 +77,12 @@ class NCurses_commander : public Commander
     void process_event(Event event) override;
     void process_order_feedback(int code);
     
-    void render(unsigned input);
+    void draw(unsigned input);
     void update_state(Game_state state) override;
     void set_params(Game_params params) override;
 
     private:
     bool on;
-    int x_term_size, y_term_size; //getmaxyx(stdscr, height, width);
 
     class Unit_sprite : public TUI::UI_Object
     {
@@ -132,9 +131,12 @@ class NCurses_commander : public Commander
         TUI::Text name, cost, value, ability_text, flavor_text;
     };
 
-    Focus focus_field, focus_confirm_pass, focus_game_end;
-    Focus focus_examine_players, focus_examine_card;
-    Focus focus_menu, focus_chat;
+    Focus::Focus_space fspace_game, fspace_message;
+
+    Focus focus_field = {fspace_game}, focus_message = {fspace_game}, focus_chat = {fspace_game};
+    Focus focus_examine = {fspace_game}, focus_comms = {fspace_game};
+
+    Focus focus_game_result = {fspace_message}, focus_end_turn = {fspace_message};
 
     int cursor_x, cursor_y, cursor_hand_id;
     bool selected;

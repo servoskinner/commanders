@@ -11,7 +11,6 @@ TUI& TUI::get()
 
 TUI::TUI() 
 {
-    std::cout << "created TUI" << std::endl;
     initscr();
 
     raw();                  // No line buffering for keys
@@ -23,7 +22,6 @@ TUI::TUI()
 
 TUI::~TUI() 
 {
-    std::cout << "destroyed TUI" << std::endl;
     endwin();
 }
 

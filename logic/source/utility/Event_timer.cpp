@@ -1,9 +1,10 @@
 #include "Event_timer.hpp"
 
-
-
 float Event_timer::get_cur_time_s() {
-    return (float)clock()/(float)CLOCKS_PER_SEC;
+    auto now = std::chrono::steady_clock::now();
+    auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
+
+    return static_cast<float>(nanoseconds)/1000000000.0;
 }
 
 void Event_timer::process()

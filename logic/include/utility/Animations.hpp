@@ -30,7 +30,7 @@ class Blinker : public Animated
 class Crazy_box : public Animated
 {
     public:
-    Crazy_box(float delay = 0.01) : Animated(delay, [this](){this->tick();}) {}
+    Crazy_box(float delay = 0.1) : Animated(delay, [this](){this->tick();}) {}
     std::string text;
     unsigned text_color = 0;
     TUI::Rect rect;
@@ -45,12 +45,12 @@ class Crazy_box : public Animated
 class Rolling_text : public Animated
 {
     public:
-    Rolling_text(float delay = 0.01) : Animated(delay, [this](){this->tick();}) {}
+    Rolling_text(float delay = 0.1) : Animated(delay, [this](){this->tick();}) {}
     std::string origin_text;
     TUI::Text text;
 
     protected:
     int n_drawn_chars = 0;
     void tick();
-    void draw_self(unsigned input = 0, int orig_y = 0, int orig_x = 0) override {}
+    void draw_self(unsigned input = 0, int orig_y = 0, int orig_x = 0) override;
 };
