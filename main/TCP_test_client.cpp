@@ -7,6 +7,8 @@ int main()
     u_short server_port;
     TCP_client socket_self;
 
+    socket_self.handshake_timeout_ms = 1000;
+
     std::cout << "Enter server port: " << std::flush;
     std::cin >> server_port;
 
@@ -18,8 +20,9 @@ int main()
     std::string incoming_message;
 
     std::cout << "Connecting..." << std::endl;
-    while(!socket_self.connect_to({server_port, "127.0.0.1"})) {};
-    std::cout << "Success" << std::endl;
+    if(socket_self.connect_to({server_port, "127.0.0.1"}, 3))
+    {
+        std::cout << "Success" << std::endl;
     while(true)
     {
         std::cout << ">" << std::flush;
@@ -48,6 +51,10 @@ int main()
             incoming_message = std::string(msg.begin(), msg.end());
             std::cout << incoming_message << std::endl;
         }
+    }
+    }
+    else {
+        std::cout << "failed" << std::endl;
     }
     return 0;
 }

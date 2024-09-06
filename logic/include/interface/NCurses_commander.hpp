@@ -13,6 +13,8 @@
 #include <string>
 #include <array>
 
+#include "Event_timer.hpp"
+
 #define XSCALE          10
 #define YSCALE          7  
 #define HAND_INACTIVE_CARD_WIDTH 2
@@ -137,6 +139,8 @@ class NCurses_commander : public Commander
     Focus focus_examine = {fspace_game}, focus_comms = {fspace_game};
 
     Focus focus_game_result = {fspace_message}, focus_end_turn = {fspace_message};
+
+    Event_timer timer;
 
     int cursor_x, cursor_y, cursor_hand_id;
     bool selected;

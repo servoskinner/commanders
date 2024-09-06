@@ -87,12 +87,13 @@ void TCP_server::handle_request()
     {
         std::lock_guard lock(peer_list_mutex);
         // send confirmation message
-        std::vector<char> confirmation_message = {0};
-        if (send(new_socket, confirmation_message.data(), confirmation_message.size(), 0) != confirmation_message.size()) {
-            close(new_socket);
-            return;
+        if (do_handshake) {
+            std::vector<char> confirmation_message = {0};
+            if (send(new_socket, confirmation_message.data(), confirmation_message.size(), 0) != confirmation_message.size()) {
+                close(new_socket);
+                return;
+            }
         }
-
         polled.push_back({new_socket, POLLIN, 0});
 
         Socket_info new_info = {ntohs(client_addr.sin_port), client_addr.sin_addr.s_addr};
@@ -146,7 +147,7 @@ Socket_inbound_message TCP_server::get_message()
     }
 }
 
-const Socket_info TCP_server::get_connection_event()
+const std::optional<Socket_info> TCP_server::get_connection_event()
 {
     std::lock_guard<std::mutex> lock(connection_log_mutex);
     if (connection_log.empty()) {
@@ -155,7 +156,7 @@ const Socket_info TCP_server::get_connection_event()
     else {
         Socket_info info = connection_log.front();
         connection_log.pop();
-        return info;
+        return {info};
     }
 }
 

@@ -1,6 +1,6 @@
 #include "Socket_wrappers.hpp"
 
-TCP_client::TCP_client() : is_polling(false), connected(false)
+TCP_client::TCP_client() : is_polling(false)
 {
     // Start the receive thread
     socket_fdesc = socket(AF_INET, SOCK_STREAM, 0);
@@ -21,8 +21,8 @@ TCP_client::~TCP_client() {
     close(socket_fdesc);
 }
 
-bool TCP_client::connect_to(const Socket_info& destination) {
-    if(connected) {
+bool TCP_client::connect_to(const Socket_info& destination, int n_attempts, int ms_between) {
+    if(is_polling) {
         disconnect();
     }
     struct sockaddr_in server_addr;
@@ -31,12 +31,33 @@ bool TCP_client::connect_to(const Socket_info& destination) {
     server_addr.sin_port = htons(destination.port);
     server_addr.sin_addr.s_addr = destination.address;
 
+    bool success = false;
     // Connect to server
-    if (connect(socket_fdesc, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+    for (int i = 0; i < n_attempts; i++) {
+        if (connect(socket_fdesc, (struct sockaddr*)&server_addr, sizeof(server_addr)) == 0) {
+            success = true;
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(ms_between));
+    }
+    if (!success) {
         return false;
     }
+    // Await confirmation
+    if (handshake_timeout_ms > 0) {
+        sockaddr_in inbound_addr;
+        socklen_t inbound_addr_len = sizeof(inbound_addr);
+    
+        pollfd poll_req = {socket_fdesc, POLLIN, 0};
+        int poll_res = poll(&poll_req, 1, handshake_timeout_ms);
+        if (poll_res > 0) {
+            success = true;
+        }   
+    }  
+    // Launch receiver thread
     server = destination;
-    connected = true;
+    is_polling = true;
+
     receiver_thread = std::thread(&TCP_client::receive_messages, this);
     return true;
 }
@@ -49,27 +70,24 @@ bool TCP_client::disconnect()
     }
 
     is_polling = false;
-    connected = false;
+    bool was_connected = server.has_value();
     server = {};
 
     if (receiver_thread.joinable()) {
         receiver_thread.join();
     }
-    return true;
+    return was_connected;
 }
 
 const std::optional<Socket_info> TCP_client::get_connection()
 {
     std::lock_guard<std::mutex> conf_lock(confirmation_mutex);
-    if (!connected) {
-        return {};
-    }
     return server;
 }
 
 bool TCP_client::send_msg(const std::vector<char>& msg) {
     std::lock_guard<std::mutex> lock(receiver_mutex);
-    if (connected) {
+    if (server.has_value()) {
         return send(socket_fdesc, msg.data(), msg.size(), 0) == msg.size();
     }
     else {
@@ -95,19 +113,18 @@ void TCP_client::receive_messages() {
     pollfd poll_req = {socket_fdesc, POLLIN, 0};
 
     char buffer[SOCKET_BUFFER_SIZE];
-    while (connected) {
+    while (is_polling) {
         poll(&poll_req, 1, -1);
         {
         std::lock_guard<std::mutex> lock(receiver_mutex);
         if (message_queue.size() < TCP_CLIENT_MAX_INBOX) {
             int bytes_received = recvfrom(socket_fdesc, buffer, sizeof(buffer), \
-                                  0, (sockaddr*)&inbound_addr, &inbound_addr_len);
+                                0, (sockaddr*)&inbound_addr, &inbound_addr_len);
             if (bytes_received > 0) {
                 std::vector<char> msg = std::vector<char>(buffer, buffer + bytes_received);
                 message_queue.push({{ntohs(inbound_addr.sin_port), inbound_addr.sin_addr.s_addr}, msg});
             }
         }
-        }
-        
+        }  
     }
 }
