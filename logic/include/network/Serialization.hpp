@@ -13,7 +13,7 @@ typedef std::vector<char> Serialized;
  * @brief Packs a fixed-size structure into a byte vector to be sent as a message.
  */
 template <typename Type>
-Serialized serialize_struct(const Type& object)
+Serialized serialize(const Type& object)
 {
     std::vector<char> serialized(sizeof(Type));
     std::memcpy(serialized.data(), &object, sizeof(Type));
@@ -25,7 +25,7 @@ template <typename Type>
 Serialized serialize_vector(std::vector<Type> vector)
 {
     // build prefix
-    std::vector<char> serialized = {serialize_struct<unsigned int>(vector.size())};
+    std::vector<char> serialized = {serialize<unsigned int>(vector.size())};
     serialized.resize(sizeof(unsigned int) + vector.size()*sizeof(Type));
 
     std::memcpy((char*)(vector.data()) + sizeof(unsigned int), \
@@ -39,10 +39,10 @@ template <typename Keytype, typename Valtype>
 Serialized serialize_map(std::unordered_map<Keytype, Valtype> map)
 {
     // build prefix
-    Serialized serialized = {serialize_struct<unsigned int>(map.size())};
+    Serialized serialized = {serialize<unsigned int>(map.size())};
 
     for (std::pair<Keytype, Valtype> pair : map) {
-        Serialized serialized_pair = {serialize_struct(pair.first), serialize_struct(pair.second)};
+        Serialized serialized_pair = {serialize(pair.first), serialize(pair.second)};
         std::copy(serialized_pair.begin(), serialized_pair.end(), std::back_inserter(serialized)); // append to result
     }
     return serialized;
@@ -52,7 +52,7 @@ Serialized serialize_map(std::unordered_map<Keytype, Valtype> map)
  * @brief Creates a fixed-size structure out of a byte vector received over network.
  */
 template <typename Type>
-Type deserialize_struct(Serialized serialized)
+Type deserialize(Serialized serialized)
 {
     Type new_obj;
     if(serialized.size() < sizeof(Type))
@@ -98,11 +98,11 @@ std::unordered_map<Keytype, Valtype> deserialize_map(Serialized serialized)
     for (unsigned int i = 0; i < map_size; i++) {
         Serialized serialized_key = {serialized.begin() + sizeof(unsigned int) + i*(sizeof(Keytype) + sizeof(Valtype)), \
                                             serialized.begin() + sizeof(unsigned int) + i*(sizeof(Keytype) + sizeof(Valtype)) + sizeof(Keytype)};
-        Keytype key = deserialize_struct<Keytype>(serialized_key);
+        Keytype key = deserialize<Keytype>(serialized_key);
         Serialized serialized_val = {serialized.begin() + sizeof(unsigned int) + i*(sizeof(Keytype) + sizeof(Valtype)) + sizeof(Keytype),
                                             serialized.begin() + sizeof(unsigned int) + i*(sizeof(Keytype) + sizeof(Valtype)) + sizeof(Keytype) \
                                             + sizeof(Valtype)};
-        Valtype val = deserialize_struct<Valtype>(serialized_val);
+        Valtype val = deserialize<Valtype>(serialized_val);
         map.insert({key, val});
     }
     return map;

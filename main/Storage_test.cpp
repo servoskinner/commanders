@@ -7,22 +7,68 @@
 int main()
 {
     Storage_manager& sm = Storage_manager::get_default();
+    bool is_running = true;
 
-    sm.put_item("poop", serialize_struct(1));
-    std::string name = "johnny";
-    sm.put_item("name", std::vector<char>(name.begin(), name.end()));
+    while(is_running) {
+        std::cout << "(R)ead (W)rite (D)elete (Q)uit" << std::endl;
+        std::string in_string;
+        std::cin >> in_string;
+        char input = in_string[0];
 
-    std::optional<Serialized> item1 = sm.get_item("poop");
-    int value1 = -1;
-    if (item1.has_value()) {
-        value1 = deserialize_struct<int>(item1.value());
+        switch (input)
+        {
+        case 'R': case 'r':
+            {
+                std::cout << "Enter key: " << std::flush;
+                std::string key;
+                std::cin >> key;
+
+                std::optional<Serialized> value = sm.get_item(key);
+                if (value.has_value()) {
+                    std::cout << std::string(value->begin(), value->end()) << std::endl;
+                }
+                else {
+                    std::cout << "no such entry" << std::endl;
+                }
+
+            break;
+            }
+        case 'W': case 'w':
+            {
+                std::cout << "Enter key: " << std::flush;
+                std::string key;
+                std::cin >> key;
+                std::cout << "Enter value: " << std::flush;
+                std::string value;
+                std::cin >> value;
+            
+                if (sm.put_item(key, Serialized{value.begin(), value.end()})) {
+                    std::cout << "written successfully" << std::endl;
+                }
+                else {
+                    std::cout << "failed to write" << std::endl;
+                }
+            break;
+            }
+        case 'D': case 'd':
+            {
+                std::cout << "Enter key: " << std::flush;
+                std::string key;
+                std::cin >> key;
+                if (sm.delete_item(key)) {
+                    std::cout << "deleted successfully" << std::endl;
+                }
+                else {
+                    std::cout << "failed to delete" << std::endl;
+                }
+            break;
+            }
+        case 'Q': case 'q':
+            is_running = false;
+            break;
+        default:
+            std::cout << "Unrecognized command" << std::endl;
+            break;
+        }
     }
-    std::optional<Serialized> item2 = sm.get_item("name");
-    std::string value2 = "none";
-    if (item2.has_value()) {
-        value2 = {item2.value().begin(), item2.value().end()};
-    }
-
-    std::cout << value1 << std::endl;
-    std::cout << value2 << std::endl;
 }

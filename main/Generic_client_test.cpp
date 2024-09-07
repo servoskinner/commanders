@@ -96,7 +96,7 @@ int main()
                 std::cout << "Enter magic number: " << std::flush;
                 std::cin >> magic_number;
 
-                std::vector<char> message = serialize_struct(magic_number);
+                std::vector<char> message = serialize(magic_number);
                 message.insert(message.begin(), ICTRL_CONNECTION_REQUEST);
 
                 if (discovery_socket.send_to(discovered_servers[id], message)) {

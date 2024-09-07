@@ -1,10 +1,10 @@
 #include "Storage_manager.hpp"
 
-Storage_manager::Storage_manager(std::string storage_file)
+Storage_manager::Storage_manager(std::string storage_file) : filename(storage_file)
 {   
     file.open(storage_file, std::ios::in | std::ios::out | std::ios::binary);
     if (file.bad() || file.fail()) {
-        // try to create file
+        // try to create file if an error occurs
         file.clear();
         file.open(storage_file, std::ios::out | std::ios::trunc);
         if (file.bad() || file.fail()) {
@@ -20,16 +20,54 @@ Storage_manager::Storage_manager(std::string storage_file)
 
     file.seekg(0);
     file.read((char*)&n_entries, sizeof(n_entries));
-    if (file.fail() || file.eof()) {
+    if (file.eof()) {
         file.clear();
         n_entries = 0;
+
+        file.seekp(0);
+        file.write((char*)&n_entries, sizeof(n_entries));
+        file.flush();
     }
+}
+
+Storage_manager::~Storage_manager() {
+    file.flush();
+    file.close();
 }
 
 Storage_manager& Storage_manager::get_default()
 {
     static Storage_manager storage_manager(DEFAULT_STORAGE_FILE);
     return storage_manager;
+}
+
+std::optional<unsigned> Storage_manager::next_entry(unsigned prev_pos)
+{
+    file.seekg(prev_pos);
+    if (file.fail() || file.eof()) {
+        file.clear();
+        return {};
+    }
+
+    unsigned short locator_size;
+    unsigned int data_size;
+
+    file.read((char*)&locator_size, sizeof(locator_size));
+    file.read((char*)&data_size, sizeof(data_size));
+
+    if (file.fail() || file.eof()) {
+        file.clear();
+        return {};
+    }
+
+    file.seekg(locator_size + data_size, std::ios::cur);
+
+    if (file.fail() || file.eof()) {
+        file.clear();
+        return {};
+    }
+
+    return {(unsigned)file.tellg()};
 }
 
 std::optional<unsigned> Storage_manager::locate_entry_indexed(int index)
@@ -43,25 +81,16 @@ std::optional<unsigned> Storage_manager::locate_entry_indexed(int index)
         file.clear();
         return {};
     }
-    unsigned short locator_size;
-    unsigned int data_size;
+    unsigned int cur_pos = (unsigned)file.tellg();
 
     for (int i = 0; i < index; i++) {
-
-        file.read((char*)&locator_size, sizeof(locator_size));
-        file.read((char*)&data_size, sizeof(data_size));
-
-        if (file.fail() || file.eof()) {
-            file.clear();
+        std::optional<unsigned> next_pos = next_entry(cur_pos);
+        if (!next_pos.has_value()) {
             return {};
         }
-        file.seekg((unsigned)file.tellg() + locator_size + data_size);
+        cur_pos = next_pos.value();
     }
 
-    if (file.fail()) {
-        file.clear();
-        return {};
-    }
     return {(unsigned)file.tellg()};
 }
 
@@ -100,7 +129,7 @@ std::optional<unsigned> Storage_manager::locate_entry(std::string locator)
     }
 }
 
-std::optional<Serialized> Storage_manager::read_entry(unsigned at_pos)
+std::optional<Serialized> Storage_manager::read_entry_at(unsigned at_pos)
 {
     Serialized data;
 
@@ -131,7 +160,7 @@ std::optional<Serialized> Storage_manager::read_entry(unsigned at_pos)
     return {data};
 }
 
-bool Storage_manager::put_entry(unsigned at_pos, Storage_manager::Storage_entry& entry)
+bool Storage_manager::write_entry_at(unsigned at_pos, Storage_manager::Storage_entry& entry)
 {
     file.seekp(at_pos);
     if (file.fail() || file.eof()) {
@@ -156,7 +185,7 @@ std::optional<Serialized> Storage_manager::get_item(std::string locator)
     if (!location.has_value()) {
         return {};
     }
-    Serialized data = read_entry(location.value()).value();
+    Serialized data = read_entry_at(location.value()).value();
 
     return data;
 }
@@ -166,19 +195,45 @@ bool Storage_manager::put_item(std::string locator, std::vector<char> value)
     Storage_entry entry;
     entry.locator = locator;
     entry.data = value;
-    bool swedish_fail = file.fail();
 
     file.seekp(0, std::ios::end);
     std::optional<unsigned> write_position = locate_entry(locator);
-    
+
+    // key already exists
     if(write_position.has_value()) {
-        return put_entry(write_position.value(), entry);
+        // check data size
+        unsigned int data_size;
+        file.seekg(sizeof(unsigned short), std::ios::cur);
+        file.read((char*)&data_size, sizeof(unsigned int));
+        // if same, write new data over
+        if (data_size == value.size()) {
+            return write_entry_at(write_position.value(), entry);
+        }
+        else { // if different, delete entry and add it again
+            if(!delete_item(locator)) {
+                return false;
+            }
+            file.seekg(0, std::ios::end);
+            if(file.fail()) {
+                file.clear();
+                return 0;
+            }
+            return write_entry_at((unsigned)file.tellg(), entry);
+        }
     }
+    // key does not exist
     else {
-        n_entries += 1;
-        if (!put_entry(file.tellp(), entry)) {
+        // write to end
+        file.seekg(0, std::ios::end);
+        if(file.fail()) {
+                file.clear();
+                return 0;
+            }
+        if (!write_entry_at((unsigned)file.tellg(), entry)) {
             return false;
         }
+        // update entry count
+        n_entries += 1;
         file.seekp(0);
         file.write((char*)&n_entries, sizeof(n_entries));
         if (file.fail() || file.eof()) {
@@ -186,6 +241,61 @@ bool Storage_manager::put_item(std::string locator, std::vector<char> value)
             return false;
         }
         file.flush();
+    }
+    return true;
+}
+
+bool Storage_manager::delete_item(std::string locator)
+{
+    std::optional<unsigned> entry_loc = locate_entry(locator);
+    if (!entry_loc.has_value()) {
+        return false;
+    }
+    std::vector<char> buffer;
+    unsigned new_file_size = 0;
+
+    std::optional<unsigned> next_entry_start = next_entry(entry_loc.value());
+    // deleting last entry
+    if (!next_entry_start.has_value()) {
+        new_file_size = entry_loc.value();
+    }
+    else {
+        // move all entries back
+        unsigned entry_size = next_entry_start.value() - entry_loc.value();
+        std::optional<unsigned> next_entry_end = next_entry(next_entry_start.value());
+        while (next_entry_end.has_value()) {
+            unsigned moved_entry_size = next_entry_end.value() - next_entry_start.value();
+            buffer.resize(moved_entry_size);
+            // move next 
+            file.seekg(next_entry_start.value());
+            file.read(buffer.data(), moved_entry_size);
+            if (file.fail()) {
+                file.clear();
+                return false;
+            }
+            file.seekp(entry_loc.value());
+            file.write(buffer.data(), moved_entry_size);
+            if (file.fail()) {
+                file.clear();
+                return false;
+            }
+            entry_loc = entry_loc.value() + moved_entry_size;
+            next_entry_start = next_entry_end;
+            next_entry_end = next_entry(next_entry_start.value());
+        }
+        new_file_size = entry_loc.value();
+    }
+    // resize file, then reopen it
+    file.close();
+    std::filesystem::resize_file(filename, new_file_size);
+    file.open(filename, std::ios::in | std::ios::out | std::ios::binary);
+    // update entries counter
+    n_entries--;
+    file.seekp(0);
+    file.write((char*)&n_entries, sizeof(n_entries));
+    if (file.fail()) {
+        file.clear();
+        return false;
     }
     return true;
 }

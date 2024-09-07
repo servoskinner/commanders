@@ -45,9 +45,9 @@ int main()
             }
         }
 
-        Socket_info new_connection = service_socket.get_connection_event();
-        if (new_connection.address != 0) {
-            service_socket.disallow_ip(new_connection.address); // Require to request connection again
+        std::optional<Socket_info> new_connection = service_socket.get_connection_event();
+        if (new_connection.has_value()) {
+            service_socket.disallow_ip(new_connection->address); // Require to request connection again
         }
 
         std::vector<char> msg = service_socket.get_message().msg;
