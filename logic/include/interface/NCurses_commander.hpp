@@ -140,8 +140,6 @@ class NCurses_commander : public Commander
 
     Focus focus_game_result = {fspace_message}, focus_end_turn = {fspace_message};
 
-    Event_timer timer;
-
     int cursor_x, cursor_y, cursor_hand_id;
     bool selected;
     bool hand_highlit;

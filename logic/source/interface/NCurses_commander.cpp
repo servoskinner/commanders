@@ -4,59 +4,25 @@ NCurses_commander::NCurses_commander()
 {
     on = true;  
     TUI& tui = TUI::get();
-
-    tui.set_color_pair(CPAIR_INVERTED,       COLOR_BLACK,        COLOR_WHITE);
-    tui.set_color_pair(CPAIR_DARK,           COLOR_BRIGHT_BLACK, COLOR_BLACK);
-    tui.set_color_pair(CPAIR_INVERTED_DARK,  COLOR_BLACK,        COLOR_BRIGHT_BLACK);
-    tui.set_color_pair(CPAIR_BRIGHT,         COLOR_BRIGHT_WHITE, COLOR_BLACK);
-    tui.set_color_pair(CPAIR_INVERTED_BRIGHT,COLOR_BLACK,        COLOR_BRIGHT_WHITE);
-    tui.set_color_pair(CPAIR_HIGHLIT,        COLOR_BRIGHT_WHITE, COLOR_RED);
-    tui.set_color_pair(CPAIR_HIGHLIT_SUBTLE, COLOR_RED,          COLOR_BLACK);
-
-    tui.set_color_pair(CPAIR_BLUE,          COLOR_BLUE,          COLOR_BLACK);
-    tui.set_color_pair(CPAIR_BRIGHT_BLUE,   COLOR_BRIGHT_BLUE,   COLOR_BLACK);
-    tui.set_color_pair(CPAIR_CYAN,          COLOR_CYAN,          COLOR_BLACK);
-    tui.set_color_pair(CPAIR_BRIGHT_CYAN,   COLOR_BRIGHT_CYAN,   COLOR_BLACK);
-
-    tui.set_color_pair(CPAIR_GRIDCURSOR,     COLOR_BLACK,        COLOR_BRIGHT_BLUE);
-    tui.set_color_pair(CPAIR_GRIDSELECTION,  COLOR_BLACK,        COLOR_BRIGHT_RED);
-    tui.set_color_pair(CPAIR_GRIDCURSOR_OL,  COLOR_BLACK,        COLOR_BRIGHT_WHITE);
-
-    tui.set_color_pair(CPAIR_CARD_UNIT,      COLOR_BRIGHT_WHITE, COLOR_MAGENTA);
-    tui.set_color_pair(CPAIR_CARD_CONTRACT,  COLOR_BRIGHT_WHITE, COLOR_GREEN);
-    tui.set_color_pair(CPAIR_CARD_TACTIC,    COLOR_BRIGHT_WHITE, COLOR_BLUE);
-    tui.set_color_pair(CPAIR_CARD_UNIT_INV,      COLOR_MAGENTA,      COLOR_BLACK);
-    tui.set_color_pair(CPAIR_CARD_CONTRACT_INV,  COLOR_GREEN,        COLOR_BLACK);
-    tui.set_color_pair(CPAIR_CARD_TACTIC_INV,    COLOR_BLUE,         COLOR_BLACK);
-
-    tui.set_color_pair(CPAIR_UNIT_VALUE,     COLOR_BRIGHT_MAGENTA,   COLOR_BLACK);
-    tui.set_color_pair(CPAIR_UNIT_ADVANTAGE, COLOR_BRIGHT_GREEN,     COLOR_BLACK);
-    tui.set_color_pair(CPAIR_CONTRACT_VALUE, COLOR_BRIGHT_CYAN,      COLOR_BLACK);
-    tui.set_color_pair(CPAIR_CARD_COST,      COLOR_YELLOW,           COLOR_BLACK);
-
-    tui.set_color_pair(CPAIR_TEAM_1_POINTS,  COLOR_BRIGHT_RED,       COLOR_BLACK);
-    tui.set_color_pair(CPAIR_TEAM_2_POINTS,  COLOR_CYAN,             COLOR_BLACK);
-
-    tui.set_color_pair(CPAIR_HIGHLIGHT_GREEN, COLOR_BRIGHT_CYAN, COLOR_GREEN);
     
     // Stencil Rect used to render grid cells
     grid_cell.set_corners({'+'});
     grid_cell.set_borders({' '});
     grid_cell.draw_filled = false;
-    grid_cell.set_border_color(CPAIR_DARK);
+    grid_cell.set_border_color(COLOR_BRIGHT_BLACK);
 
     grid_border.draw_filled = false;
-    grid_border.set_border_color(CPAIR_DARK);
+    grid_border.set_border_color(COLOR_BRIGHT_BLACK);
     // Stencil for drawing cursor and selection
     grid_highlight.set_borders({' '});
     grid_highlight.draw_filled = false;
 
-    hand_highlight.set_border_color(CPAIR_BRIGHT);
+    hand_highlight.set_border_color(COLOR_BRIGHT_WHITE);
     hand_highlight.draw_filled = false;
 
     grid_capture_area.set_vborders({'.'});
     grid_capture_area.set_corners({ACS_HLINE});
-    grid_capture_area.set_border_color(CPAIR_NORMAL);
+    grid_capture_area.set_border_color(COLOR_WHITE);
     grid_capture_area.draw_filled = false;
     // stencils for drawing 
     hand_cards_left.width = HAND_INACTIVE_CARD_WIDTH;
@@ -73,15 +39,15 @@ NCurses_commander::NCurses_commander()
 
     bottom_line.x = 0;
     bottom_line.text = " [~] open menu  |  [ENTER] end turn  |  [Z] examine card  |  [X] player intel  |  [C] open chat  |  [R] clear selection";
-    bottom_line.color = CPAIR_DARK;
+    bottom_line.foreground = COLOR_BRIGHT_BLACK;
 
-    status_message.color = CPAIR_DARK;
+    status_message.foreground = COLOR_BRIGHT_BLACK;
     status_message.height = 1;
     status_message.text = "Standing by.";
 
-    hand_tooltip_l.color = CPAIR_DARK;
+    hand_tooltip_l.foreground = COLOR_BRIGHT_BLACK;
     hand_tooltip_l.text = "< [Q]";
-    hand_tooltip_r.color = CPAIR_DARK;
+    hand_tooltip_r.foreground = COLOR_BRIGHT_BLACK;
     hand_tooltip_r.text = "[E] >";
 
     urgent_message_border.draw_filled = true;
@@ -99,29 +65,29 @@ NCurses_commander::NCurses_commander()
     chat_input_border.children = {chat_input_border_active};
 
     chat_border.set_vborders({'.'});
-    chat_border.set_border_color(CPAIR_DARK);
+    chat_border.set_border_color(COLOR_BRIGHT_BLACK);
     chat_border.x = CHAT_X;
     chat_border.width = CHAT_WIDTH;
     chat_border.height = CHAT_HEIGHT;
 
     chat_heading.text = "TACCOM";
-    chat_heading.color = CPAIR_DARK;
+    chat_heading.foreground = COLOR_BRIGHT_BLACK;
     chat_heading.x = 1;
 
-    funds_indicator.color = CPAIR_CARD_COST;
+    funds_indicator.foreground = COLOR_YELLOW;
 
     points_indicator.height = 1;
     points_indicator.y = 0;
 
     contract_name.width = 24;
     contract_name.height = 1;
-    contract_name.color = CPAIR_BRIGHT;
+    contract_name.foreground = COLOR_BRIGHT_WHITE;
     contract_name.children = {contract_duration};
 
     contract_duration.width = 4;
     contract_duration.height = 1;
     contract_duration.x = 14;
-    contract_duration.color = CPAIR_UNIT_ADVANTAGE; // reused
+    contract_duration.foreground = COLOR_BRIGHT_GREEN; // reused
 
     chat_input_border_active.y = CHAT_HEIGHT - 3;
     chat_input_border_active.width = CHAT_WIDTH;
@@ -130,15 +96,15 @@ NCurses_commander::NCurses_commander()
     chat_input_border.y = CHAT_HEIGHT - 3;
     chat_input_border.width = CHAT_WIDTH;
     chat_input_border.height = 3;
-    chat_input_border.set_border_color(CPAIR_DARK);
+    chat_input_border.set_border_color(COLOR_BRIGHT_BLACK);
 
-    chat_input_border_active.tl_corner.color = CPAIR_CYAN;
-    chat_input_border_active.t_border.color =  CPAIR_CYAN;
-    chat_input_border_active.tr_corner.color = CPAIR_CYAN;
-    chat_input_border_active.set_vborders({ACS_VLINE, CPAIR_DARK});
-    chat_input_border_active.bl_corner.color = CPAIR_BRIGHT;
-    chat_input_border_active.b_border.color =  CPAIR_BRIGHT;
-    chat_input_border_active.br_corner.color = CPAIR_BRIGHT;
+    chat_input_border_active.tl_corner.foreground = COLOR_CYAN;
+    chat_input_border_active.t_border.foreground =  COLOR_CYAN;
+    chat_input_border_active.tr_corner.foreground = COLOR_CYAN;
+    chat_input_border_active.set_vborders({ACS_VLINE, COLOR_BRIGHT_BLACK});
+    chat_input_border_active.bl_corner.foreground = COLOR_BRIGHT_WHITE;
+    chat_input_border_active.b_border.foreground =  COLOR_BRIGHT_WHITE;
+    chat_input_border_active.br_corner.foreground = COLOR_BRIGHT_WHITE;
 
     x_scale = XSCALE;
     y_scale = YSCALE;
@@ -449,7 +415,7 @@ void NCurses_commander::render_grid()
     int right_contracts_origin_y = grid_origin_y + 1;
 
     TUI::Text contracts_label;
-    contracts_label.color = CPAIR_DARK;
+    contracts_label.foreground = COLOR_BRIGHT_BLACK;
     contracts_label.text = "CONTRACTS:";
 
     contracts_label.x = left_contracts_origin_x;
@@ -480,7 +446,7 @@ void NCurses_commander::render_grid()
 
     // Render player info
     TUI::Text player_stats_text;
-    player_stats_text.color = CPAIR_DARK;
+    player_stats_text.foreground = COLOR_BRIGHT_BLACK;
     player_stats_text.y = right_contracts_origin_y + 32;
     player_stats_text.width = 16;
 
@@ -488,29 +454,29 @@ void NCurses_commander::render_grid()
     player_stats_text.x = left_contracts_origin_x;
     Player_info player = game_state.players[0];
     player_stats_text.text = "FUNDS: " + std::to_string(player.funds) + \
-                             "\nHAND: " + std::to_string(player.hand_size) + \
-                             "\nDECK: " + std::to_string(player.library_size) + \
-                             "\nJUNK: " + std::to_string(player.discard_size);
+                             "\nHAND:  " + std::to_string(player.hand_size) + \
+                             "\nDECK:  " + std::to_string(player.library_size) + \
+                             "\nJUNK:  " + std::to_string(player.discard_size);
     player_stats_text.draw();
 
     // player 2
     player_stats_text.x = right_contracts_origin_x;
     player = game_state.players[1];
     player_stats_text.text = "FUNDS: " + std::to_string(player.funds) + \
-                             "\nHAND: " + std::to_string(player.hand_size) + \
-                             "\nDECK: " + std::to_string(player.library_size) + \
-                             "\nJUNK: " + std::to_string(player.discard_size);
+                             "\nHAND:  " + std::to_string(player.hand_size) + \
+                             "\nDECK:  " + std::to_string(player.library_size) + \
+                             "\nJUNK:  " + std::to_string(player.discard_size);
     player_stats_text.draw();
 
     // Render victory points
     points_indicator.width = game_state.players[0].points;
     points_indicator.x = grid_origin_x+1;
-    points_indicator.set_all({'*', CPAIR_TEAM_1_POINTS});
+    points_indicator.set_all({'*', COLOR_BRIGHT_RED});
     points_indicator.draw();
 
     points_indicator.width = game_state.players[1].points;
     points_indicator.x = grid_origin_x + grid_width_sym - points_indicator.width - 1;
-    points_indicator.set_all({'*', CPAIR_TEAM_2_POINTS});
+    points_indicator.set_all({'*', COLOR_BLUE});
     points_indicator.draw();
 
     // Render cursors
@@ -524,7 +490,7 @@ void NCurses_commander::render_grid()
         // Selection
         if (selected)
         {
-            grid_highlight.set_border_color(CPAIR_GRIDSELECTION);
+            grid_highlight.set_border_color(COLOR_BLACK, COLOR_BRIGHT_RED);
 
             grid_highlight.x = grid_origin_x + selection_x*(x_scale-1);
             grid_highlight.y = grid_origin_y + selection_y*(y_scale-1);
@@ -533,10 +499,10 @@ void NCurses_commander::render_grid()
         }
         // Cursor
         if (selected && cursor_x == selection_x && cursor_y == selection_y) {
-            grid_highlight.set_border_color(CPAIR_GRIDCURSOR_OL); // Overlaid cursor
+            grid_highlight.set_border_color(COLOR_BLACK, COLOR_BRIGHT_WHITE); // Overlaid cursor
         }
         else {
-            grid_highlight.set_border_color(CPAIR_GRIDCURSOR); // Normal cursor
+            grid_highlight.set_border_color(COLOR_BLACK, COLOR_BRIGHT_BLUE); // Normal cursor
         }
         
         grid_highlight.x = grid_origin_x + cursor_x*(x_scale-1);
@@ -583,11 +549,11 @@ void NCurses_commander::render_hand()
         empty_marker.height = y_scale*2;
         empty_marker.set_all({'.'});
         empty_marker.draw_filled = false;
-        empty_marker.set_border_color(CPAIR_DARK);
+        empty_marker.set_border_color(COLOR_BRIGHT_BLACK);
 
         empty_text.x = (x_term_size - empty_text.text.size()) / 2;
         empty_text.y = hand_center_origin_y + y_scale;
-        empty_text.color = CPAIR_DARK;
+        empty_text.foreground = COLOR_BRIGHT_BLACK;
 
         empty_marker.draw();
         empty_text.draw();
@@ -634,7 +600,7 @@ void NCurses_commander::render_hand()
         hand_cards_right.y = hand_center_origin_y;
         hand_cards_right.height = y_scale*2;
 
-        int type_colors[] = {CPAIR_CARD_UNIT_INV, CPAIR_CARD_CONTRACT_INV, CPAIR_CARD_TACTIC_INV};
+        int type_colors[] = {COLOR_MAGENTA, COLOR_GREEN, COLOR_BLUE};
         // Render cards to the left
         hand_cards_left.x -= HAND_INACTIVE_CARD_WIDTH * cursor_hand_id;
         for (int i = 0; i < cursor_hand_id; i++) {   
@@ -674,21 +640,29 @@ void NCurses_commander::render_peripheral(unsigned input)
 
     if (focus_end_turn.has_control()) 
     {
-        urgent_message_border.set_border_color(CPAIR_HIGHLIT);
-        urgent_message_border.fill.color = CPAIR_HIGHLIT;
+        urgent_message_border.set_border_color(COLOR_BRIGHT_WHITE, COLOR_RED);
+        urgent_message_border.fill.foreground = COLOR_BRIGHT_WHITE;
+        urgent_message_border.fill.background = COLOR_RED;
+
         urgent_message_text.text = "PRESS ENTER TO PASS TURN";
-        urgent_message_text.color = CPAIR_HIGHLIT;
+        urgent_message_text.foreground = COLOR_BRIGHT_WHITE;
+        urgent_message_text.background = COLOR_RED;
+
         urgent_message_subtext.text = "any other key to cancel";
-        urgent_message_subtext.color = CPAIR_HIGHLIT;
+        urgent_message_subtext.foreground = COLOR_WHITE;
+        urgent_message_subtext.background = COLOR_RED;
     }
     if (focus_game_result.has_control())
     {
-        urgent_message_border.set_border_color(CPAIR_HIGHLIGHT_GREEN);
-        urgent_message_border.fill.color = CPAIR_HIGHLIGHT_GREEN;
+        urgent_message_border.set_border_color(COLOR_BRIGHT_BLUE, COLOR_GREEN);
+        urgent_message_border.fill.foreground = COLOR_BRIGHT_BLUE;
+        urgent_message_border.fill.background = COLOR_GREEN;
         urgent_message_text.text = "      PLAYER " + std::to_string(winning_player) + " WINS";
-        urgent_message_text.color = CPAIR_HIGHLIGHT_GREEN;
+        urgent_message_text.foreground = COLOR_BRIGHT_BLUE;
+        urgent_message_text.background = COLOR_GREEN;
         urgent_message_subtext.text = "   press space to exit";
-        urgent_message_subtext.color = CPAIR_HIGHLIGHT_GREEN;
+        urgent_message_subtext.foreground = COLOR_BRIGHT_BLUE;
+        urgent_message_subtext.background = COLOR_GREEN;
     }
     if (focus_message.has_control())
     {
@@ -775,21 +749,21 @@ NCurses_commander::Unit_sprite::Unit_sprite(Card_info c_info)
     rect.draw_filled = true;
     rect.fill = {' ', 0};
 
-    rect.set_border_color(CPAIR_NORMAL);
+    rect.set_border_color(COLOR_WHITE);
 
     name.x = 1;
     name.y = 1;
     name.height = 2;
 
-    name.color = CPAIR_NORMAL;
-    value.color = CPAIR_UNIT_VALUE;
+    name.foreground = COLOR_WHITE;
+    value.foreground = COLOR_BRIGHT_MAGENTA;
 
     advantage.x = 1;
-    advantage.color = CPAIR_UNIT_ADVANTAGE;
+    advantage.foreground = COLOR_BRIGHT_CYAN;
 
     indicator.x = 1;
     indicator.y = 3;
-    indicator.color = CPAIR_DARK;
+    indicator.foreground = COLOR_BRIGHT_BLACK;
 
     set_card(c_info);
 }
@@ -813,7 +787,7 @@ void NCurses_commander::Unit_sprite::draw_self(unsigned input, int orig_y, int o
     rect.height = y_scale;
 
     name.width = x_scale-2;
-    name.color = darken_name ? CPAIR_DARK : CPAIR_NORMAL;
+    name.foreground = darken_name ? COLOR_BRIGHT_BLACK : COLOR_WHITE;
 
     value.x = x_scale-value.text.size()-1;
     value.y = y_scale-2;
@@ -855,8 +829,8 @@ NCurses_commander::Card_sprite::Card_sprite(Description_generator::Card_descr c_
     flavor_text.x = 1;
     flavor_text.height = 3;
 
-    cost.color = CPAIR_CARD_COST;
-    flavor_text.color = CPAIR_DARK;
+    cost.foreground = COLOR_YELLOW;
+    flavor_text.foreground = COLOR_BRIGHT_BLACK;
     set_desc(c_descr);
 }
 
@@ -869,13 +843,11 @@ void NCurses_commander::Card_sprite::set_desc(Description_generator::Card_descr 
     mnemosprite = c_descr.mnemosprite;
 
     value.text = std::to_string(c_descr.value);
-    value.color = c_descr.type == CTYPE_UNIT ? CPAIR_UNIT_VALUE : CPAIR_CONTRACT_VALUE;
+    value.foreground = c_descr.type == CTYPE_UNIT ? COLOR_BRIGHT_MAGENTA : COLOR_BRIGHT_GREEN;
     
-    int type_colors[] = {CPAIR_CARD_UNIT_INV, CPAIR_CARD_CONTRACT_INV, CPAIR_CARD_TACTIC_INV};
-    rect.set_border_color(type_colors[c_descr.type]);
-
-    int sprite_colors[] = {CPAIR_CARD_UNIT, CPAIR_CARD_CONTRACT, CPAIR_CARD_TACTIC};
-    sprite_color = sprite_colors[c_descr.type];
+    int colors[] = {COLOR_MAGENTA, COLOR_GREEN, COLOR_BLUE};
+    rect.set_border_color(colors[c_descr.type]);
+    sprite_color = colors[c_descr.type];
 }
 
 void NCurses_commander::Card_sprite::set_card(Card_info c_info)
@@ -910,7 +882,7 @@ void NCurses_commander::Card_sprite::draw_self(unsigned input, int orig_y, int o
     int sprite_y = 1;
     // mnemosprite
     
-    attron(COLOR_PAIR(sprite_color));
+    attron(COLOR_PAIR(TUI::get_color_code(COLOR_BLACK, sprite_color)));
     for (int x=0; x<3; x++) {
         for(int y=0; y<5; y++) {
             if (mnemosprite[x+y*3]) {
@@ -923,5 +895,5 @@ void NCurses_commander::Card_sprite::draw_self(unsigned input, int orig_y, int o
             }
         }
     }
-    attroff(COLOR_PAIR(sprite_color));
+    attroff(COLOR_PAIR(TUI::get_color_code(COLOR_BLACK, sprite_color)));
 }

@@ -35,8 +35,6 @@
 class Rect;
 class Text_box;
 class Scroll_box;
-class Unit_sprite;
-class Card_sprite;
 
 class TUI
 {
@@ -71,16 +69,25 @@ class TUI
 
     unsigned get_input();
 
+    inline static unsigned short get_color_code(unsigned char foreground = COLOR_WHITE, unsigned char background = COLOR_BLACK)
+    {
+        if (foreground == COLOR_WHITE && background == COLOR_BLACK) {
+            return 0;
+        }
+        return background * 16 + foreground;
+    }
+
     struct Glyph
     {
         unsigned symbol = ' ';
-        short color = 0;
+        unsigned char foreground = COLOR_WHITE;
+        unsigned char background = COLOR_BLACK;
     };
 
     inline void draw_glyph(int y, int x, Glyph glyph) {
-        attron(COLOR_PAIR(glyph.color));
+        attron(COLOR_PAIR(get_color_code(glyph.foreground, glyph.background)));
         mvaddch(y, x, glyph.symbol);
-        attroff(COLOR_PAIR(glyph.color));
+        attroff(COLOR_PAIR(get_color_code(glyph.foreground, glyph.background)));
     }
 
     class UI_Object;
@@ -113,15 +120,24 @@ class TUI
 
         bool draw_filled = false;
 
-        inline void set_border_color(short color) {
-            tl_corner.color = color;
-            tr_corner.color = color;
-            bl_corner.color = color;
-            br_corner.color = color;
-            t_border.color = color;
-            b_border.color = color;
-            l_border.color = color;
-            r_border.color = color;
+        inline void set_border_color(unsigned char foreground = COLOR_WHITE, unsigned char background = COLOR_BLACK) {
+            tl_corner.foreground = foreground;
+            tr_corner.foreground = foreground;
+            bl_corner.foreground = foreground;
+            br_corner.foreground = foreground;
+            t_border.foreground = foreground;
+            b_border.foreground = foreground;
+            l_border.foreground = foreground;
+            r_border.foreground = foreground;
+
+            tl_corner.background = background;
+            tr_corner.background = background;
+            bl_corner.background = background;
+            br_corner.background = background;
+            t_border.background = background;
+            b_border.background = background;
+            l_border.background = background;
+            r_border.background = background;
         }
         inline void set_hborders(Glyph glyph) {
             t_border = glyph;
@@ -154,7 +170,9 @@ class TUI
     class Sprite : public UI_Object
     {
         public:
-        Sprite(int width, int height);
+        Sprite(int height, int width);
+        Sprite& operator=(Sprite &other) { sprite = other.sprite; return *this;};
+        Sprite(Sprite& other) = default;
 
         inline std::pair<int, int> get_size() { return {sprite.size(), sprite[0].size()};};
         inline Glyph get_glyph(int y, int x) { return sprite[y][x];};
@@ -170,7 +188,8 @@ class TUI
     {
         public:
         Text(std::string txt = "") : text(txt) {}
-        short color = 0;
+        unsigned char background = COLOR_BLACK;
+        unsigned char foreground = COLOR_WHITE;
         int width = 0, height = 0;
         std::string text;
 

@@ -18,6 +18,14 @@ TUI::TUI()
     curs_set(0);            // Hide cursor   
 
     start_color(); 
+    // init color pairs
+    for(short fore = 0; fore < 16; fore++) {
+        for(short back = 0; back < 16; back++) {
+            if (fore != COLOR_WHITE || back != COLOR_BLACK) {
+                set_color_pair(get_color_code(fore, back), fore, back);
+            }
+        }
+    }
 }
 
 TUI::~TUI() 
@@ -55,28 +63,28 @@ void TUI::Rect::draw_self(unsigned input, int orig_y, int orig_x)
 {
         // Border ______________
         // Horizontal borders
-        attron(COLOR_PAIR(t_border.color));
+        attron(COLOR_PAIR(get_color_code(t_border.foreground, t_border.background)));
         for (int i = orig_x+1; i < orig_x+width-1; i++) {
             mvaddch(orig_y, i, t_border.symbol);
         }
-        attroff(COLOR_PAIR(t_border.color));
-        attron(COLOR_PAIR(b_border.color));
+        attroff(COLOR_PAIR(get_color_code(t_border.foreground, t_border.background)));
+        attron(COLOR_PAIR(get_color_code(b_border.foreground, b_border.background)));
         for (int i = orig_x+1; i < orig_x+width-1; i++) {
             mvaddch(orig_y+height-1, i, b_border.symbol);
         }
-        attroff(COLOR_PAIR(b_border.color));
+        attroff(get_color_code(b_border.foreground, b_border.background));
 
         // Vertical borders
-        attron(COLOR_PAIR(l_border.color));
+        attron(COLOR_PAIR(get_color_code(l_border.foreground, l_border.background)));
         for (int i = orig_y+1; i < orig_y+height-1; i++) {
             mvaddch(i, orig_x, l_border.symbol);
         }
-        attroff(COLOR_PAIR(l_border.color));
-        attron(COLOR_PAIR(r_border.color));
+        attroff(COLOR_PAIR(get_color_code(l_border.foreground, l_border.background)));
+        attron(COLOR_PAIR(get_color_code(r_border.foreground, r_border.background)));
         for (int i = orig_y+1; i < orig_y+height-1; i++) {
             mvaddch(i, orig_x+width-1, r_border.symbol);
         }
-        attroff(COLOR_PAIR(r_border.color));
+        attroff(COLOR_PAIR(get_color_code(r_border.foreground, r_border.background)));
 
         // Corners
         if (width > 0 && height > 0)
@@ -89,21 +97,19 @@ void TUI::Rect::draw_self(unsigned input, int orig_y, int orig_x)
         // Fill ________________
         if(draw_filled)
         {
-            attron(COLOR_PAIR(fill.color));
+            attron(COLOR_PAIR(get_color_code(fill.foreground, fill.background)));
             for (int i = orig_y+1; i < orig_y+height-1; i++) {
                 for (int j = orig_x+1; j < orig_x+width-1; j++) {
                     mvaddch(i, j, fill.symbol);
                 }
             }
-            attroff(COLOR_PAIR(fill.color));
+            attroff(COLOR_PAIR(get_color_code(fill.foreground, fill.background)));
         }
 }
 
 void TUI::Text::draw_self(unsigned input, int orig_y, int orig_x)
 {
-    if (color != 0) {
-        attron(COLOR_PAIR(color));
-    }
+    attron(COLOR_PAIR(get_color_code(foreground, background)));
     if (width > 0)
     {
         std::vector<std::string> lines = wrap_text(text, width);
@@ -116,16 +122,12 @@ void TUI::Text::draw_self(unsigned input, int orig_y, int orig_x)
     else {
         mvprintw(orig_y, orig_x, text.c_str());
     }
-    if (color != 0) {
-        attroff(COLOR_PAIR(color));
-    }
+    attroff(COLOR_PAIR(get_color_code(foreground, background)));
 }
 
 void TUI::Scrollable_text::draw_self(unsigned input, int orig_y, int orig_x)
 {
-    if (color != 0) {
-        attron(COLOR_PAIR(color));
-    }
+    attron(COLOR_PAIR(get_color_code(foreground, background)));
     if (width > 0)
     {
         std::vector<std::string> lines = wrap_text(text, width);
@@ -163,19 +165,17 @@ void TUI::Scrollable_text::draw_self(unsigned input, int orig_y, int orig_x)
     else {
         mvprintw(orig_y, orig_x, text.c_str());
     }
-    if (color != 0) {
-        attroff(COLOR_PAIR(color));
-    }
+    attroff(COLOR_PAIR(get_color_code(foreground, background)));
 
 }
 
-TUI::Sprite::Sprite(int width, int height)
+TUI::Sprite::Sprite(int height, int width)
 {
     if (width < 1 || height < 1) {
         throw std::invalid_argument("TUI::Sprite::Sprite(): width and height must be greater than zero");
     }
 
-    sprite = std::vector<std::vector<Glyph>>(height, std::vector<Glyph>(width));
+    sprite = std::vector<std::vector<Glyph>>(height, std::vector<Glyph>(width, {' ', 0}));
 }
 
 void TUI::Sprite::draw_self(unsigned input, int orig_y, int orig_x)
