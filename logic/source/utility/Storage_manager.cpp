@@ -297,5 +297,6 @@ bool Storage_manager::delete_item(std::string locator)
         file.clear();
         return false;
     }
+    file.flush();
     return true;
 }

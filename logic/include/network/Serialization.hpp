@@ -28,8 +28,8 @@ Serialized serialize_vector(std::vector<Type> vector)
     std::vector<char> serialized = {serialize<unsigned int>(vector.size())};
     serialized.resize(sizeof(unsigned int) + vector.size()*sizeof(Type));
 
-    std::memcpy((char*)(vector.data()) + sizeof(unsigned int), \
-                (char*)(vector.data()) + sizeof(unsigned int) + vector.size()*sizeof(Type), \
+    std::memcpy(serialized.data() + sizeof(unsigned int), \
+                (char*)(vector.data()), \
                 vector.size()*sizeof(Type));
 
     return serialized;
@@ -70,7 +70,7 @@ std::vector<Type> deserialize_vector(Serialized serialized)
         throw std::runtime_error("deserialize_map(): byte vector too short to infer size");
     }
     // decode prefix
-    unsigned int vector_size = {serialized.begin(), serialized.begin()+sizeof(unsigned int)};
+    unsigned int vector_size = *(unsigned int*)serialized.data();
 
     if (serialized.size() - sizeof(unsigned int) < sizeof(Type)*vector_size) {
         throw std::runtime_error("deserialize_map(): byte vector too short for specified size");
@@ -78,7 +78,7 @@ std::vector<Type> deserialize_vector(Serialized serialized)
     std::vector<Type> vector;
     vector.resize(vector_size);
 
-    std::memcpy((char*)(vector.data()), serialized.data(), sizeof(Type)*vector_size);
+    std::memcpy((char*)(vector.data()), serialized.data() + sizeof(unsigned int), sizeof(Type)*vector_size);
     return vector;
 }
 

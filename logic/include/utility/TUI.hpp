@@ -79,11 +79,11 @@ class TUI
 
     struct Glyph
     {
-        unsigned symbol = ' ';
-        unsigned char foreground = COLOR_WHITE;
-        unsigned char background = COLOR_BLACK;
+        unsigned symbol = ' '; 
+        unsigned short foreground = COLOR_WHITE;
+        unsigned short background = COLOR_BLACK;
     };
-
+    
     inline void draw_glyph(int y, int x, Glyph glyph) {
         attron(COLOR_PAIR(get_color_code(glyph.foreground, glyph.background)));
         mvaddch(y, x, glyph.symbol);

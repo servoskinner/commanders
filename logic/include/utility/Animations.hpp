@@ -16,6 +16,11 @@ class Animated : public TUI::UI_Object
 
     protected:
     Event_timer timer;
+    virtual void draw_self(unsigned input = 0, int orig_y = 0, int orig_x = 0) override
+    {
+        timer.process();
+        UI_Object::draw_self();
+    }
 };
 
 class Blinker : public Animated
@@ -25,6 +30,7 @@ class Blinker : public Animated
     
     protected:
     void tick();
+ 
 };
 
 class Crazy_box : public Animated

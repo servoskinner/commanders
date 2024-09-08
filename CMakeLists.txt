@@ -42,10 +42,14 @@ add_executable(generic_client_test logic/source/network/TCP_client.cpp logic/sou
 add_executable(generic_server_test logic/source/network/TCP_server.cpp logic/source/network/UDP_wrapper.cpp 
                logic/source/network/Socket_wrappers.cpp main/Generic_server_test.cpp)
 
+add_executable(sprite_editor logic/source/utility/Sprite_editor.cpp logic/source/utility/TUI.cpp logic/source/utility/Misc_functions.cpp  
+               logic/source/utility/Animations.cpp logic/source/utility/Event_timer.cpp logic/source/utility/Storage_manager.cpp)
+
 # Links the "corporatewars" executable target with the SFML libraries.
 # target_link_libraries(game sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 target_link_libraries(game_test PRIVATE ncurses)
 target_link_libraries(tui_test PRIVATE ncurses)
+target_link_libraries(sprite_editor PRIVATE ncurses)
 
 # Adds a preprocessor definition called TESTING for the "test" target, which is only visible when compiling this target.
 target_compile_definitions(game_test PRIVATE TESTING)
