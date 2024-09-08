@@ -58,7 +58,17 @@ bool pop_index(std::vector<Type>& vec, const int& index) //Remove element with t
 
 std::vector<std::string> wrap_text(const std::string& text, int line_width); // Split text into lines to fit inside given line width.
 
-inline bool is_printable_char(unsigned ch)
+constexpr inline bool is_printable(unsigned ch)
 {
     return (31 < ch && ch < 127);
+}
+
+constexpr inline int flatten_index(std::pair<int, int> indices, int width)
+{
+    return indices.first * width + indices.second;
+}
+
+constexpr inline std::pair<int, int> unflatten_index(int index, int width)
+{
+    return {index / width, index % width};
 }

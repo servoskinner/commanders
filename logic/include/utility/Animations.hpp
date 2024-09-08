@@ -1,3 +1,5 @@
+#pragma once
+
 #include "TUI.hpp"
 #include "Event_timer.hpp"
 

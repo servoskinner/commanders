@@ -23,9 +23,9 @@ int main()
                 std::string key;
                 std::cin >> key;
 
-                std::optional<Serialized> value = sm.get_item(key);
+                std::optional<std::string> value = sm.get<std::string>(key);
                 if (value.has_value()) {
-                    std::cout << std::string(value->begin(), value->end()) << std::endl;
+                    std::cout << value.value() << std::endl;
                 }
                 else {
                     std::cout << "no such entry" << std::endl;
@@ -42,7 +42,7 @@ int main()
                 std::string value;
                 std::cin >> value;
             
-                if (sm.put_item(key, Serialized{value.begin(), value.end()})) {
+                if (sm.put(key, value)) {
                     std::cout << "written successfully" << std::endl;
                 }
                 else {
@@ -55,7 +55,7 @@ int main()
                 std::cout << "Enter key: " << std::flush;
                 std::string key;
                 std::cin >> key;
-                if (sm.delete_item(key)) {
+                if (sm.del(key)) {
                     std::cout << "deleted successfully" << std::endl;
                 }
                 else {

@@ -3,6 +3,8 @@
 #include "Event_timer.hpp"
 #include "Serialization.hpp"
 #include "Animations.hpp"
+#include "Misc_functions.hpp"
+#include "Sprite_storage.hpp"
 
 #include <string>
 #include <vector>
@@ -16,15 +18,6 @@
 
 #define CHAR_SELECTOR_WIDTH 12
 
-constexpr inline int flatten_index(std::pair<int, int> indices, int width)
-{
-    return indices.first * width + indices.second;
-}
-
-constexpr inline std::pair<int, int> unflatten_index(int index, int width)
-{
-    return {index / width, index % width};
-}
 
 int main(int argc, char* argv[])
 {
@@ -37,13 +30,12 @@ int main(int argc, char* argv[])
     sprite.x = 2;
     sprite.y = 2;
 
-    Storage_manager storage(argv[1]);
-
     int width, height;
+    std::optional<TUI::Sprite> loaded = load_sprite(argv[1]);
 
-    if (!storage.get_item("width").has_value()  || 
-        !storage.get_item("height").has_value() ||
-        !storage.get_item("sprite").has_value()) {
+    if(!loaded.has_value())
+    {
+        Storage_manager storage_manager(argv[1]);
 
         if (argc < 4) {
             throw std::runtime_error("No width and height provided");
@@ -51,23 +43,20 @@ int main(int argc, char* argv[])
         width = std::atoi(argv[2]);
         height = std::atoi(argv[3]);
 
-        storage.put_item("width", serialize<int>(width));
-        storage.put_item("height", serialize<int>(height));
-        storage.put_item("sprite", serialize_vector<TUI::Glyph>(std::vector<TUI::Glyph>(width * height, {' '})));
+        storage_manager.put<int>("width", width);
+        storage_manager.put<int>("height", height);
+        storage_manager.put_vector("sprite", std::vector<TUI::Glyph>(width * height, {' '}));
+
+        storage_manager.~Storage_manager();
+        loaded.emplace(width, height);
+    }
+    else {
+        height = loaded.value().get_size().first;
+        width = loaded.value().get_size().second;
     }
 
-    width = deserialize<int>(storage.get_item("width").value());
-    height = deserialize<int>(storage.get_item("height").value());
+    sprite = loaded.value();
 
-    TUI::Sprite new_sprite(height, width);
-    sprite = new_sprite;
-
-    std::vector<TUI::Glyph> glyph_map = deserialize_vector<TUI::Glyph>(storage.get_item("sprite").value());
-    for(int y = 0; y < height; y++) {
-            for(int x = 0; x < width; x++) {
-                sprite.set_glyph(y, x, glyph_map[flatten_index({y, x}, width)]);
-            }
-        }
     // Initialize UI elements
     TUI& tui = tui.get();
     
@@ -150,6 +139,7 @@ int main(int argc, char* argv[])
 
             break;
         case '`': case '~':
+            save_sprite(sprite, argv[1]);
             is_running = false;
             break;
         
@@ -218,9 +208,7 @@ int main(int argc, char* argv[])
 
         case ' ':
             {
-                glyph_map[flatten_index({cursor_y, cursor_x}, width)] = brush;
                 sprite.set_glyph(cursor_y, cursor_x, brush);
-                storage.put_item("sprite", serialize_vector<TUI::Glyph>(glyph_map));
             }
             break ;
         }
@@ -265,7 +253,7 @@ int main(int argc, char* argv[])
         tui.draw_glyph(COLOR_SELECTOR_OFFSET_Y + 3, COLOR_SELECTOR_OFFSET_X + 1 + background, {'^', COLOR_BRIGHT_WHITE, COLOR_BLACK});
 
         tui.render();
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     return 0;

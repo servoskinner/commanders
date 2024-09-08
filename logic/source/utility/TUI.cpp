@@ -204,7 +204,7 @@ void TUI::Text_input::draw_self(unsigned input, int orig_y, int orig_x)
         capacity = width * height;
     }
 
-    if (is_printable_char(input) && (text.size() < capacity || capacity == -1)) {
+    if (is_printable(input) && (text.size() < capacity || capacity == -1)) {
         *std::back_inserter(text) = input;
     }
     if (text.size() > 0 && (input == 127)) {

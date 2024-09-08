@@ -37,7 +37,58 @@ class Storage_manager
     Storage_manager(std::string storage_file = DEFAULT_STORAGE_FILE);
     static Storage_manager& get_default();
     
-    std::optional<Serialized> get_item(std::string locator);
-    bool put_item(std::string locator, std::vector<char> value);
-    bool delete_item(std::string locator);
+    std::optional<Serialized> get_serialized(std::string locator);
+    bool put_serialized(std::string locator, std::vector<char> value);
+    bool del(std::string locator);
+
+    template <typename Type>
+    inline std::optional<Type> get(std::string locator)
+    {
+        std::optional<Serialized> serialized = get_serialized(locator);
+        if (!serialized.has_value()) {
+            return {};
+        }
+        return {deserialize<Type>(serialized.value())};
+    }
+
+    template <typename Type>
+    inline std::optional<std::vector<Type>> get_vector(std::string locator)
+    {
+        std::optional<Serialized> serialized = get_serialized(locator);
+        if (!serialized.has_value()) {
+            return {};
+        }
+        return {deserialize_vector<Type>(serialized.value())};
+    }
+
+    template <typename Keytype, typename Valtype>
+    inline std::optional<std::unordered_map<Keytype, Valtype>> get_map(std::string locator)
+    {
+        std::optional<Serialized> serialized = get_serialized(locator);
+        if (!serialized.has_value()) {
+            return {};
+        }
+        return {deserialize_map<Keytype, Valtype>(serialized.value())};
+    }
+
+    template <typename Type>
+    inline bool put(std::string locator, Type value)
+    {
+        Serialized serialized = serialize(value);
+        return put_serialized(locator, serialized);
+    }
+
+    template <typename Type>
+    inline bool put_vector(std::string locator, std::vector<Type> value)
+    {
+        Serialized serialized = serialize_vector(value);
+        return put_serialized(locator, serialized);
+    }
+
+    template <typename Keytype, typename Valtype>
+    inline bool get_map(std::string locator, std::unordered_map<Keytype, Valtype> value)
+    {
+        Serialized serialized = serialize_map(value);
+        return put_serialized(locator, serialized);
+    }
 };

@@ -179,7 +179,7 @@ bool Storage_manager::write_entry_at(unsigned at_pos, Storage_manager::Storage_e
     return !(file.fail() || file.eof());
 }
 
-std::optional<Serialized> Storage_manager::get_item(std::string locator)
+std::optional<Serialized> Storage_manager::get_serialized(std::string locator)
 {
     std::optional<unsigned int> location = locate_entry(locator);
     if (!location.has_value()) {
@@ -190,7 +190,7 @@ std::optional<Serialized> Storage_manager::get_item(std::string locator)
     return data;
 }
 
-bool Storage_manager::put_item(std::string locator, std::vector<char> value)
+bool Storage_manager::put_serialized(std::string locator, std::vector<char> value)
 {
     Storage_entry entry;
     entry.locator = locator;
@@ -210,7 +210,7 @@ bool Storage_manager::put_item(std::string locator, std::vector<char> value)
             return write_entry_at(write_position.value(), entry);
         }
         else { // if different, delete entry and add it again
-            if(!delete_item(locator)) {
+            if(!del(locator)) {
                 return false;
             }
             file.seekg(0, std::ios::end);
@@ -245,7 +245,7 @@ bool Storage_manager::put_item(std::string locator, std::vector<char> value)
     return true;
 }
 
-bool Storage_manager::delete_item(std::string locator)
+bool Storage_manager::del(std::string locator)
 {
     std::optional<unsigned> entry_loc = locate_entry(locator);
     if (!entry_loc.has_value()) {
