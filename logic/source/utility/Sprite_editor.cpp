@@ -13,8 +13,9 @@
 #include <utility>
 #include <cstdlib>
 
+#define MAX_SPRITE_SIZE 48
 #define COLOR_SELECTOR_OFFSET_X 12
-#define COLOR_SELECTOR_OFFSET_Y 36
+#define COLOR_SELECTOR_OFFSET_Y MAX_SPRITE_SIZE + 4
 
 #define CHAR_SELECTOR_WIDTH 12
 
@@ -46,8 +47,7 @@ int main(int argc, char* argv[])
         storage_manager.put<int>("width", width);
         storage_manager.put<int>("height", height);
         storage_manager.put_vector("sprite", std::vector<TUI::Glyph>(width * height, {' '}));
-
-        storage_manager.~Storage_manager();
+        
         loaded.emplace(width, height);
     }
     else {
@@ -84,14 +84,14 @@ int main(int argc, char* argv[])
     TUI::Rect char_selector_box;
     TUI::Rect drawing_limits_box;
 
-    drawing_area_box.width = 34;
-    drawing_area_box.height = 34;
+    drawing_area_box.width = MAX_SPRITE_SIZE + 2;
+    drawing_area_box.height = MAX_SPRITE_SIZE + 2;
     drawing_area_box.set_border_color(COLOR_BRIGHT_BLACK);
     drawing_area_box.x = 1;
     drawing_area_box.y = 1;
 
     char_selector_box.width = CHAR_SELECTOR_WIDTH + 2;
-    char_selector_box.x = 36;
+    char_selector_box.x = MAX_SPRITE_SIZE + 4;
     char_selector_box.y = 1;
     char_selector_box.height = 18;
 
@@ -104,14 +104,14 @@ int main(int argc, char* argv[])
     brush_box.width = 3;
     brush_box.height = 3;
     brush_box.x = 2;
-    brush_box.y = 36;
+    brush_box.y = MAX_SPRITE_SIZE + 4;
     brush_box.set_border_color(COLOR_BRIGHT_BLACK);
 
     TUI::Text brush_box_text;
     brush_box_text.text = "BRUSH";
     brush_box_text.foreground = COLOR_BRIGHT_BLACK;
     brush_box_text.x = 5;
-    brush_box_text.y = 37;
+    brush_box_text.y = MAX_SPRITE_SIZE + 5;
 
     drawing_limits_box.width = width + 2;
     drawing_limits_box.height = height + 2;
@@ -224,13 +224,14 @@ int main(int argc, char* argv[])
         brush_box.draw();
         brush_box_text.draw();
 
+        // char selector
         for(int i = 0; i < chars.size(); i++) {
             std::pair<int, int> pos = unflatten_index(i, CHAR_SELECTOR_WIDTH);
             if (i != current_char) {
-                tui.draw_glyph(2 + pos.first, 37 + pos.second, {chars[i], COLOR_WHITE, COLOR_BLACK});
+                tui.draw_glyph(2 + pos.first, MAX_SPRITE_SIZE + 5 + pos.second, {chars[i], COLOR_WHITE, COLOR_BLACK});
             }
             else {
-                tui.draw_glyph(2 + pos.first, 37 + pos.second, {chars[i], COLOR_BLACK, COLOR_BRIGHT_WHITE});
+                tui.draw_glyph(2 + pos.first, MAX_SPRITE_SIZE + 5 + pos.second, {chars[i], COLOR_BLACK, COLOR_BRIGHT_WHITE});
             }
         }
 

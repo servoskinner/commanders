@@ -36,6 +36,8 @@ class Rect;
 class Text_box;
 class Scroll_box;
 
+typedef unsigned char Color;
+
 class TUI
 {
     private:
@@ -69,7 +71,7 @@ class TUI
 
     unsigned get_input();
 
-    inline static unsigned short get_color_code(unsigned char foreground = COLOR_WHITE, unsigned char background = COLOR_BLACK)
+    inline static unsigned short get_color_code(Color foreground = COLOR_WHITE, Color background = COLOR_BLACK)
     {
         if (foreground == COLOR_WHITE && background == COLOR_BLACK) {
             return 0;
@@ -80,8 +82,8 @@ class TUI
     struct Glyph
     {
         unsigned symbol = ' '; 
-        unsigned short foreground = COLOR_WHITE;
-        unsigned short background = COLOR_BLACK;
+        Color foreground = COLOR_WHITE;
+        Color background = COLOR_BLACK;
     };
     
     inline void draw_glyph(int y, int x, Glyph glyph) {
@@ -95,7 +97,8 @@ class TUI
     class UI_Object
     {
         public:
-        UI_Object() : tui(TUI::get()) {}
+        UI_Object(int y = 0, int x = 0) : x(x), y(y), tui(TUI::get()) {}
+        UI_Object& operator= (const UI_Object& other) = default;
 
         int x = 0, y = 0;  
         bool use_absolute_position = false;
@@ -112,6 +115,11 @@ class TUI
     class Rect : public UI_Object
     {
         public:
+        Rect(int height = 1, int width = 1, int y = 0, int x = 0, 
+             Color foreground = COLOR_WHITE, Color background = COLOR_BLACK) : height(height), width(width), UI_Object(y, x)
+            { set_border_color(foreground, background);}
+        Rect& operator= (const Rect& other) = default;
+
         int width = 0, height = 0;
 
         Glyph tl_corner = {ACS_ULCORNER}, tr_corner = {ACS_URCORNER}, bl_corner = {ACS_LLCORNER}, br_corner = {ACS_LRCORNER};
@@ -120,7 +128,7 @@ class TUI
 
         bool draw_filled = false;
 
-        inline void set_border_color(unsigned char foreground = COLOR_WHITE, unsigned char background = COLOR_BLACK) {
+        inline void set_border_color(Color foreground = COLOR_WHITE, Color background = COLOR_BLACK) {
             tl_corner.foreground = foreground;
             tr_corner.foreground = foreground;
             bl_corner.foreground = foreground;
@@ -170,9 +178,9 @@ class TUI
     class Sprite : public UI_Object
     {
         public:
-        Sprite(int height, int width);
+        Sprite(int height, int width, int y = 0, int x = 0);
         Sprite& operator=(Sprite &other) { sprite = other.sprite; return *this;};
-        Sprite(Sprite& other) = default;
+        Sprite(const Sprite& other) = default;
 
         inline std::pair<int, int> get_size() { return {sprite.size(), sprite[0].size()};};
         inline Glyph get_glyph(int y, int x) { return sprite[y][x];};
@@ -187,9 +195,13 @@ class TUI
     class Text : public UI_Object
     {
         public:
-        Text(std::string txt = "") : text(txt) {}
-        unsigned char background = COLOR_BLACK;
-        unsigned char foreground = COLOR_WHITE;
+        Text(std::string text = "", int height = 0, int width = 0, int y = 0, int x = 0, 
+             Color foreground = COLOR_WHITE, Color background = COLOR_BLACK)
+         : text(text), height(height), width(width), background(background), foreground(foreground), UI_Object(y, x) {}
+        Text& operator= (const Text& other) = default;
+
+        Color background = COLOR_BLACK;
+        Color foreground = COLOR_WHITE;
         int width = 0, height = 0;
         std::string text;
 
@@ -200,6 +212,11 @@ class TUI
     class Scrollable_text : public Text
     {
         public:
+        Scrollable_text(std::string text = "", int height = 0, int width = 0, int y = 0, int x = 0,
+                        Color foreground = COLOR_WHITE, Color background = COLOR_BLACK)
+         : Text(text, height, width, y, x, foreground, background) {}
+        Scrollable_text& operator= (const Scrollable_text& other) = default;
+
         int scroll_pos = 0;
         bool from_bottom = false;
 
@@ -209,6 +226,12 @@ class TUI
 
     class Text_input : public Text
     {
+        public:
+        Text_input(int height = -1, int width = -1, int y = 0, int x = 0,
+                   Color foreground = COLOR_WHITE, Color background = COLOR_BLACK)
+         : Text("", height, width, y, x, foreground, background) {}
+        Text_input& operator= (const Text_input& other) = default;
+
         protected:
         virtual void draw_self(unsigned input = 0, int orig_y = 0, int orig_x = 0) override;
     };

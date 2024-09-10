@@ -1,6 +1,7 @@
 #include "TUI.hpp"
 #include "Focus.hpp"
 #include "Animations.hpp"
+#include "Sprite_storage.hpp"
 
 #include <ncurses.h>
 #include <thread>
@@ -14,23 +15,16 @@ int main()
     TUI& tui = TUI::get();
 
     Crazy_box crazy_box(0.1);
-
-    tui.set_color_pair(1, COLOR_BRIGHT_WHITE, COLOR_BLACK);
-    tui.set_color_pair(2, COLOR_BRIGHT_BLUE, COLOR_BLACK);
-    tui.set_color_pair(3, COLOR_MAGENTA, COLOR_BLACK);
-
-    tui.set_color_pair(4, COLOR_BLACK, COLOR_BRIGHT_YELLOW);
-    tui.set_color_pair(5, COLOR_BLACK, COLOR_BRIGHT_BLACK);
     
     rect.x = 10, rect.y = 17;
 
-    rect.tl_corner.color = 1;
-    rect.t_border.color = 1;
-    rect.tr_corner.color = 1;
-    rect.set_vborders({ACS_VLINE, 2});
-    rect.bl_corner.color = 3;
-    rect.b_border.color = 3;
-    rect.br_corner.color = 3;
+    rect.tl_corner.foreground = COLOR_BRIGHT_WHITE;
+    rect.t_border.foreground = COLOR_BRIGHT_WHITE;
+    rect.tr_corner.foreground = COLOR_BRIGHT_WHITE;
+    rect.set_vborders({ACS_VLINE, COLOR_CYAN});
+    rect.bl_corner.foreground = COLOR_BLUE;
+    rect.b_border.foreground = COLOR_BLUE;
+    rect.br_corner.foreground = COLOR_BLUE;
 
     scroll.x = 11; scroll.y = 18;
     rect.width = 20, rect.height = 5;
@@ -40,7 +34,7 @@ int main()
     rolling_text.y = 1;
     rolling_text.text.width = 30;
     rolling_text.text.height = 5;
-    rolling_text.text.color = 3;
+    rolling_text.text.foreground = COLOR_WHITE;
 
 
     scroll.text = \
@@ -60,6 +54,10 @@ int main()
     crazy_box.rect.width = 10;
     crazy_box.rect.height = 8;
 
+    TUI::Sprite sprite = load_sprite("../sprites/grass").value();
+    sprite.x = 12;
+    sprite.y = 1;
+
     while (true) {
         unsigned input = tui.get_input();
         if(input == 'q' || input == 'Q') {
@@ -69,6 +67,14 @@ int main()
         tui.clear();
 
         rect.draw(input);
+
+        sprite.draw(0, 0, 0);
+        sprite.draw(0, 0, 4);
+        sprite.draw(0, 0, 8);
+        sprite.draw(0, 4, 4);
+        sprite.draw(0, 4, 8);
+        sprite.draw(0, 8, 8);
+
         scroll.draw(input);
         rolling_text.draw(input);
         crazy_box.draw(input);

@@ -301,7 +301,6 @@ void NCurses_commander::draw(unsigned input)
 
 void NCurses_commander::render_UI(unsigned input)
 {
-    erase();
     TUI& tui = TUI::get();
 
     int x_term_size = tui.get_size().second;
@@ -337,9 +336,6 @@ void NCurses_commander::render_UI(unsigned input)
     // debug.y = 4;
     // debug.text = grid[cursor_y][cursor_x].has_value() ? "unit" : "none";
     // debug.draw();
-
-    refresh();
-
 }
 
 void NCurses_commander::render_grid()

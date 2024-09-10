@@ -59,6 +59,7 @@ int main()
 
     while(commander.is_on())
     {
+        TUI::get().clear();
         int turn = gm.get_turn();
         commander.update_state(gm.get_game_state(turn));
 
@@ -79,6 +80,8 @@ int main()
             int order_code = gm.exec_order(turn, ord.value());
             commander.process_order_feedback(order_code);
         }
+        
+        TUI::get().render();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 }

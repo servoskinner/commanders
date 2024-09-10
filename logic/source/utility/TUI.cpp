@@ -45,9 +45,10 @@ unsigned TUI::get_input()
 
 void TUI::UI_Object::draw(unsigned input, int orig_y, int orig_x)
 {
-    draw_self(input, orig_y + y, orig_x + x);
-    for (UIobj_ref& child : children) {
-        if (child.get().visible) {
+    if (visible)
+    {
+        draw_self(input, orig_y + y, orig_x + x);
+        for (UIobj_ref& child : children) {
             if (child.get().use_absolute_position) {
                 child.get().draw(input, orig_y, orig_x);
             }
@@ -169,7 +170,7 @@ void TUI::Scrollable_text::draw_self(unsigned input, int orig_y, int orig_x)
 
 }
 
-TUI::Sprite::Sprite(int height, int width)
+TUI::Sprite::Sprite(int height, int width, int y, int x) : UI_Object(y, x)
 {
     if (width < 1 || height < 1) {
         throw std::invalid_argument("TUI::Sprite::Sprite(): width and height must be greater than zero");

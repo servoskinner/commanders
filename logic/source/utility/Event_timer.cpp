@@ -13,10 +13,7 @@ void Event_timer::process()
 
     delta_time = cur_time - prev_time;
 
-    if (delta_time < 0.0) { // overflow
-        delta_time = (float)(__LONG_MAX__/CLOCKS_PER_SEC) - prev_time + cur_time;
-    }
-    for (int ev_id = 0;ev_id < events.size(); ev_id++)
+    for (int ev_id = 0; ev_id < events.size(); ev_id++)
     {
         events[ev_id].countdown -= delta_time;
         while(events[ev_id].countdown <= 0.0)
@@ -36,9 +33,7 @@ void Event_timer::process()
                 break;
             }
             
-
             events[ev_id].event();
-
 
             if (skip_stalled) {
                 events[ev_id].countdown = events[ev_id].t_seconds;

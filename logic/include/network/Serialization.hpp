@@ -73,7 +73,7 @@ std::vector<Type> deserialize_vector(Serialized serialized)
     unsigned int vector_size = *(unsigned int*)serialized.data();
 
     if (serialized.size() - sizeof(unsigned int) < sizeof(Type)*vector_size) {
-        throw std::runtime_error("deserialize_map(): byte vector too short for specified size");
+        throw std::runtime_error("deserialize_vector(): byte vector too short for specified size");
     }
     std::vector<Type> vector;
     vector.resize(vector_size);

@@ -74,7 +74,7 @@ void Rolling_text::tick()
 }
 
 void Rolling_text::draw_self(unsigned input, int orig_y, int orig_x)
-{
+{   
     timer.process();
     text.text = {origin_text.begin(), origin_text.begin() + n_drawn_chars};
     text.draw(input, orig_x, orig_y);
