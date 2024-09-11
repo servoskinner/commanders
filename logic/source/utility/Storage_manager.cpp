@@ -203,45 +203,46 @@ bool Storage_manager::put_serialized(std::string locator, std::vector<char> valu
     if(write_position.has_value()) {
         // check data size
         unsigned int data_size;
-        file.seekg(sizeof(unsigned short), std::ios::cur);
+        file.seekg(sizeof(unsigned short) + write_position.value());
         file.read((char*)&data_size, sizeof(unsigned int));
         // if same, write new data over
         if (data_size == value.size()) {
             return write_entry_at(write_position.value(), entry);
         }
-        else { // if different, delete entry and add it again
+        else { // if different, delete entry and add it again as if it was new
             if(!del(locator)) {
                 return false;
             }
-            file.seekg(0, std::ios::end);
-            if(file.fail()) {
+            n_entries++; // entry was not deleted -- increment counter
+            file.seekp(0);
+            file.write((char*)&n_entries, sizeof(n_entries));
+            if (file.fail() || file.eof()) {
                 file.clear();
-                return 0;
+                return false;
             }
-            return write_entry_at((unsigned)file.tellg(), entry);
+            file.flush();
         }
     }
-    // key does not exist
-    else {
-        // write to end
-        file.seekg(0, std::ios::end);
-        if(file.fail()) {
-                file.clear();
-                return 0;
-            }
-        if (!write_entry_at((unsigned)file.tellg(), entry)) {
-            return false;
-        }
-        // update entry count
-        n_entries += 1;
-        file.seekp(0);
-        file.write((char*)&n_entries, sizeof(n_entries));
-        if (file.fail() || file.eof()) {
+    // key does not exist or was erased
+    file.seekg(0, std::ios::end);
+    if(file.fail()) {
             file.clear();
-            return false;
+            return 0;
         }
-        file.flush();
+
+    if (!write_entry_at((unsigned)file.tellg(), entry)) {
+        return false;
     }
+    // update entry count
+    n_entries += 1;
+    file.seekp(0);
+    file.write((char*)&n_entries, sizeof(n_entries));
+    if (file.fail() || file.eof()) {
+        file.clear();
+        return false;
+    }
+    file.flush();
+
     return true;
 }
 

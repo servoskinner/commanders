@@ -44,8 +44,8 @@ int main(int argc, char* argv[])
         width = std::atoi(argv[2]);
         height = std::atoi(argv[3]);
 
-        storage_manager.put<int>("width", width);
-        storage_manager.put<int>("height", height);
+        storage_manager.put("width", width);
+        storage_manager.put("height", height);
         storage_manager.put_vector("sprite", std::vector<TUI::Glyph>(width * height, {' '}));
         
         loaded.emplace(width, height);

@@ -4,6 +4,9 @@
 #include "Sprite_storage.hpp"
 #include "Misc_functions.hpp"
 
+#include "NCurses_commander.hpp"
+#include "Game_master.hpp"
+
 #include <string>
 #include <vector>
 #include <thread>
@@ -18,15 +21,17 @@ int main()
     Storage_manager& storage = Storage_manager::get_default();
 
     enum game_screen {
-        INTRO,
-        CALLSIGN_PROMPT,
-        MAIN_MENU,
-        GAME,
-        DECK_ED,
-        SETTINGS
+        GAME_INTRO,
+        GAME_CALLSIGN_PROMPT,
+        GAME_MAIN_MENU,
+        GAME_PREPARATION,
+        GAME_CONTROL,
+        GAME_DECK_ED_MAIN,
+        GAME_DECK_ED_EDITOR,
+        GAME_SETTINGS
     };
 
-    game_screen cur_screen = INTRO;
+    game_screen cur_screen = GAME_INTRO;
     bool run_loop = true;
     std::string callsign;
 
@@ -54,7 +59,7 @@ int main()
     intro_rolling1.origin_text = \
     "COMMAND SUBROUTINE STARTING UP ............ DONE \
      PSYCHOTRONIC LINK VERSION..54.93 CHECKSUM \
-     72A02FDD INITIATING STARTUP SEQUENCE ............ DONE \
+     72 A0 2F DD INITIATING STARTUP SEQUENCE ............ DONE \
      PARTICLE BEAM WARMUP PROCEDURE ............... DONE \
      2A 96 97 DF GENETIC SIGNATURE CHECK PASSED - INITIATING CONTROL AUTHORITY TRANSFER ........... DONE";
     intro_rolling1.visible = false;
@@ -62,28 +67,28 @@ int main()
     Rolling_text intro_rolling2(0.0001);
     intro_rolling2.text.x = 59;
     intro_rolling2.text.y = 25;
-    intro_rolling2.text.width = 24;
+    intro_rolling2.text.width = 23;
     intro_rolling2.text.foreground = COLOR_RED;
-    intro_rolling2.origin_text = "another text blah blah blah blah blah blah blah blah blah blah blah";
+    intro_rolling2.origin_text = "FF 9A 4C CE E1 96 69 CB C8 55 6F 1A B1 EB 12 87 DD 6C 15 47 48 86 0A f6 97 8D 0A 54 DD 26 10 29 LAUNCH CONFIRM";
     intro_rolling2.visible = false;
 
     intro_timer.events.push_back({[&intro_text1](){ intro_text1.visible = true;}, 0.15, 1});
     intro_timer.events.push_back({[&intro_text2](){ intro_text2.visible = true;}, 0.3, 1});
     intro_timer.events.push_back({[&intro_rolling1](){ intro_rolling1.visible = true;}, 0.5, 1});
-    intro_timer.events.push_back({[&intro_rolling2](){ intro_rolling2.visible = true;}, 2.4, 1});
+    intro_timer.events.push_back({[&intro_rolling2](){ intro_rolling2.visible = true;}, 1.8, 1});
 
     std::function<void(void)> end_intro = [&cur_screen, &storage, &callsign]() {
         std::optional<std::vector<char>> entry = storage.get_vector<char>("callsign");
         if (entry.has_value()) {
             callsign = {entry.value().begin(), entry.value().end()};
-            cur_screen = MAIN_MENU;
+            cur_screen = GAME_MAIN_MENU;
         }
         else {
-            cur_screen = CALLSIGN_PROMPT;
+            cur_screen = GAME_CALLSIGN_PROMPT;
         }
     };
     
-    intro_timer.events.push_back({end_intro, 3.7, 1});
+    intro_timer.events.push_back({end_intro, 3.0, 1});
 
     // ----------------
     // Callsign prompt
@@ -105,6 +110,13 @@ int main()
     int menu_selected_item = 0;
 
     std::vector<std::string> menu_items = {"start", "info", "deck editor", "settings", "quit"};
+    enum main_menu_item {
+        MAIN_MENU_START,
+        MAIN_MENU_INFO,
+        MAIN_MENU_DECK_ED,
+        MAIN_MENU_SETTINGS,
+        MAIN_MENU_QUIT
+    };
 
     TUI::UI_Object menu_navigation_hint(0, 3);
     TUI::Text menu_navigation_hint_up("W /\\", 0, 0, -1, 20, COLOR_BRIGHT_BLACK);
@@ -112,15 +124,27 @@ int main()
     menu_navigation_hint.children = {std::ref(menu_navigation_hint_down), std::ref(menu_navigation_hint_up)};
     
     TUI::Sprite menu_logo = load_sprite("../sprites/logo").value();
-    menu_logo.x = 7;
+    menu_logo.x = 4;
     menu_logo.y = 4;
+
+    // ------
+    // Game
+    // ------
+
+    // ----------------
+    // Deck editor
+    // ----------------
+
+    TUI::Rect deck_ed_deck_sprite(11, 11, 17, 0);
+    TUI::Rect deck_ed_deck_selector(11, 11, 17, 0, COLOR_BLACK, COLOR_BRIGHT_WHITE);
+    TUI::Text deck_ed_deck_caption("");
 
     while (run_loop) {
         unsigned input = tui.get_input();
         tui.clear();
         switch (cur_screen)
         {
-        case INTRO:
+        case GAME_INTRO:
             intro_timer.process();
 
             intro_rect.draw();
@@ -130,18 +154,19 @@ int main()
             intro_rolling2.draw();
             break;
         
-        case CALLSIGN_PROMPT:
+        case GAME_CALLSIGN_PROMPT:
 
             if (input == ' ') {
                 input = 0; // allow no spaces in callsign
             }
             callsign_prompt_frame.draw(input);
             if (input == KEY_ENTR && callsign_prompt.text.size() > 1) {
-                storage.put_vector("callsign", std::vector<char>(callsign_prompt.text.begin(), callsign_prompt.text.end()));
-                cur_screen = MAIN_MENU;
+                storage.put_string("callsign", callsign_prompt.text);
+                callsign = callsign_prompt.text;
+                cur_screen = GAME_MAIN_MENU;
             }
             break;
-        case MAIN_MENU:
+        case GAME_MAIN_MENU:
             {
                 switch (input)
                 {
@@ -170,15 +195,30 @@ int main()
                 menu_item_text.children = {std::ref(menu_navigation_hint)};
                 menu_item_text.x = 3;
                 for (int i = 0; i < menu_items.size(); i++) {
-                    menu_item_text.y = 21 + i*2;
+                    menu_item_text.y = 21 + i*3;
                     menu_item_text.text = " " + menu_items[i];
                     while (menu_item_text.text.size() < 28) {
                         menu_item_text.text.append(" ");
                     }
                     if (i == menu_selected_item) {
+                        // highlight selected item
+                        menu_item_text.text = " " + menu_item_text.text;
                         menu_item_text.foreground = COLOR_BRIGHT_WHITE;
                         menu_item_text.background = COLOR_RED;
                         menu_navigation_hint.visible = true;
+                        // set nav hints to visible/invisible if UI item is first or last
+                        if (menu_selected_item == menu_items.size()-1) {
+                            menu_navigation_hint_down.visible = false;
+                        }
+                        else {
+                            menu_navigation_hint_down.visible = true;
+                        }
+                        if (menu_selected_item == 0) {
+                            menu_navigation_hint_up.visible = false;
+                        }
+                        else {
+                            menu_navigation_hint_up.visible = true;
+                        }
                     }
                     else {
                         menu_item_text.foreground = COLOR_BRIGHT_BLACK;
@@ -190,7 +230,7 @@ int main()
             }   
             break;
 
-        case GAME:
+        case GAME_CONTROL:
             // int turn = gm.get_turn();
             // commander.update_state(gm.get_game_state(turn));
 
@@ -212,7 +252,7 @@ int main()
             //     commander.process_order_feedback(order_code);
             // }
             break;
-        case DECK_ED:
+        case GAME_DECK_ED_MAIN:
 
             break;
         }

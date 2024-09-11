@@ -61,6 +61,15 @@ class Storage_manager
         return {deserialize_vector<Type>(serialized.value())};
     }
 
+    inline std::optional<std::string> get_string(std::string locator)
+    {
+        std::optional<Serialized> serialized = get_serialized(locator);
+        if (!serialized.has_value()) {
+            return {};
+        }
+        return {deserialize_string(serialized.value())};
+    }
+
     template <typename Keytype, typename Valtype>
     inline std::optional<std::unordered_map<Keytype, Valtype>> get_map(std::string locator)
     {
@@ -75,6 +84,12 @@ class Storage_manager
     inline bool put(std::string locator, Type value)
     {
         Serialized serialized = serialize(value);
+        return put_serialized(locator, serialized);
+    }
+
+    inline bool put_string(std::string locator, std::string value)
+    {
+        Serialized serialized = serialize_string(value);
         return put_serialized(locator, serialized);
     }
 

@@ -36,7 +36,7 @@ class Rect;
 class Text_box;
 class Scroll_box;
 
-typedef unsigned char Color;
+typedef unsigned short Color;
 
 class TUI
 {
@@ -117,7 +117,7 @@ class TUI
         public:
         Rect(int height = 1, int width = 1, int y = 0, int x = 0, 
              Color foreground = COLOR_WHITE, Color background = COLOR_BLACK) : height(height), width(width), UI_Object(y, x)
-            { set_border_color(foreground, background);}
+            { set_border_color(foreground, background); }
         Rect& operator= (const Rect& other) = default;
 
         int width = 0, height = 0;
