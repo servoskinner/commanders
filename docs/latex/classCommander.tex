@@ -1,0 +1,80 @@
+\doxysection{Commander Class Reference}
+\hypertarget{classCommander}{}\label{classCommander}\index{Commander@{Commander}}
+
+
+Generates standardized Orders from interface input and processes Events in the opposite direction.  
+
+
+
+
+{\ttfamily \#include $<$Commander.\+hpp$>$}
+
+Inheritance diagram for Commander\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classCommander}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structCommander_1_1Card__info}{Card\+\_\+info}}
+\item 
+struct \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+\_\+message}}
+\item 
+struct \mbox{\hyperlink{structCommander_1_1Game__params}{Game\+\_\+params}}
+\item 
+struct \mbox{\hyperlink{structCommander_1_1Game__state}{Game\+\_\+state}}
+\item 
+struct \mbox{\hyperlink{structCommander_1_1Player__info}{Player\+\_\+info}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classCommander_a59b10e6edc313a0153a86c29d985194d}\label{classCommander_a59b10e6edc313a0153a86c29d985194d} 
+typedef \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+\_\+message}} {\bfseries Order}
+\item 
+\Hypertarget{classCommander_acb6845371b862285baffb301e0b6bfae}\label{classCommander_acb6845371b862285baffb301e0b6bfae} 
+typedef \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+\_\+message}} {\bfseries Event}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classCommander_acf0daf143684b42429d4ce02367e5631}\label{classCommander_acf0daf143684b42429d4ce02367e5631} 
+virtual std\+::optional$<$ \mbox{\hyperlink{structCommander_1_1Commander__message}{Order}} $>$ {\bfseries get\+\_\+order} ()=0
+\item 
+\Hypertarget{classCommander_a95dd65c8807321f02f8c4a43eeeb3757}\label{classCommander_a95dd65c8807321f02f8c4a43eeeb3757} 
+virtual void {\bfseries process\+\_\+event} (\mbox{\hyperlink{structCommander_1_1Commander__message}{Event}} event)=0
+\item 
+\Hypertarget{classCommander_a0633d4a1384300c818e548da67ed1b46}\label{classCommander_a0633d4a1384300c818e548da67ed1b46} 
+virtual void {\bfseries process\+\_\+order\+\_\+feedback} (int code)=0
+\item 
+\Hypertarget{classCommander_afa2c150ac91db415badf9a456de83d60}\label{classCommander_afa2c150ac91db415badf9a456de83d60} 
+virtual void {\bfseries update\+\_\+state} (\mbox{\hyperlink{structCommander_1_1Game__state}{Game\+\_\+state}} state)
+\item 
+\Hypertarget{classCommander_ae38d6f54f9e581b15b8d451b130f3f3c}\label{classCommander_ae38d6f54f9e581b15b8d451b130f3f3c} 
+virtual void {\bfseries set\+\_\+params} (\mbox{\hyperlink{structCommander_1_1Game__params}{Game\+\_\+params}} params)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classCommander_a3fd0bf504d5643bade6187f70d9c05ca}\label{classCommander_a3fd0bf504d5643bade6187f70d9c05ca} 
+std\+::vector$<$ int $>$ {\bfseries controlled\+\_\+ids}
+\item 
+\Hypertarget{classCommander_a570c91d9bba9e45d5272868ec5183559}\label{classCommander_a570c91d9bba9e45d5272868ec5183559} 
+int {\bfseries active\+\_\+id}
+\item 
+\Hypertarget{classCommander_af8c6e09578c65571c91d22ce493eb08f}\label{classCommander_af8c6e09578c65571c91d22ce493eb08f} 
+\mbox{\hyperlink{structCommander_1_1Game__params}{Game\+\_\+params}} {\bfseries game\+\_\+params}
+\item 
+\Hypertarget{classCommander_a944242ea06efd2454dd5f73379f1cc8e}\label{classCommander_a944242ea06efd2454dd5f73379f1cc8e} 
+\mbox{\hyperlink{structCommander_1_1Game__state}{Game\+\_\+state}} {\bfseries game\+\_\+state}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Generates standardized Orders from interface input and processes Events in the opposite direction. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/interaction/Commander.\+hpp\end{DoxyCompactItemize}

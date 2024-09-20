@@ -3,7 +3,7 @@
 
 Animated::Animated(float delay, std::function<void(void)> on_tick) : timer()
 {
-    timer.events.push_back(Event_timer::Timed_event(on_tick, delay));
+    timer.events.push_back(Timer::Timed_event(on_tick, delay));
 }
 
 void Blinker::tick()

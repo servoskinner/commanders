@@ -1,0 +1,49 @@
+\doxysection{Ability.\+hpp}
+\hypertarget{Ability_8hpp_source}{}\label{Ability_8hpp_source}\index{logic/include/gameplay/Ability.hpp@{logic/include/gameplay/Ability.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <list>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}Game\_master.hpp"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}Unique.hpp"{}}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Ability}{Game\_master::Ability}}}
+\DoxyCodeLine{00015\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00017\ \ \ \ \ \mbox{\hyperlink{classGame__master_1_1Card}{Card}}\&\ attached\_to;}
+\DoxyCodeLine{00018\ \ \ \ \ \mbox{\hyperlink{classGame__master}{Game\_master}}\&\ master;}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Ability_1_1Binding}{Binding}}}
+\DoxyCodeLine{00022\ \ \ \ \ \{}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ Cause\&\ trig;\ }
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classUnique}{Unique}}\ key;\ }
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classGame__master_1_1Ability_1_1Binding_a5718dd4634c0e5fd1f22892fce6de40b}{Binding}}(Cause\&\ trigger,\ Effect\ reaction);}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classGame__master_1_1Ability_1_1Binding}{\string~Binding}}();}
+\DoxyCodeLine{00030\ \ \ \ \ \};}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00033\ \ \ \ \ \mbox{\hyperlink{classUnique}{Unique}}\ entity\_id;}
+\DoxyCodeLine{00034\ \ \ \ \ \mbox{\hyperlink{classGame__master_1_1Ability}{Ability}}(\mbox{\hyperlink{classGame__master}{Game\_master}}\&\ gm,\ \mbox{\hyperlink{classGame__master_1_1Card}{Card}}\&\ card)\ :\ master(gm),\ attached\_to(card)\ \{\}\ }
+\DoxyCodeLine{00035\ \ \ \ \ \mbox{\hyperlink{classGame__master_1_1Ability}{\string~Ability}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00036\ \};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Ability__simple}{Game\_master::Ability\_simple}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classGame__master_1_1Ability}{Game\_master::Ability}}}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \ \ \mbox{\hyperlink{classGame__master_1_1Ability__simple}{Ability\_simple}}(\mbox{\hyperlink{classGame__master}{Game\_master}}\&\ gm,\ \mbox{\hyperlink{classGame__master_1_1Card}{Card}}\&\ card,\ std::pair<Cause\_ref,\ Effect>\ effect)\ :\ \mbox{\hyperlink{classGame__master_1_1Ability}{Ability}}(gm,\ card),\ binding(effect.first,\ effect.second)\ \{\}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{classGame__master_1_1Ability_1_1Binding}{Binding}}\ binding;}
+\DoxyCodeLine{00046\ \};}
+
+\end{DoxyCode}

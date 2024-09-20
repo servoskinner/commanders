@@ -1,6 +1,6 @@
 #pragma once
 
-enum cardIds
+enum Card_id
 {
     BOUNTYHUNTER,
     TERRORGUARD,
@@ -18,7 +18,7 @@ enum cardIds
 
     TOTAL_CARDS_IN_GAME // do not add anything PAST this entry
 };
-enum card_type
+enum Card_type
 {
     CTYPE_UNIT,
     CTYPE_CONTRACT,

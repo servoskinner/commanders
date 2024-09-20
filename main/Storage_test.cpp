@@ -6,7 +6,7 @@
 
 int main()
 {
-    Storage_manager& sm = Storage_manager::get_default();
+    Archivist& sm = Archivist::get_default();
     bool is_running = true;
 
     while(is_running) {

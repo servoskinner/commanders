@@ -1,9 +1,8 @@
 #include "Sprite_storage.hpp"
-#include "Misc_functions.hpp"
 
 bool save_sprite(TUI::Sprite& sprite, std::string filename)
 {
-    Storage_manager storage(filename);
+    Archivist storage(filename);
 
     if (!storage.put("height", sprite.get_size().first) || !storage.put("width", sprite.get_size().second)) {
         return false;
@@ -23,7 +22,7 @@ bool save_sprite(TUI::Sprite& sprite, std::string filename)
 
 std::optional<TUI::Sprite> load_sprite(std::string filename)
 {
-    Storage_manager storage(filename);
+    Archivist storage(filename);
     
     std::optional<int> width_opt  = storage.get<int>("width");
     std::optional<int> height_opt = storage.get<int>("height");

@@ -1,0 +1,39 @@
+\doxysection{TCP\+\_\+client.\+hpp}
+\hypertarget{TCP__client_8hpp_source}{}\label{TCP__client_8hpp_source}\index{logic/include/network/TCP\_client.hpp@{logic/include/network/TCP\_client.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}Misc\_functions.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}Network.hpp"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classTCP__client}{TCP\_client}}}
+\DoxyCodeLine{00007\ \{}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00009\ \ \ \ \ \mbox{\hyperlink{classTCP__client}{TCP\_client}}();}
+\DoxyCodeLine{00010\ \ \ \ \ \mbox{\hyperlink{classTCP__client}{\string~TCP\_client}}();}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classTCP__client_a25a426b061bba4184c67ee6bf9b302fb}{handshake\_timeout\_ms}}\ =\ 0;}
+\DoxyCodeLine{00022\ \ \ \ \ \mbox{\hyperlink{structSocket__inbound__message}{Socket\_inbound\_message}}\ \mbox{\hyperlink{classTCP__client_aa2b2f52addf9aa9617c7515d46b93c0a}{get\_message}}();}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classTCP__client_a709e47280ca174b01b973a41c66e16b9}{send\_msg}}(\textcolor{keyword}{const}\ std::vector<char>\&\ msg);}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classTCP__client_a3ee118b4b174681556b5cb0d4a0f73c4}{connect\_to}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structSocket__info}{Socket\_info}}\&\ destination,\ \textcolor{keywordtype}{int}\ n\_attempts\ =\ 1,\ \textcolor{keywordtype}{int}\ ms\_between\ =\ 0);}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classTCP__client_ada9df6e01b880c2bc86bb00871bd1463}{disconnect}}();}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{const}\ std::optional<Socket\_info>\ get\_connection();}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ receive\_messages();}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ u\_short\ own\_port\ =\ -\/1;}
+\DoxyCodeLine{00047\ \ \ \ \ std::atomic<int>\ socket\_fdesc\ =\ -\/1;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ std::thread\ receiver\_thread;}
+\DoxyCodeLine{00050\ \ \ \ \ std::atomic<bool>\ is\_polling;}
+\DoxyCodeLine{00051\ \ \ \ \ std::queue<Socket\_inbound\_message>\ message\_queue;}
+\DoxyCodeLine{00052\ \ \ \ \ std::optional<Socket\_info>\ server\ =\ \{\};}
+\DoxyCodeLine{00053\ \ \ \ \ std::mutex\ receiver\_mutex,\ confirmation\_mutex;}
+\DoxyCodeLine{00054\ \};}
+
+\end{DoxyCode}

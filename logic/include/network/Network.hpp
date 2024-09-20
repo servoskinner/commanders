@@ -33,13 +33,13 @@
 #define TCP_SERVER_MAX_REQ           64
 #define TCP_SERVER_MAX_CLIENTS       1023
 
-enum inet_message_tags
+enum inet_message_tag
 {
     MSG_CONTROL,
     MSG_GAMEPLAY,
     MSG_CHAT
 }; 
-enum inet_control_tags
+enum inet_control_tag
 {
     ICTRL_ACK,
     ICTRL_NACK,
@@ -50,9 +50,7 @@ enum inet_control_tags
     ICTRL_SERVER_FORCE_DISCONNECT
 };
 
-/**
- * @struct Information offered by server when discovered.
- */
+/// @brief Information offered by server when discovered.
 struct Server_info
 {
     char description[128];
@@ -60,9 +58,7 @@ struct Server_info
     char flags[8];
 };
 
-/**
- * @struct Combination of a socket's port and IP address.
- */
+/// @brief Combination of a socket's port and IP address.
 struct Socket_info
 {
     u_short port = 0;
@@ -74,12 +70,11 @@ struct Socket_info
     Socket_info() : port(0), address(0) {}
 
     const bool operator==(const Socket_info& other) {return port == other.port && address == other.address; }
+    /// @return Address represented as string.
     const std::string addrstr();
 };
 
-/**
- * @struct Message in form of byte vector and its sender.
- */
+/// @brief Message in form of byte vector and its sender.
 struct Socket_inbound_message
 {
     Socket_info sender = {};

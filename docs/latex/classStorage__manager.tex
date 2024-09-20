@@ -1,0 +1,52 @@
+\doxysection{Storage\+\_\+manager Class Reference}
+\hypertarget{classStorage__manager}{}\label{classStorage__manager}\index{Storage\_manager@{Storage\_manager}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classStorage__manager_a8d76f4af07f2f74286ab35c15a3a0161}\label{classStorage__manager_a8d76f4af07f2f74286ab35c15a3a0161} 
+{\bfseries Storage\+\_\+manager} (std\+::string storage\+\_\+file=DEFAULT\+\_\+\+STORAGE\+\_\+\+FILE)
+\item 
+\Hypertarget{classStorage__manager_a175232ebfb9c64e50f92b26f9cb65251}\label{classStorage__manager_a175232ebfb9c64e50f92b26f9cb65251} 
+std\+::optional$<$ Serialized $>$ {\bfseries get\+\_\+serialized} (std\+::string locator)
+\item 
+\Hypertarget{classStorage__manager_a4a2028176ce9fb00489eff9d609f6d2d}\label{classStorage__manager_a4a2028176ce9fb00489eff9d609f6d2d} 
+bool {\bfseries put\+\_\+serialized} (std\+::string locator, std\+::vector$<$ char $>$ value)
+\item 
+\Hypertarget{classStorage__manager_a3954a561d29ef7b3cae60f40b3e9874b}\label{classStorage__manager_a3954a561d29ef7b3cae60f40b3e9874b} 
+bool {\bfseries del} (std\+::string locator)
+\item 
+\Hypertarget{classStorage__manager_a0f0d978d375022a7619ca51ac5756597}\label{classStorage__manager_a0f0d978d375022a7619ca51ac5756597} 
+{\footnotesize template$<$typename Type $>$ }\\std\+::optional$<$ Type $>$ {\bfseries get} (std\+::string locator)
+\item 
+\Hypertarget{classStorage__manager_afdcbf72388c0f00b36cfb42b2c88d799}\label{classStorage__manager_afdcbf72388c0f00b36cfb42b2c88d799} 
+{\footnotesize template$<$typename Type $>$ }\\std\+::optional$<$ std\+::vector$<$ Type $>$ $>$ {\bfseries get\+\_\+vector} (std\+::string locator)
+\item 
+\Hypertarget{classStorage__manager_a9efc692cd25abd4b369d6cdf3f27e72c}\label{classStorage__manager_a9efc692cd25abd4b369d6cdf3f27e72c} 
+std\+::optional$<$ std\+::string $>$ {\bfseries get\+\_\+string} (std\+::string locator)
+\item 
+\Hypertarget{classStorage__manager_a9fafabdf543f5ffdf978743dcd76b6da}\label{classStorage__manager_a9fafabdf543f5ffdf978743dcd76b6da} 
+{\footnotesize template$<$typename Keytype , typename Valtype $>$ }\\std\+::optional$<$ std\+::unordered\+\_\+map$<$ Keytype, Valtype $>$ $>$ {\bfseries get\+\_\+map} (std\+::string locator)
+\item 
+\Hypertarget{classStorage__manager_a968dabbebc04aa5503a5db36573614d2}\label{classStorage__manager_a968dabbebc04aa5503a5db36573614d2} 
+{\footnotesize template$<$typename Type $>$ }\\bool {\bfseries put} (std\+::string locator, Type value)
+\item 
+\Hypertarget{classStorage__manager_aae624f4881871efae9f31f1dd8cbf4df}\label{classStorage__manager_aae624f4881871efae9f31f1dd8cbf4df} 
+bool {\bfseries put\+\_\+string} (std\+::string locator, std\+::string value)
+\item 
+\Hypertarget{classStorage__manager_add9e1bc97350f1772ac557c2c75fb575}\label{classStorage__manager_add9e1bc97350f1772ac557c2c75fb575} 
+{\footnotesize template$<$typename Type $>$ }\\bool {\bfseries put\+\_\+vector} (std\+::string locator, std\+::vector$<$ Type $>$ value)
+\item 
+\Hypertarget{classStorage__manager_a0f0c7ba3652461694bc5414d593285ab}\label{classStorage__manager_a0f0c7ba3652461694bc5414d593285ab} 
+{\footnotesize template$<$typename Keytype , typename Valtype $>$ }\\bool {\bfseries get\+\_\+map} (std\+::string locator, std\+::unordered\+\_\+map$<$ Keytype, Valtype $>$ value)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classStorage__manager_a37e05f13549dc9674ecfbd6abd15d8b3}\label{classStorage__manager_a37e05f13549dc9674ecfbd6abd15d8b3} 
+static \mbox{\hyperlink{classStorage__manager}{Storage\+\_\+manager}} \& {\bfseries get\+\_\+default} ()
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/Storage\+\_\+manager.\+hpp\end{DoxyCompactItemize}

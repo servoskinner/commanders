@@ -1,0 +1,67 @@
+\doxysection{TUI\+::UI\+\_\+\+Object Class Reference}
+\hypertarget{classTUI_1_1UI__Object}{}\label{classTUI_1_1UI__Object}\index{TUI::UI\_Object@{TUI::UI\_Object}}
+
+
+Abstract \doxylink{classTUI}{TUI} Object, multiple can be composed as children.  
+
+
+
+
+{\ttfamily \#include $<$TUI.\+hpp$>$}
+
+Inheritance diagram for TUI\+::UI\+\_\+\+Object\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.204725cm]{classTUI_1_1UI__Object}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_1_1UI__Object_aa6309279d5a7a8e221d7497d69200733}\label{classTUI_1_1UI__Object_aa6309279d5a7a8e221d7497d69200733} 
+{\bfseries UI\+\_\+\+Object} (int y=0, int x=0)
+\item 
+\Hypertarget{classTUI_1_1UI__Object_a9689dfdc79ecf9748d8e61f7dbe5d1b1}\label{classTUI_1_1UI__Object_a9689dfdc79ecf9748d8e61f7dbe5d1b1} 
+\mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \&other)=default
+\item 
+\Hypertarget{classTUI_1_1UI__Object_accd4f6eae1169ab5eaffc126e1404e8d}\label{classTUI_1_1UI__Object_accd4f6eae1169ab5eaffc126e1404e8d} 
+void {\bfseries draw} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_1_1UI__Object_a9cce36ab97780066bd74a6fe4651aad4}\label{classTUI_1_1UI__Object_a9cce36ab97780066bd74a6fe4651aad4} 
+int {\bfseries x} = 0
+\item 
+\Hypertarget{classTUI_1_1UI__Object_a365954ec577c8181ba17450f4cdfc322}\label{classTUI_1_1UI__Object_a365954ec577c8181ba17450f4cdfc322} 
+int {\bfseries y} = 0
+\item 
+\Hypertarget{classTUI_1_1UI__Object_abd0ed10deb87a6bca41509f40d79d610}\label{classTUI_1_1UI__Object_abd0ed10deb87a6bca41509f40d79d610} 
+bool {\bfseries use\+\_\+absolute\+\_\+position} = false
+\item 
+\Hypertarget{classTUI_1_1UI__Object_a6342caafa970bf320dee7718e591fee6}\label{classTUI_1_1UI__Object_a6342caafa970bf320dee7718e591fee6} 
+bool {\bfseries visible} = true
+\item 
+\Hypertarget{classTUI_1_1UI__Object_aa9cdba450dad77c6bbe53ceb0bcaa6fa}\label{classTUI_1_1UI__Object_aa9cdba450dad77c6bbe53ceb0bcaa6fa} 
+std\+::vector$<$ UIobj\+\_\+ref $>$ {\bfseries children} = \{\}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_1_1UI__Object_a684ab84d3b78d6d14154f2bcdaf5aa0b}\label{classTUI_1_1UI__Object_a684ab84d3b78d6d14154f2bcdaf5aa0b} 
+virtual void {\bfseries draw\+\_\+self} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_1_1UI__Object_a62f1c5ee96966f4a442329ca5510bbc7}\label{classTUI_1_1UI__Object_a62f1c5ee96966f4a442329ca5510bbc7} 
+\mbox{\hyperlink{classTUI}{TUI}} \& {\bfseries tui}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Abstract \doxylink{classTUI}{TUI} Object, multiple can be composed as children. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/TUI.\+hpp\end{DoxyCompactItemize}

@@ -1,0 +1,24 @@
+\doxysection{Deck.\+hpp}
+\hypertarget{Deck_8hpp_source}{}\label{Deck_8hpp_source}\index{logic/include/gameplay/Deck.hpp@{logic/include/gameplay/Deck.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}Game\_master.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <list>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Deck}{Game\_master::Deck}}}
+\DoxyCodeLine{00007\ \{}
+\DoxyCodeLine{00008\ \textcolor{keyword}{public}:\ \textcolor{comment}{//\ \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}}
+\DoxyCodeLine{00009\ \ \ \ \ \mbox{\hyperlink{classGame__master_1_1Deck}{Deck}}(\mbox{\hyperlink{classGame__master}{Game\_master}}\&\ master,\ \textcolor{keyword}{const}\ std::vector<int>\&\ deck\_image,\ \textcolor{keywordtype}{int}\ player\_id\ =\ -\/1);}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ std::list<Card>\ all;\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00012\ \ \ \ \ std::vector<Card\_ref>\ \mbox{\hyperlink{classGame__master_1_1Deck_a399c7bd0bebeb832c571e722e73bff3c}{junk}};\ \ \ \ }
+\DoxyCodeLine{00013\ \ \ \ \ std::vector<Card\_ref>\ \mbox{\hyperlink{classGame__master_1_1Deck_a6a0116683fcd4251f47d3879f8e247c9}{library}};\ }
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classGame__master_1_1Deck_a461d503e829ff8197d845acd593add03}{shuffle}}();\ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classGame__master_1_1Deck_a275f8ffc085a136e79662be720233d28}{refresh}}();\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{comment}{//\ bool\ mill(int\ n\_cards\ =\ 1);}}
+\DoxyCodeLine{00018\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,62 @@
+\doxysection{Card.\+hpp}
+\hypertarget{Card_8hpp_source}{}\label{Card_8hpp_source}\index{logic/include/gameplay/Card.hpp@{logic/include/gameplay/Card.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}Game\_master.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}Unique.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}Ability.hpp"{}}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Card}{Game\_master::Card}}}
+\DoxyCodeLine{00009\ \{}
+\DoxyCodeLine{00010\ \textcolor{keyword}{public}:\ \textcolor{comment}{//\ \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}}
+\DoxyCodeLine{00011\ \ \ \ \ \mbox{\hyperlink{classGame__master_1_1Card}{Card}}(\mbox{\hyperlink{classGame__master}{Game\_master}}\&\ master,\ Card\_id\ \textcolor{keywordtype}{id},\ \textcolor{keywordtype}{int}\ oid\ =\ -\/1);}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classGame__master_1_1Card_a51cd854946f1caba692b9c62a3cf21c9}{reset}}();}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{comment}{//\ Identification}}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ owner\_id;\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keyword}{const}\ Card\_id\ \mbox{\hyperlink{classGame__master_1_1Card_af156c315295cccb7c2712f0a4b26e4ff}{card\_id}};\ }
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classGame__master_1_1Card_ad4b403bc11444dec2c40cbb1af770fc4}{controller\_id}};\ }
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \mbox{\hyperlink{classUnique}{Unique}}\ \mbox{\hyperlink{classGame__master_1_1Card_a488e672b70ad1d74d4aa6237de4b0ed4}{entity\_id}};\ }
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ Card\_type\ \mbox{\hyperlink{classGame__master_1_1Card_a554ecaab37791f1dd3d2049120e615dc}{type}};}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{enum}\ Card\_status}
+\DoxyCodeLine{00024\ \ \ \ \ \{}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ CSTATUS\_UNDEFINED\ =\ -\/1,}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ CSTATUS\_LIBRARY\ =\ 0,}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ CSTATUS\_HAND\ =\ 1,}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ CSTATUS\_BATTLEFIELD\ =\ 2,}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ CSTATUS\_GRAVEYARD\ =\ 3}
+\DoxyCodeLine{00030\ \ \ \ \ \};}
+\DoxyCodeLine{00031\ \ \ \ \ Card\_status\ status;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \mbox{\hyperlink{structCommander_1_1Card__info}{Commander::Card\_info}}\ get\_info();}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{comment}{//\ Gameplay}}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{int}\ x,\ y;\ }
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classGame__master_1_1Card_ae1c8f0768906c6a1dd8d14a0135fc3a4}{cost}};\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classGame__master_1_1Card_a287134638afb3de613b9d9380c551a91}{value}};\ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classGame__master_1_1Card_a9dc89896ad683db3c957225342d8b33c}{advantage}};}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{//\ Status\ effects}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{bool}\ can\_attack;}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{bool}\ can\_move;}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{bool}\ is\_overwhelmed;}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ std::list<std::unique\_ptr<Ability>>\ abilities;}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{//\ Event\ triggers}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ Cause\ enters\_play;\ }
+\DoxyCodeLine{00049\ \ \ \ \ Cause\ \mbox{\hyperlink{classGame__master_1_1Card_a7626bb813bd96f165461455f52821fd5}{leaves\_play}};\ }
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ Cause\ \mbox{\hyperlink{classGame__master_1_1Card_a7efe7e7a1e4144e7388307c577562517}{before\_move}};\ }
+\DoxyCodeLine{00052\ \ \ \ \ Cause\ \mbox{\hyperlink{classGame__master_1_1Card_af2cc04f8cc88fad6feee5f417997d4c4}{after\_move}};\ }
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ Cause\ \mbox{\hyperlink{classGame__master_1_1Card_a91249d682aad9df31c9e359e9451967f}{before\_attack}};\ }
+\DoxyCodeLine{00055\ \ \ \ \ Cause\ \mbox{\hyperlink{classGame__master_1_1Card_a46237e65b6a121c9ba1224c310c6efeb}{after\_attack}};\ }
+\DoxyCodeLine{00056\ \ \ \ \ Cause\ \mbox{\hyperlink{classGame__master_1_1Card_a621cc08f3865bd5b0cf6c4f214a1cfe0}{before\_attacked}};\ }
+\DoxyCodeLine{00057\ \ \ \ \ Cause\ \mbox{\hyperlink{classGame__master_1_1Card_af934d2531938d9336b131b45fa93d050}{after\_attacked}};\ }
+\DoxyCodeLine{00058\ \};}
+
+\end{DoxyCode}

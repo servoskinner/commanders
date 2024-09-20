@@ -1,0 +1,79 @@
+\doxysection{Commander\+::Commander\+\_\+message Struct Reference}
+\hypertarget{structCommander_1_1Commander__message}{}\label{structCommander_1_1Commander__message}\index{Commander::Commander\_message@{Commander::Commander\_message}}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structCommander_1_1Commander__message_adcdfae7c8da39e082faa2674eb2fbc9e}\label{structCommander_1_1Commander__message_adcdfae7c8da39e082faa2674eb2fbc9e} 
+enum {\bfseries Order\+\_\+type} \{ \newline
+{\bfseries ORD\+\_\+\+DO\+\_\+\+NOTHING}
+, {\bfseries ORD\+\_\+\+PASS}
+, {\bfseries ORD\+\_\+\+SURRENDER}
+, {\bfseries ORD\+\_\+\+PLAY\+\_\+\+CARD}
+, \newline
+{\bfseries ORD\+\_\+\+MOVE}
+, {\bfseries ORD\+\_\+\+ATTACK}
+, {\bfseries ORD\+\_\+\+CHOICE}
+, {\bfseries ORD\+\_\+\+ABILITY}
+ \}
+\item 
+\Hypertarget{structCommander_1_1Commander__message_a00d6b5edeea8accfe1b7ff9b99ca0dd7}\label{structCommander_1_1Commander__message_a00d6b5edeea8accfe1b7ff9b99ca0dd7} 
+enum {\bfseries Order\+\_\+result} \{ \newline
+{\bfseries ORD\+\_\+\+SUCCESS}
+, {\bfseries ORD\+\_\+\+UNKNOWN}
+, {\bfseries ORD\+\_\+\+INVTYPE}
+, {\bfseries ORD\+\_\+\+INVARGS}
+, \newline
+{\bfseries ORD\+\_\+\+PERMISSION}
+, {\bfseries ORD\+\_\+\+NOSELECT}
+, {\bfseries ORD\+\_\+\+NOTARGET}
+, {\bfseries ORD\+\_\+\+EXHAUSTED}
+, \newline
+{\bfseries ORD\+\_\+\+NOFUNDS}
+ \}
+\item 
+\Hypertarget{structCommander_1_1Commander__message_ab1da04eaf54382c40da8ee62d54c74e4}\label{structCommander_1_1Commander__message_ab1da04eaf54382c40da8ee62d54c74e4} 
+enum {\bfseries Event\+\_\+type} \{ \newline
+{\bfseries EV\+\_\+\+DUMMY}
+, {\bfseries EV\+\_\+\+ORDER\+\_\+\+FEEDBACK}
+, {\bfseries EV\+\_\+\+GAME\+\_\+\+WON\+\_\+\+BY}
+, {\bfseries EV\+\_\+\+TURN\+\_\+\+PASSED\+\_\+\+TO}
+, \newline
+{\bfseries EV\+\_\+\+PLAYER\+\_\+\+DEPLOYS}
+, {\bfseries EV\+\_\+\+CARD\+\_\+\+MOVED}
+, {\bfseries EV\+\_\+\+CARD\+\_\+\+ATTACKS}
+, {\bfseries EV\+\_\+\+CARD\+\_\+\+DESTROYED}
+, \newline
+{\bfseries EV\+\_\+\+PLAYER\+\_\+\+DRAWS}
+, {\bfseries EV\+\_\+\+PLAYER\+\_\+\+DISCARDS}
+, {\bfseries EV\+\_\+\+DECK\+\_\+\+REFRESH}
+, {\bfseries EV\+\_\+\+DECK\+\_\+\+NOREFRESH}
+, \newline
+{\bfseries EV\+\_\+\+CHOICE\+\_\+\+PROMPT}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structCommander_1_1Commander__message_ac619deb69a372b346c255a38188a52e9}\label{structCommander_1_1Commander__message_ac619deb69a372b346c255a38188a52e9} 
+{\bfseries Commander\+\_\+message} (unsigned short type, std\+::vector$<$ int $>$ data)
+\item 
+\Hypertarget{structCommander_1_1Commander__message_a058ac8a50061cfa2b2e6d9708e1e6508}\label{structCommander_1_1Commander__message_a058ac8a50061cfa2b2e6d9708e1e6508} 
+const std\+::vector$<$ char $>$ {\bfseries packed} ()
+\item 
+\Hypertarget{structCommander_1_1Commander__message_a2272ecb900879a04ecec0c670250c270}\label{structCommander_1_1Commander__message_a2272ecb900879a04ecec0c670250c270} 
+{\bfseries Commander\+\_\+message} (const std\+::vector$<$ char $>$ \&packed)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structCommander_1_1Commander__message_ac8d273449fbf9a4f4731e9c5d7cb6c88}\label{structCommander_1_1Commander__message_ac8d273449fbf9a4f4731e9c5d7cb6c88} 
+unsigned short {\bfseries type}
+\item 
+\Hypertarget{structCommander_1_1Commander__message_a4f6f212d6c86358f67f1043d7f79d8ab}\label{structCommander_1_1Commander__message_a4f6f212d6c86358f67f1043d7f79d8ab} 
+std\+::vector$<$ int $>$ {\bfseries data}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/interaction/Commander.\+hpp\end{DoxyCompactItemize}

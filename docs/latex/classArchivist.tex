@@ -1,0 +1,92 @@
+\doxysection{Archivist Class Reference}
+\hypertarget{classArchivist}{}\label{classArchivist}\index{Archivist@{Archivist}}
+
+
+Manages long-\/term variable storage by writing and reading key-\/value pairs from a file.  
+
+
+
+
+{\ttfamily \#include $<$Archivist.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classArchivist_a50f4a2eaa030daaf3900463a2a4b0e5f}\label{classArchivist_a50f4a2eaa030daaf3900463a2a4b0e5f} 
+{\bfseries Archivist} (std\+::string storage\+\_\+file=DEFAULT\+\_\+\+STORAGE\+\_\+\+FILE)
+\item 
+\Hypertarget{classArchivist_a2655517c2e455f94ba5bca02a3a66f56}\label{classArchivist_a2655517c2e455f94ba5bca02a3a66f56} 
+std\+::optional$<$ Serialized $>$ {\bfseries get\+\_\+serialized} (std\+::string locator)
+\begin{DoxyCompactList}\small\item\em Retreives serialized data marked with given Locator. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classArchivist_ae74091daf5a9eb22e76a7b971bb70380}{put\+\_\+serialized}} (std\+::string locator, std\+::vector$<$ char $>$ value)
+\begin{DoxyCompactList}\small\item\em Creates or overwrites an entry with given Locator. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classArchivist_acd2444e8508b222ce37e739d8a6b11e7}{del}} (std\+::string locator)
+\begin{DoxyCompactList}\small\item\em Deletes data marked with given Locator. \end{DoxyCompactList}\item 
+\Hypertarget{classArchivist_aa9cb014e15210cf328c2eab522b8aab6}\label{classArchivist_aa9cb014e15210cf328c2eab522b8aab6} 
+{\footnotesize template$<$typename Type $>$ }\\std\+::optional$<$ Type $>$ {\bfseries get} (std\+::string locator)
+\item 
+\Hypertarget{classArchivist_acba7d4de1f670c5a971668b7bd497966}\label{classArchivist_acba7d4de1f670c5a971668b7bd497966} 
+{\footnotesize template$<$typename Type $>$ }\\std\+::optional$<$ std\+::vector$<$ Type $>$ $>$ {\bfseries get\+\_\+vector} (std\+::string locator)
+\item 
+\Hypertarget{classArchivist_a7c854e94bdbcc9e6d6dd0f26414739ab}\label{classArchivist_a7c854e94bdbcc9e6d6dd0f26414739ab} 
+std\+::optional$<$ std\+::string $>$ {\bfseries get\+\_\+string} (std\+::string locator)
+\item 
+\Hypertarget{classArchivist_a4a98cc84b7e5d918f4ad0881d0a8d094}\label{classArchivist_a4a98cc84b7e5d918f4ad0881d0a8d094} 
+{\footnotesize template$<$typename Keytype , typename Valtype $>$ }\\std\+::optional$<$ std\+::unordered\+\_\+map$<$ Keytype, Valtype $>$ $>$ {\bfseries get\+\_\+map} (std\+::string locator)
+\item 
+\Hypertarget{classArchivist_ac2b37884342918665b1a5c869c5a2d4e}\label{classArchivist_ac2b37884342918665b1a5c869c5a2d4e} 
+{\footnotesize template$<$typename Type $>$ }\\bool {\bfseries put} (std\+::string locator, Type value)
+\item 
+\Hypertarget{classArchivist_a644d66ab067b6e18ba67f997cea6135a}\label{classArchivist_a644d66ab067b6e18ba67f997cea6135a} 
+bool {\bfseries put\+\_\+string} (std\+::string locator, std\+::string value)
+\item 
+\Hypertarget{classArchivist_a5fe8731b5ab263bd15bb21f52b781161}\label{classArchivist_a5fe8731b5ab263bd15bb21f52b781161} 
+{\footnotesize template$<$typename Type $>$ }\\bool {\bfseries put\+\_\+vector} (std\+::string locator, std\+::vector$<$ Type $>$ value)
+\item 
+\Hypertarget{classArchivist_a27f4cac45ea480aff0d2151feb600c80}\label{classArchivist_a27f4cac45ea480aff0d2151feb600c80} 
+{\footnotesize template$<$typename Keytype , typename Valtype $>$ }\\bool {\bfseries get\+\_\+map} (std\+::string locator, std\+::unordered\+\_\+map$<$ Keytype, Valtype $>$ value)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classArchivist_a7d2636f9d9c5d1859d81e4915e5783fb}\label{classArchivist_a7d2636f9d9c5d1859d81e4915e5783fb} 
+static \mbox{\hyperlink{classArchivist}{Archivist}} \& {\bfseries get\+\_\+default} ()
+\begin{DoxyCompactList}\small\item\em Gets the global \doxylink{classArchivist}{Archivist} instance to store data used by multiple modules. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Manages long-\/term variable storage by writing and reading key-\/value pairs from a file. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classArchivist_acd2444e8508b222ce37e739d8a6b11e7}\index{Archivist@{Archivist}!del@{del}}
+\index{del@{del}!Archivist@{Archivist}}
+\doxysubsubsection{\texorpdfstring{del()}{del()}}
+{\footnotesize\ttfamily \label{classArchivist_acd2444e8508b222ce37e739d8a6b11e7} 
+bool Archivist\+::del (\begin{DoxyParamCaption}\item[{std\+::string}]{locator}{}\end{DoxyParamCaption})}
+
+
+
+Deletes data marked with given Locator. 
+
+\begin{DoxyReturn}{Returns}
+~\newline
+ 
+\end{DoxyReturn}
+\Hypertarget{classArchivist_ae74091daf5a9eb22e76a7b971bb70380}\index{Archivist@{Archivist}!put\_serialized@{put\_serialized}}
+\index{put\_serialized@{put\_serialized}!Archivist@{Archivist}}
+\doxysubsubsection{\texorpdfstring{put\_serialized()}{put\_serialized()}}
+{\footnotesize\ttfamily \label{classArchivist_ae74091daf5a9eb22e76a7b971bb70380} 
+bool Archivist\+::put\+\_\+serialized (\begin{DoxyParamCaption}\item[{std\+::string}]{locator}{, }\item[{std\+::vector$<$ char $>$}]{value}{}\end{DoxyParamCaption})}
+
+
+
+Creates or overwrites an entry with given Locator. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/Archivist.\+hpp\end{DoxyCompactItemize}

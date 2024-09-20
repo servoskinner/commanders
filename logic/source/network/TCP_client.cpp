@@ -1,4 +1,5 @@
-#include "Socket_wrappers.hpp"
+#include "Network.hpp"
+#include "TCP_client.hpp"
 
 TCP_client::TCP_client() : is_polling(false)
 {

@@ -1,0 +1,114 @@
+\doxysection{Crazy\+\_\+box Class Reference}
+\hypertarget{classCrazy__box}{}\label{classCrazy__box}\index{Crazy\_box@{Crazy\_box}}
+
+
+Box with text moving around its contour.  
+
+
+
+
+{\ttfamily \#include $<$Animations.\+hpp$>$}
+
+Inheritance diagram for Crazy\+\_\+box\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classCrazy__box}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classCrazy__box_a32e61b78d997b0fcd34a59cebf725294}\label{classCrazy__box_a32e61b78d997b0fcd34a59cebf725294} 
+{\bfseries Crazy\+\_\+box} (float delay=0.\+1)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classAnimated}{Animated}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Animated} (float period, std\+::function$<$ void(void)$>$ on\+\_\+tick)
+\item 
+float {\bfseries get\+\_\+period} ()
+\item 
+void {\bfseries set\+\_\+period} (float period)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries UI\+\_\+\+Object} (int y=0, int x=0)
+\item 
+\mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \&other)=default
+\item 
+void {\bfseries draw} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classCrazy__box_a805ebe40102c2260508ed919010093e4}\label{classCrazy__box_a805ebe40102c2260508ed919010093e4} 
+std\+::string {\bfseries text}
+\item 
+\Hypertarget{classCrazy__box_a8cdfc250ec1bd875d5a76775979050b0}\label{classCrazy__box_a8cdfc250ec1bd875d5a76775979050b0} 
+unsigned {\bfseries text\+\_\+color} = 0
+\item 
+\Hypertarget{classCrazy__box_aa8279c28e3b4a7b0f992c349f056817e}\label{classCrazy__box_aa8279c28e3b4a7b0f992c349f056817e} 
+\mbox{\hyperlink{classTUI_1_1Rect}{TUI\+::\+Rect}} {\bfseries rect}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+int {\bfseries x} = 0
+\item 
+int {\bfseries y} = 0
+\item 
+bool {\bfseries use\+\_\+absolute\+\_\+position} = false
+\item 
+bool {\bfseries visible} = true
+\item 
+std\+::vector$<$ UIobj\+\_\+ref $>$ {\bfseries children} = \{\}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classCrazy__box_aedb111aee6098a71967a5313b1fa0047}\label{classCrazy__box_aedb111aee6098a71967a5313b1fa0047} 
+void {\bfseries tick} ()
+\item 
+\Hypertarget{classCrazy__box_ac713900a0d22cf90387a509e1b42ae5c}\label{classCrazy__box_ac713900a0d22cf90387a509e1b42ae5c} 
+std\+::pair$<$ int, int $>$ {\bfseries position\+\_\+character} (int position)
+\item 
+void \mbox{\hyperlink{classCrazy__box_a3fdd1cb5f9bed9ae1d598e7dc2244aa4}{draw\+\_\+self}} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0) override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classCrazy__box_a4c520897ee43c968417e095edf02d394}\label{classCrazy__box_a4c520897ee43c968417e095edf02d394} 
+int {\bfseries offset} = 0
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classAnimated}{Animated}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTimer}{Timer}} {\bfseries timer}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTUI}{TUI}} \& {\bfseries tui}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Box with text moving around its contour. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classCrazy__box_a3fdd1cb5f9bed9ae1d598e7dc2244aa4}\index{Crazy\_box@{Crazy\_box}!draw\_self@{draw\_self}}
+\index{draw\_self@{draw\_self}!Crazy\_box@{Crazy\_box}}
+\doxysubsubsection{\texorpdfstring{draw\_self()}{draw\_self()}}
+{\footnotesize\ttfamily \label{classCrazy__box_a3fdd1cb5f9bed9ae1d598e7dc2244aa4} 
+void Crazy\+\_\+box\+::draw\+\_\+self (\begin{DoxyParamCaption}\item[{unsigned}]{input}{ = {\ttfamily 0}, }\item[{int}]{orig\+\_\+y}{ = {\ttfamily 0}, }\item[{int}]{orig\+\_\+x}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classAnimated}{Animated}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/Animations.\+hpp\end{DoxyCompactItemize}

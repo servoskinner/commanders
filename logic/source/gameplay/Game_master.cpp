@@ -360,9 +360,9 @@ int Game_master::exec_order(int player_id, const Commander::Order& order)
     }
 }
 
-void Game_master::fire_trigger(Trigger& trigger, std::vector<int> args = {}) 
+void Game_master::fire_trigger(Cause& trigger, std::vector<int> args = {}) 
 {
-    for (std::pair<int, Reaction> bound : trigger) {
+    for (std::pair<int, Effect> bound : trigger) {
         bound.second(args);
     }
 }
@@ -515,7 +515,7 @@ void Game_master::resolve_destruction(Card& card)
 
     // Send to discard
     card.status = Card::CSTATUS_GRAVEYARD;
-    decks[card.owner_id].graveyard.push_back(std::ref(card));
+    decks[card.owner_id].junk.push_back(std::ref(card));
 
     // Restore default power and linked triggers
     card.reset();
@@ -677,7 +677,7 @@ bool Game_master::resolve_draw(int player_id)
 
     if(player.deck.get().library.size() == 0) {
         // Library is empty, refill it by shuffling graveyard
-        if(player.deck.get().graveyard.size() == 0) {
+        if(player.deck.get().junk.size() == 0) {
             // Graveyard is empty (everything is in hand or on battlefield?) -- draw is not resolved
             return false;
         }
@@ -725,7 +725,7 @@ bool Game_master::discard(int player_id, int hand_index)
 
     int discarded_entity_id = (int)players[player_id].hand[hand_index].get().entity_id.get_id();
 
-    decks[player_id].graveyard.push_back(players[player_id].hand[hand_index]);
+    decks[player_id].junk.push_back(players[player_id].hand[hand_index]);
     players[player_id].hand[hand_index].get().status = Card::CSTATUS_GRAVEYARD;
     pop_index(players[player_id].hand, hand_index);
 

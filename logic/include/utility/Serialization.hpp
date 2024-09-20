@@ -6,12 +6,10 @@
 #include <utility>
 #include <cstdlib>
 
-
+/// @brief Raw data suitable for network transfer or writing to file.
 typedef std::vector<char> Serialized;
 
-/**
- * @brief Packs a fixed-size structure into a byte vector to be sent as a message.
- */
+/// @brief Packs a fixed-size struct into a byte vector.
 template <typename Type>
 Serialized serialize(const Type& object)
 {
@@ -24,6 +22,7 @@ inline std::vector<char> serialize_string(std::string str) {
     return std::vector<char>(str.begin(), str.end());
 }
 
+/// @brief Packs a vector of fixed-size structs or primitive types into a byte vector.
 template <typename Type>
 Serialized serialize_vector(std::vector<Type> vector)
 {
@@ -35,6 +34,7 @@ Serialized serialize_vector(std::vector<Type> vector)
     return serialized;
 }
 
+/// @brief Packs a map with fixed-size keys and values into a byte vector.
 template <typename Keytype, typename Valtype>
 Serialized serialize_map(std::unordered_map<Keytype, Valtype> map)
 {
@@ -49,9 +49,7 @@ Serialized serialize_map(std::unordered_map<Keytype, Valtype> map)
     return serialized;
 }
 
-/**
- * @brief Creates a fixed-size structure out of a byte vector received over network.
- */
+/// @brief Restores a fixed-size struct from a byte vector.
 template <typename Type>
 Type deserialize(Serialized serialized)
 {
@@ -63,10 +61,12 @@ Type deserialize(Serialized serialized)
     return new_obj;
 }
 
+/// @brief Restores a string from a byte vector by casting it to another type, duh.
 inline std::string deserialize_string(Serialized serialized) {
-    return std::string(serialized.begin(), serialized.end());
+    return std::string(serialized.data());
 }
 
+/// @brief Restores a vector of fixed-size structs or primitive types from a byte vector.
 template <typename Type>
 std::vector<Type> deserialize_vector(Serialized serialized)
 {
@@ -82,6 +82,7 @@ std::vector<Type> deserialize_vector(Serialized serialized)
     return vector;
 }
 
+/// @brief Restores a map with fixed-size keys and values from a byte vector
 template <typename Keytype, typename Valtype>
 std::unordered_map<Keytype, Valtype> deserialize_map(Serialized serialized)
 {

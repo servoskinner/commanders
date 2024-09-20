@@ -1,0 +1,64 @@
+\doxysection{Proxy\+\_\+commander Class Reference}
+\hypertarget{classProxy__commander}{}\label{classProxy__commander}\index{Proxy\_commander@{Proxy\_commander}}
+Inheritance diagram for Proxy\+\_\+commander\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classProxy__commander}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classProxy__commander_a9dd50ea5b275ebbddb0f48f482ecff9c}\label{classProxy__commander_a9dd50ea5b275ebbddb0f48f482ecff9c} 
+bool {\bfseries queue\+\_\+order} (\mbox{\hyperlink{structCommander_1_1Commander__message}{Order}} order)
+\item 
+void \mbox{\hyperlink{classProxy__commander_a73da45fd9e5b54fecc55d5c90698fb88}{process\+\_\+event}} (\mbox{\hyperlink{structCommander_1_1Commander__message}{Event}} event) override
+\item 
+void \mbox{\hyperlink{classProxy__commander_a318b06a592ae97897620ca8ca5f9d17a}{process\+\_\+order\+\_\+feedback}} (int code) override
+\item 
+std\+::optional$<$ \mbox{\hyperlink{structCommander_1_1Commander__message}{Order}} $>$ \mbox{\hyperlink{classProxy__commander_af5b39698a1182b21f788322abdd83dcf}{get\+\_\+order}} () override
+\item 
+\Hypertarget{classProxy__commander_a42b0c2eef7730d0a4f8a51242b963a87}\label{classProxy__commander_a42b0c2eef7730d0a4f8a51242b963a87} 
+std\+::optional$<$ \mbox{\hyperlink{structCommander_1_1Commander__message}{Event}} $>$ {\bfseries get\+\_\+event} ()
+\item 
+\Hypertarget{classProxy__commander_a5837a5cdb477b0c9668ee78eeda2cf8a}\label{classProxy__commander_a5837a5cdb477b0c9668ee78eeda2cf8a} 
+int {\bfseries events\+\_\+size} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classProxy__commander_af5b39698a1182b21f788322abdd83dcf}\index{Proxy\_commander@{Proxy\_commander}!get\_order@{get\_order}}
+\index{get\_order@{get\_order}!Proxy\_commander@{Proxy\_commander}}
+\doxysubsubsection{\texorpdfstring{get\_order()}{get\_order()}}
+{\footnotesize\ttfamily \label{classProxy__commander_af5b39698a1182b21f788322abdd83dcf} 
+std\+::optional$<$ \mbox{\hyperlink{structCommander_1_1Commander__message}{Order}} $>$ Proxy\+\_\+commander\+::get\+\_\+order (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCommander}{Commander}}.
+
+\Hypertarget{classProxy__commander_a73da45fd9e5b54fecc55d5c90698fb88}\index{Proxy\_commander@{Proxy\_commander}!process\_event@{process\_event}}
+\index{process\_event@{process\_event}!Proxy\_commander@{Proxy\_commander}}
+\doxysubsubsection{\texorpdfstring{process\_event()}{process\_event()}}
+{\footnotesize\ttfamily \label{classProxy__commander_a73da45fd9e5b54fecc55d5c90698fb88} 
+void Proxy\+\_\+commander\+::process\+\_\+event (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structCommander_1_1Commander__message}{Event}}}]{event}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCommander}{Commander}}.
+
+\Hypertarget{classProxy__commander_a318b06a592ae97897620ca8ca5f9d17a}\index{Proxy\_commander@{Proxy\_commander}!process\_order\_feedback@{process\_order\_feedback}}
+\index{process\_order\_feedback@{process\_order\_feedback}!Proxy\_commander@{Proxy\_commander}}
+\doxysubsubsection{\texorpdfstring{process\_order\_feedback()}{process\_order\_feedback()}}
+{\footnotesize\ttfamily \label{classProxy__commander_a318b06a592ae97897620ca8ca5f9d17a} 
+void Proxy\+\_\+commander\+::process\+\_\+order\+\_\+feedback (\begin{DoxyParamCaption}\item[{int}]{code}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCommander}{Commander}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/interaction/Proxy\+\_\+commander.\+hpp\end{DoxyCompactItemize}

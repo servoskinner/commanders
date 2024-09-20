@@ -1,0 +1,41 @@
+\doxysection{Event\+\_\+timer.\+hpp}
+\hypertarget{Event__timer_8hpp_source}{}\label{Event__timer_8hpp_source}\index{logic/include/utility/Event\_timer.hpp@{logic/include/utility/Event\_timer.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classEvent__timer}{Event\_timer}}}
+\DoxyCodeLine{00010\ \{}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ get\_cur\_time\_s();}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{float}\ prev\_time,\ delta\_time;}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00016\ \ \ \ \ \mbox{\hyperlink{classEvent__timer}{Event\_timer}}()\ :\ events(),\ delta\_time(0),\ \(\backslash\)}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prev\_time(get\_cur\_time\_s()),\ skip\_stalled(\textcolor{keyword}{true})\ \{\}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structEvent__timer_1_1Timed__event}{Timed\_event}}}
+\DoxyCodeLine{00020\ \ \ \ \ \{}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ std::function<void(\textcolor{keywordtype}{void})>\ \textcolor{keyword}{event}\ =\ \{\};}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ std::optional<std::reference\_wrapper<std::mutex>>\ mutex;}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ t\_seconds\ =\ 0.0;}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ countdown\ =\ 0.0;}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\_repeat\ =\ -\/1;}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structEvent__timer_1_1Timed__event}{Timed\_event}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{void})>\ event,\ \textcolor{keywordtype}{float}\ t\_seconds,\ \textcolor{keywordtype}{int}\ n\_repeat\ =\ -\/1)\ :\ event(event),\ t\_seconds(t\_seconds),\ \(\backslash\)}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ countdown(t\_seconds),\ mutex(),}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n\_repeat(n\_repeat)\ \{\}}
+\DoxyCodeLine{00030\ \ \ \ \ \};}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{void}\ process();}
+\DoxyCodeLine{00033\ \ \ \ \ std::vector<Timed\_event>\ events;}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{bool}\ skip\_stalled;}
+\DoxyCodeLine{00035\ \};}
+
+\end{DoxyCode}

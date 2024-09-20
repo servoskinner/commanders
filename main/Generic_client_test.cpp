@@ -1,4 +1,6 @@
-#include "Socket_wrappers.hpp"
+#include "Network.hpp"
+#include "UDP_peer.hpp"
+#include "TCP_client.hpp"
 #include "Serialization.hpp"
 
 #include <iostream>
@@ -11,8 +13,9 @@ int main()
     std::cout << "Enter client port: " << std::flush;
     std::cin >> client_port;
 
-    UDP_wrapper discovery_socket(client_port);
+    UDP_peer discovery_socket(client_port);
     TCP_client client_socket;
+    client_socket.handshake_timeout_ms = 1000;
 
     std::string incoming_message; 
     std::vector<Socket_info> discovered_servers = {};
@@ -36,7 +39,7 @@ int main()
 
             if (discovery_ans.msg[1] == ICTRL_CONNECTION_REQUEST) {
                 Socket_info request_socket = {(u_short)(discovery_ans.sender.port+1), "127.0.0.1"};
-                if (!client_socket.connect_to(request_socket)) {
+                if (!client_socket.connect_to(request_socket, 2, 10)) {
                     std::cout << "failed to connect" << std::endl;
                 }
             }

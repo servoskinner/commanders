@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Misc_functions.hpp"
-#include "Socket_wrappers.hpp"
+#include "TCP_server.hpp"
+#include "UDP_peer.hpp"
 #include "Commander.hpp"
 
 #include <queue>
@@ -50,7 +51,7 @@ class Client
     void handle_control_message(Socket_inbound_message msg);
     void manage_upkeep();
 
-    UDP_wrapper client_socket;
+    UDP_peer client_socket;
     std::optional<Socket_info> connection;
     int connection_upkeep;
     std::vector<Server_list_entry> discovered_servers;

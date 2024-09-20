@@ -1,0 +1,77 @@
+\doxysection{TUI\+::Sprite Class Reference}
+\hypertarget{classTUI_1_1Sprite}{}\label{classTUI_1_1Sprite}\index{TUI::Sprite@{TUI::Sprite}}
+
+
+A drawable patch of individually adjustable Glyphs.  
+
+
+
+
+{\ttfamily \#include $<$TUI.\+hpp$>$}
+
+Inheritance diagram for TUI\+::Sprite\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classTUI_1_1Sprite}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_1_1Sprite_a4cfafe78612e0e9e10284d18ab5521c5}\label{classTUI_1_1Sprite_a4cfafe78612e0e9e10284d18ab5521c5} 
+{\bfseries Sprite} (int height, int width, int y=0, int x=0)
+\item 
+\Hypertarget{classTUI_1_1Sprite_ad8ce840daca61793fd4248359749a863}\label{classTUI_1_1Sprite_ad8ce840daca61793fd4248359749a863} 
+\mbox{\hyperlink{classTUI_1_1Sprite}{Sprite}} \& {\bfseries operator=} (\mbox{\hyperlink{classTUI_1_1Sprite}{Sprite}} \&other)
+\item 
+\Hypertarget{classTUI_1_1Sprite_a3eddb95be8c8fb18a242f9cd2d862a72}\label{classTUI_1_1Sprite_a3eddb95be8c8fb18a242f9cd2d862a72} 
+{\bfseries Sprite} (const \mbox{\hyperlink{classTUI_1_1Sprite}{Sprite}} \&other)=default
+\item 
+\Hypertarget{classTUI_1_1Sprite_af037efef828777036d81a0db6ef0b05d}\label{classTUI_1_1Sprite_af037efef828777036d81a0db6ef0b05d} 
+std\+::pair$<$ int, int $>$ {\bfseries get\+\_\+size} ()
+\item 
+\Hypertarget{classTUI_1_1Sprite_a435033b89b149bbcd138b3d6912344f9}\label{classTUI_1_1Sprite_a435033b89b149bbcd138b3d6912344f9} 
+\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} {\bfseries get\+\_\+glyph} (int y, int x)
+\item 
+\Hypertarget{classTUI_1_1Sprite_aab2896ff4fb6ebe2a8c43d1e0276ff9d}\label{classTUI_1_1Sprite_aab2896ff4fb6ebe2a8c43d1e0276ff9d} 
+void {\bfseries set\+\_\+glyph} (int y, int x, \mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} glyph)
+\item 
+\Hypertarget{classTUI_1_1Sprite_a4e4375e0620d81ac77b2a5eee0a296f4}\label{classTUI_1_1Sprite_a4e4375e0620d81ac77b2a5eee0a296f4} 
+void {\bfseries set\+\_\+all} (\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} glyph)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries UI\+\_\+\+Object} (int y=0, int x=0)
+\item 
+\mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \&other)=default
+\item 
+void {\bfseries draw} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+int {\bfseries x} = 0
+\item 
+int {\bfseries y} = 0
+\item 
+bool {\bfseries use\+\_\+absolute\+\_\+position} = false
+\item 
+bool {\bfseries visible} = true
+\item 
+std\+::vector$<$ UIobj\+\_\+ref $>$ {\bfseries children} = \{\}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTUI}{TUI}} \& {\bfseries tui}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A drawable patch of individually adjustable Glyphs. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/TUI.\+hpp\end{DoxyCompactItemize}

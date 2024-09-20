@@ -1,0 +1,60 @@
+\doxysection{Server.\+hpp}
+\hypertarget{Server_8hpp_source}{}\label{Server_8hpp_source}\index{logic/include/interaction/Server.hpp@{logic/include/interaction/Server.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <queue>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}UDP\_peer.hpp"{}}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}TCP\_client.hpp"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}Game\_master.hpp"{}}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}Proxy\_commander.hpp"{}}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}Misc\_functions.hpp"{}}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#define\ SERVER\_PORT\ 9898}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#define\ CLIENT\_UPKEEP\_COUNTDOWN\ 4}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#define\ CLIENT\_UPKEEP\_DELAY\_MS\ 100}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classServer}{Server}}}
+\DoxyCodeLine{00019\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00021\ \ \ \ \ \mbox{\hyperlink{classServer}{Server}}(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ port\ =\ SERVER\_PORT)\ :\ discovery\_socket(port)\ \{\};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{void}\ process\_messages();}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ process\_timers();}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ std::vector<Socket\_info>\ get\_peers();}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{void}\ force\_disconnect(\mbox{\hyperlink{structSocket__info}{Socket\_info}}\ peer);}
+\DoxyCodeLine{00029\ \ \ \ \ }
+\DoxyCodeLine{00030\ \ \ \ \ std::string\ description;}
+\DoxyCodeLine{00031\ \ \ \ \ \mbox{\hyperlink{structServer__info}{Server\_info}}\ get\_info();}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{struct\ }Client\_slot}
+\DoxyCodeLine{00035\ \ \ \ \ \{}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structSocket__info}{Socket\_info}}\ sock\_info;}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ std::string\ name;}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ std::optional<std::reference\_wrapper<Proxy\_commander>>\ commander;}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ std::vector<std::vector<int>>\ deck\_image;}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ upkeep;}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ Client\_slot\&\ other)\ \{\ \textcolor{keywordflow}{return}\ sock\_info\ ==\ other.sock\_info;\}}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structSocket__info}{Socket\_info}}\&\ other)\ \{\textcolor{keywordflow}{return}\ sock\_info\ ==\ other;\}}
+\DoxyCodeLine{00044\ \ \ \ \ \};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ std::vector<std::optional<Client\_slot>>\ client\_slots;}
+\DoxyCodeLine{00047\ \ \ \ \ std::vector<Proxy\_commander>\ commanders;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \mbox{\hyperlink{classUDP__peer}{UDP\_peer}}\ discovery\_socket;}
+\DoxyCodeLine{00050\ \ \ \ \ std::optional<Game\_master>\ master;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ std::vector<char>\ pack\_commander\_data(\textcolor{keywordtype}{int}\ index);}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{void}\ manage\_upkeep();}
+\DoxyCodeLine{00054\ \};}
+
+\end{DoxyCode}

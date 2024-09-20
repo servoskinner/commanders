@@ -1,0 +1,31 @@
+\doxysection{Game\+\_\+master\+::Deck Class Reference}
+\hypertarget{classGame__master_1_1Deck}{}\label{classGame__master_1_1Deck}\index{Game\_master::Deck@{Game\_master::Deck}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_1_1Deck_ae52ba025661d6785e8080f8283e9f3d8}\label{classGame__master_1_1Deck_ae52ba025661d6785e8080f8283e9f3d8} 
+{\bfseries Deck} (\mbox{\hyperlink{classGame__master}{Game\+\_\+master}} \&master, const std\+::vector$<$ int $>$ \&deck\+\_\+image, int player\+\_\+id=-\/1)
+\item 
+\Hypertarget{classGame__master_1_1Deck_a461d503e829ff8197d845acd593add03}\label{classGame__master_1_1Deck_a461d503e829ff8197d845acd593add03} 
+void {\bfseries shuffle} ()
+\begin{DoxyCompactList}\small\item\em Cards that can be drawn. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Deck_a275f8ffc085a136e79662be720233d28}\label{classGame__master_1_1Deck_a275f8ffc085a136e79662be720233d28} 
+void {\bfseries refresh} ()
+\begin{DoxyCompactList}\small\item\em Randomizes the order of cards in library. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_1_1Deck_a09c21591934a808c6a7d18d6a09e4263}\label{classGame__master_1_1Deck_a09c21591934a808c6a7d18d6a09e4263} 
+std\+::list$<$ \mbox{\hyperlink{classGame__master_1_1Card}{Card}} $>$ {\bfseries all}
+\item 
+\Hypertarget{classGame__master_1_1Deck_a399c7bd0bebeb832c571e722e73bff3c}\label{classGame__master_1_1Deck_a399c7bd0bebeb832c571e722e73bff3c} 
+std\+::vector$<$ Card\+\_\+ref $>$ {\bfseries junk}
+\begin{DoxyCompactList}\small\item\em All cards associated with this deck. Original cards are stored here. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Deck_a6a0116683fcd4251f47d3879f8e247c9}\label{classGame__master_1_1Deck_a6a0116683fcd4251f47d3879f8e247c9} 
+std\+::vector$<$ Card\+\_\+ref $>$ {\bfseries library}
+\begin{DoxyCompactList}\small\item\em Cards that have been removed after being put into play. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/gameplay/Deck.\+hpp\end{DoxyCompactItemize}

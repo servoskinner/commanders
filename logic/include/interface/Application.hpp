@@ -18,7 +18,7 @@ class Application {
     Focus focus_main_menu = {global_fspace};
     Focus focus_game = {global_fspace};
 
-    Event_timer animation_timer;
+    Timer animation_timer;
 
     int main_menu_selection;
 

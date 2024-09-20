@@ -1,6 +1,7 @@
-#include "Socket_wrappers.hpp"
+#include "Network.hpp"
+#include "UDP_wrapper.hpp"
 
-UDP_wrapper::UDP_wrapper(u_short port)
+UDP_peer::UDP_peer(u_short port)
 {
     socket_fdesc = socket(AF_INET, SOCK_DGRAM, 0);
     if(socket_fdesc < 0)
@@ -34,7 +35,7 @@ UDP_wrapper::UDP_wrapper(u_short port)
     }
 } 
 
-const bool UDP_wrapper::send_to(const Socket_info& dest, const std::vector<char>& msg)
+const bool UDP_peer::send_to(const Socket_info& dest, const std::vector<char>& msg)
 {
     char buffer[SOCKET_BUFFER_SIZE];
     std::copy(msg.begin(), msg.end(), buffer);
@@ -50,7 +51,7 @@ const bool UDP_wrapper::send_to(const Socket_info& dest, const std::vector<char>
     return bytes_sent == msg.size();
 }
 
-const Socket_inbound_message UDP_wrapper::get_message()
+const Socket_inbound_message UDP_peer::get_message()
 {
     sockaddr_in inbound_addr;
     socklen_t inbound_addr_len = sizeof(inbound_addr);

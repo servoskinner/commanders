@@ -1,0 +1,110 @@
+\doxysection{TUI Class Reference}
+\hypertarget{classTUI}{}\label{classTUI}\index{TUI@{TUI}}
+
+
+The singleton that manages Text-\/based User Interface.  
+
+
+
+
+{\ttfamily \#include $<$TUI.\+hpp$>$}
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}
+\begin{DoxyCompactList}\small\item\em A single terminal cell. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classTUI_1_1Rect}{Rect}}
+\begin{DoxyCompactList}\small\item\em A rectangle. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classTUI_1_1Scrollable__text}{Scrollable\+\_\+text}}
+\begin{DoxyCompactList}\small\item\em \doxylink{classTUI_1_1Text}{Text} that can be scrolled with input or by modifying its scroll\+\_\+pos. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classTUI_1_1Sprite}{Sprite}}
+\begin{DoxyCompactList}\small\item\em A drawable patch of individually adjustable Glyphs. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classTUI_1_1Text}{Text}}
+\begin{DoxyCompactList}\small\item\em Basic non-\/interactive text. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classTUI_1_1Text__input}{Text\+\_\+input}}
+\begin{DoxyCompactList}\small\item\em Dynamic text that can be appended via input. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}}
+\begin{DoxyCompactList}\small\item\em Abstract \doxylink{classTUI}{TUI} Object, multiple can be composed as children. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_aee6df27aebbe073aab7d8a93e08fd9d4}\label{classTUI_aee6df27aebbe073aab7d8a93e08fd9d4} 
+typedef std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} $>$ {\bfseries UIobj\+\_\+ref}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_ad770dd11879d86075d6647a08a5a4a80}\label{classTUI_ad770dd11879d86075d6647a08a5a4a80} 
+void {\bfseries clear} ()
+\begin{DoxyCompactList}\small\item\em Clears screen buffer. \end{DoxyCompactList}\item 
+\Hypertarget{classTUI_a77be03d3201ba7b7336571376f0a0ebe}\label{classTUI_a77be03d3201ba7b7336571376f0a0ebe} 
+void {\bfseries render} ()
+\begin{DoxyCompactList}\small\item\em Displays screen buffer/. \end{DoxyCompactList}\item 
+\Hypertarget{classTUI_aeeb3fe500430e16b2dc9d59168bb601f}\label{classTUI_aeeb3fe500430e16b2dc9d59168bb601f} 
+void {\bfseries set\+\_\+color\+\_\+pair} (short id, short foreground, short background)
+\item 
+std\+::pair$<$ int, int $>$ \mbox{\hyperlink{classTUI_a56a140656f58ddbc2b33de718fd972f5}{get\+\_\+size}} ()
+\item 
+std\+::pair$<$ int, int $>$ \mbox{\hyperlink{classTUI_ac8562dd91da691f0a09690e9d788a035}{get\+\_\+center}} ()
+\item 
+unsigned \mbox{\hyperlink{classTUI_aadb511a0c8bb0385ed8a351040922028}{get\+\_\+input}} ()
+\item 
+\Hypertarget{classTUI_a13bdd68ae23b5c587e5e747c058b36dc}\label{classTUI_a13bdd68ae23b5c587e5e747c058b36dc} 
+void {\bfseries draw\+\_\+glyph} (int y, int x, \mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} glyph)
+\begin{DoxyCompactList}\small\item\em Places given glyph at coordinates. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{classTUI}{TUI}} \& \mbox{\hyperlink{classTUI_aa7c4343d11b517f6ab4d26f972e0ca4b}{get}} ()
+\item 
+\Hypertarget{classTUI_a848eb8ba8124f44de35e8997cc8a2f76}\label{classTUI_a848eb8ba8124f44de35e8997cc8a2f76} 
+static unsigned short {\bfseries get\+\_\+color\+\_\+code} (Color foreground=COLOR\+\_\+\+WHITE, Color background=COLOR\+\_\+\+BLACK)
+\begin{DoxyCompactList}\small\item\em Maps color combinations to color pair ids. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The singleton that manages Text-\/based User Interface. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classTUI_aa7c4343d11b517f6ab4d26f972e0ca4b}\index{TUI@{TUI}!get@{get}}
+\index{get@{get}!TUI@{TUI}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily \label{classTUI_aa7c4343d11b517f6ab4d26f972e0ca4b} 
+static \mbox{\hyperlink{classTUI}{TUI}} \& TUI\+::get (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\begin{DoxyReturn}{Returns}
+The active instance of \doxylink{classTUI}{TUI}. 
+\end{DoxyReturn}
+\Hypertarget{classTUI_ac8562dd91da691f0a09690e9d788a035}\index{TUI@{TUI}!get\_center@{get\_center}}
+\index{get\_center@{get\_center}!TUI@{TUI}}
+\doxysubsubsection{\texorpdfstring{get\_center()}{get\_center()}}
+{\footnotesize\ttfamily \label{classTUI_ac8562dd91da691f0a09690e9d788a035} 
+std\+::pair$<$ int, int $>$ TUI\+::get\+\_\+center (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+Terminal center 
+\end{DoxyReturn}
+\Hypertarget{classTUI_aadb511a0c8bb0385ed8a351040922028}\index{TUI@{TUI}!get\_input@{get\_input}}
+\index{get\_input@{get\_input}!TUI@{TUI}}
+\doxysubsubsection{\texorpdfstring{get\_input()}{get\_input()}}
+{\footnotesize\ttfamily \label{classTUI_aadb511a0c8bb0385ed8a351040922028} 
+unsigned TUI\+::get\+\_\+input (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+Code of last key pressed 
+\end{DoxyReturn}
+\Hypertarget{classTUI_a56a140656f58ddbc2b33de718fd972f5}\index{TUI@{TUI}!get\_size@{get\_size}}
+\index{get\_size@{get\_size}!TUI@{TUI}}
+\doxysubsubsection{\texorpdfstring{get\_size()}{get\_size()}}
+{\footnotesize\ttfamily \label{classTUI_a56a140656f58ddbc2b33de718fd972f5} 
+std\+::pair$<$ int, int $>$ TUI\+::get\+\_\+size (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+Terminal dimensions 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/TUI.\+hpp\end{DoxyCompactItemize}

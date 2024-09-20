@@ -1,0 +1,64 @@
+\doxysection{Timer\+::Timed\+\_\+event Struct Reference}
+\hypertarget{structTimer_1_1Timed__event}{}\label{structTimer_1_1Timed__event}\index{Timer::Timed\_event@{Timer::Timed\_event}}
+
+
+Event executed with certain timing or periodicity.  
+
+
+
+
+{\ttfamily \#include $<$Timer.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structTimer_1_1Timed__event_a204e5b5f2ee333e681a78922ada93cce}{Timed\+\_\+event}} (std\+::function$<$ void(void)$>$ event, float \mbox{\hyperlink{structTimer_1_1Timed__event_a41048d282bdfe833be24311dca3215da}{t\+\_\+seconds}}, int n\+\_\+repeat=-\/1)
+\begin{DoxyCompactList}\small\item\em Creates a \doxylink{structTimer_1_1Timed__event}{Timed\+\_\+event}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structTimer_1_1Timed__event_ae10790cda78ab1bcd7cd04c8912e76ca}\label{structTimer_1_1Timed__event_ae10790cda78ab1bcd7cd04c8912e76ca} 
+std\+::function$<$ void(void)$>$ {\bfseries event} = \{\}
+\item 
+\Hypertarget{structTimer_1_1Timed__event_a96096f8f0e596b6b73b5b4805e65b85a}\label{structTimer_1_1Timed__event_a96096f8f0e596b6b73b5b4805e65b85a} 
+std\+::optional$<$ std\+::reference\+\_\+wrapper$<$ std\+::mutex $>$ $>$ {\bfseries mutex}
+\item 
+\Hypertarget{structTimer_1_1Timed__event_a41048d282bdfe833be24311dca3215da}\label{structTimer_1_1Timed__event_a41048d282bdfe833be24311dca3215da} 
+float {\bfseries t\+\_\+seconds} = 0.\+0
+\begin{DoxyCompactList}\small\item\em The mutex to lock when triggering event. \end{DoxyCompactList}\item 
+\Hypertarget{structTimer_1_1Timed__event_a572255a57d288bf5312fa0a7b8928318}\label{structTimer_1_1Timed__event_a572255a57d288bf5312fa0a7b8928318} 
+float {\bfseries countdown} = 0.\+0
+\item 
+\Hypertarget{structTimer_1_1Timed__event_aecf3584effae60b9ca472ebd2822d579}\label{structTimer_1_1Timed__event_aecf3584effae60b9ca472ebd2822d579} 
+int {\bfseries n\+\_\+repeat} = -\/1
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Event executed with certain timing or periodicity. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structTimer_1_1Timed__event_a204e5b5f2ee333e681a78922ada93cce}\index{Timer::Timed\_event@{Timer::Timed\_event}!Timed\_event@{Timed\_event}}
+\index{Timed\_event@{Timed\_event}!Timer::Timed\_event@{Timer::Timed\_event}}
+\doxysubsubsection{\texorpdfstring{Timed\_event()}{Timed\_event()}}
+{\footnotesize\ttfamily \label{structTimer_1_1Timed__event_a204e5b5f2ee333e681a78922ada93cce} 
+Timer\+::\+Timed\+\_\+event\+::\+Timed\+\_\+event (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(void)$>$}]{event}{, }\item[{float}]{t\+\_\+seconds}{, }\item[{int}]{n\+\_\+repeat}{ = {\ttfamily -\/1}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a \doxylink{structTimer_1_1Timed__event}{Timed\+\_\+event}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & The function to call when event happens. \\
+\hline
+{\em t\+\_\+seconds} & Period between event calls in seconds. \\
+\hline
+{\em n\+\_\+repeat} & How many times to fire the event. Set to -\/1 to repeat it infinitely. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/Timer.\+hpp\end{DoxyCompactItemize}

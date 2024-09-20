@@ -1,0 +1,98 @@
+\doxysection{TUI\+::Text Class Reference}
+\hypertarget{classTUI_1_1Text}{}\label{classTUI_1_1Text}\index{TUI::Text@{TUI::Text}}
+
+
+Basic non-\/interactive text.  
+
+
+
+
+{\ttfamily \#include $<$TUI.\+hpp$>$}
+
+Inheritance diagram for TUI\+::Text\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classTUI_1_1Text}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_1_1Text_ad473ebac4306c942596b0656ae4ba631}\label{classTUI_1_1Text_ad473ebac4306c942596b0656ae4ba631} 
+{\bfseries Text} (std\+::string text="{}"{}, int height=0, int width=0, int y=0, int x=0, Color foreground=COLOR\+\_\+\+WHITE, Color background=COLOR\+\_\+\+BLACK)
+\item 
+\Hypertarget{classTUI_1_1Text_a0d5c05f109f49dd756d29e5907b8e4a9}\label{classTUI_1_1Text_a0d5c05f109f49dd756d29e5907b8e4a9} 
+\mbox{\hyperlink{classTUI_1_1Text}{Text}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1Text}{Text}} \&other)=default
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries UI\+\_\+\+Object} (int y=0, int x=0)
+\item 
+\mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \&other)=default
+\item 
+void {\bfseries draw} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_1_1Text_a56c3134360d05933dff411fe09155c45}\label{classTUI_1_1Text_a56c3134360d05933dff411fe09155c45} 
+Color {\bfseries background} = COLOR\+\_\+\+BLACK
+\item 
+\Hypertarget{classTUI_1_1Text_a53192f45e422af428fb34891adabaf76}\label{classTUI_1_1Text_a53192f45e422af428fb34891adabaf76} 
+Color {\bfseries foreground} = COLOR\+\_\+\+WHITE
+\item 
+\Hypertarget{classTUI_1_1Text_a4f46b4c693b1691a401b82c6197ec741}\label{classTUI_1_1Text_a4f46b4c693b1691a401b82c6197ec741} 
+int {\bfseries width} = 0
+\item 
+\Hypertarget{classTUI_1_1Text_a2dd225fde4a792d08f99d9bdc31bc146}\label{classTUI_1_1Text_a2dd225fde4a792d08f99d9bdc31bc146} 
+int {\bfseries height} = 0
+\item 
+\Hypertarget{classTUI_1_1Text_a65b0180e1dedc82a8d2b0fbb8cd0d0bf}\label{classTUI_1_1Text_a65b0180e1dedc82a8d2b0fbb8cd0d0bf} 
+std\+::string {\bfseries text}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+int {\bfseries x} = 0
+\item 
+int {\bfseries y} = 0
+\item 
+bool {\bfseries use\+\_\+absolute\+\_\+position} = false
+\item 
+bool {\bfseries visible} = true
+\item 
+std\+::vector$<$ UIobj\+\_\+ref $>$ {\bfseries children} = \{\}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{classTUI_1_1Text_ac94c77220b38e30ccd196534283135c4}{draw\+\_\+self}} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0) override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTUI}{TUI}} \& {\bfseries tui}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Basic non-\/interactive text. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classTUI_1_1Text_ac94c77220b38e30ccd196534283135c4}\index{TUI::Text@{TUI::Text}!draw\_self@{draw\_self}}
+\index{draw\_self@{draw\_self}!TUI::Text@{TUI::Text}}
+\doxysubsubsection{\texorpdfstring{draw\_self()}{draw\_self()}}
+{\footnotesize\ttfamily \label{classTUI_1_1Text_ac94c77220b38e30ccd196534283135c4} 
+virtual void TUI\+::\+Text\+::draw\+\_\+self (\begin{DoxyParamCaption}\item[{unsigned}]{input}{ = {\ttfamily 0}, }\item[{int}]{orig\+\_\+y}{ = {\ttfamily 0}, }\item[{int}]{orig\+\_\+x}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/TUI.\+hpp\end{DoxyCompactItemize}

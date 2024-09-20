@@ -1,0 +1,37 @@
+\doxysection{Application.\+hpp}
+\hypertarget{Application_8hpp_source}{}\label{Application_8hpp_source}\index{logic/include/interface/Application.hpp@{logic/include/interface/Application.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#include\ "{}TUI.hpp"{}}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Event\_timer.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}Focus.hpp"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classApplication}{Application}}\ \{}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00009\ \ \ \ \ \mbox{\hyperlink{classApplication}{Application}}\&\ get();}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{void}\ run\_graphics();}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{void}\ run\_gameplay();}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00014\ \ \ \ \ \mbox{\hyperlink{classFocus_1_1Focus__space}{Focus::Focus\_space}}\ global\_fspace;}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \mbox{\hyperlink{classFocus}{Focus}}\ focus\_intro\ =\ \{global\_fspace\};}
+\DoxyCodeLine{00017\ \ \ \ \ \mbox{\hyperlink{classFocus}{Focus}}\ focus\_callsign\_prompt\ =\ \{global\_fspace\};}
+\DoxyCodeLine{00018\ \ \ \ \ \mbox{\hyperlink{classFocus}{Focus}}\ focus\_main\_menu\ =\ \{global\_fspace\};}
+\DoxyCodeLine{00019\ \ \ \ \ \mbox{\hyperlink{classFocus}{Focus}}\ focus\_game\ =\ \{global\_fspace\};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \mbox{\hyperlink{classTimer}{Timer}}\ animation\_timer;}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{int}\ main\_menu\_selection;}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{void}\ draw\_callsign\_prompt(\textcolor{keywordtype}{unsigned}\ input);}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ draw\_intro();}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{void}\ draw\_main\_menu();}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \mbox{\hyperlink{classApplication}{Application}}(\mbox{\hyperlink{classApplication}{Application}}\&\ other)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00030\ \ \ \ \ \mbox{\hyperlink{classApplication}{Application}}\&\ operator=\ (\mbox{\hyperlink{classApplication}{Application}}\&\ other)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00031\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,71 @@
+\doxysection{Animations.\+hpp}
+\hypertarget{Animations_8hpp_source}{}\label{Animations_8hpp_source}\index{logic/include/utility/Animations.hpp@{logic/include/utility/Animations.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}TUI.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}Timer.hpp"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <queue>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classAnimated}{Animated}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI::UI\_Object}}}
+\DoxyCodeLine{00013\ \{}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00015\ \ \ \ \ \mbox{\hyperlink{classAnimated}{Animated}}(\textcolor{keywordtype}{float}\ period,\ std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{void})>\ on\_tick);}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{float}\ get\_period()\ \{\ \textcolor{keywordflow}{return}\ timer.events.back().t\_seconds;\}}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ set\_period(\textcolor{keywordtype}{float}\ period)\ \{\ timer.events.back().t\_seconds\ =\ period;\}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00021\ \ \ \ \ \mbox{\hyperlink{classTimer}{Timer}}\ timer;}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ draw\_self(\textcolor{keywordtype}{unsigned}\ input\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_y\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_x\ =\ 0)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00023\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (visible)\ \{}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \ \ \ \ timer.process();}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ UI\_Object::draw\_self();}
+\DoxyCodeLine{00028\ \ \ \ \ \}}
+\DoxyCodeLine{00029\ \};}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classBlinker}{Blinker}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classAnimated}{Animated}}}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00035\ \ \ \ \ \mbox{\hyperlink{classBlinker}{Blinker}}(\textcolor{keywordtype}{float}\ period\ =\ 0.5)\ :\ \mbox{\hyperlink{classAnimated}{Animated}}(period,\ [\textcolor{keyword}{this}]()\{this-\/>tick();\})\ \{\}}
+\DoxyCodeLine{00036\ \ \ \ \ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{void}\ tick();}
+\DoxyCodeLine{00039\ \};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classCrazy__box}{Crazy\_box}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classAnimated}{Animated}}}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{classCrazy__box}{Crazy\_box}}(\textcolor{keywordtype}{float}\ delay\ =\ 0.1)\ :\ \mbox{\hyperlink{classAnimated}{Animated}}(delay,\ [\textcolor{keyword}{this}]()\{this-\/>tick();\})\ \{\}}
+\DoxyCodeLine{00046\ \ \ \ \ std::string\ text;}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ text\_color\ =\ 0;}
+\DoxyCodeLine{00048\ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Rect}{TUI::Rect}}\ rect;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{int}\ offset\ =\ 0;}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{void}\ tick();\ \textcolor{comment}{//\ here}}
+\DoxyCodeLine{00053\ \ \ \ \ std::pair<int,\ int>\ position\_character(\textcolor{keywordtype}{int}\ position);}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{void}\ draw\_self(\textcolor{keywordtype}{unsigned}\ input\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_y\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_x\ =\ 0)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00055\ \};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00058\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classRolling__text}{Rolling\_text}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classAnimated}{Animated}}}
+\DoxyCodeLine{00059\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00061\ \ \ \ \ \mbox{\hyperlink{classRolling__text}{Rolling\_text}}(\textcolor{keywordtype}{float}\ delay\ =\ 0.1)\ :\ \mbox{\hyperlink{classAnimated}{Animated}}(delay,\ [\textcolor{keyword}{this}]()\{this-\/>tick();\})\ \{\}}
+\DoxyCodeLine{00062\ \ \ \ \ std::string\ origin\_text;}
+\DoxyCodeLine{00063\ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Text}{TUI::Text}}\ text;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{int}\ n\_drawn\_chars\ =\ 0;}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{void}\ tick();}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{void}\ draw\_self(\textcolor{keywordtype}{unsigned}\ input\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_y\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_x\ =\ 0)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00069\ \};}
+
+\end{DoxyCode}

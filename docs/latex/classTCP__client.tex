@@ -1,0 +1,90 @@
+\doxysection{TCP\+\_\+client Class Reference}
+\hypertarget{classTCP__client}{}\label{classTCP__client}\index{TCP\_client@{TCP\_client}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structSocket__inbound__message}{Socket\+\_\+inbound\+\_\+message}} \mbox{\hyperlink{classTCP__client_aa2b2f52addf9aa9617c7515d46b93c0a}{get\+\_\+message}} ()
+\begin{DoxyCompactList}\small\item\em Retrieves a message from inbox queue. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classTCP__client_a709e47280ca174b01b973a41c66e16b9}{send\+\_\+msg}} (const std\+::vector$<$ char $>$ \&msg)
+\begin{DoxyCompactList}\small\item\em Ran by dedicated thread\+: checks for incoming messages on open sockets and processes them. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classTCP__client_a3ee118b4b174681556b5cb0d4a0f73c4}{connect\+\_\+to}} (const \mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}} \&destination, int n\+\_\+attempts=1, int ms\+\_\+between=0)
+\begin{DoxyCompactList}\small\item\em Attempts to connect to server with given address. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classTCP__client_ada9df6e01b880c2bc86bb00871bd1463}{disconnect}} ()
+\begin{DoxyCompactList}\small\item\em Severs connection with the server. \end{DoxyCompactList}\item 
+\Hypertarget{classTCP__client_a08a6790e42241ea7a73a29ded383fd5e}\label{classTCP__client_a08a6790e42241ea7a73a29ded383fd5e} 
+const std\+::optional$<$ \mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}} $>$ {\bfseries get\+\_\+connection} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classTCP__client_a25a426b061bba4184c67ee6bf9b302fb}{handshake\+\_\+timeout\+\_\+ms}} = 0
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classTCP__client_a3ee118b4b174681556b5cb0d4a0f73c4}\index{TCP\_client@{TCP\_client}!connect\_to@{connect\_to}}
+\index{connect\_to@{connect\_to}!TCP\_client@{TCP\_client}}
+\doxysubsubsection{\texorpdfstring{connect\_to()}{connect\_to()}}
+{\footnotesize\ttfamily \label{classTCP__client_a3ee118b4b174681556b5cb0d4a0f73c4} 
+bool TCP\+\_\+client\+::connect\+\_\+to (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}} \&}]{destination}{, }\item[{int}]{n\+\_\+attempts}{ = {\ttfamily 1}, }\item[{int}]{ms\+\_\+between}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+
+
+Attempts to connect to server with given address. 
+
+\begin{DoxyReturn}{Returns}
+Whether connection attempt was successful. 
+\end{DoxyReturn}
+\Hypertarget{classTCP__client_ada9df6e01b880c2bc86bb00871bd1463}\index{TCP\_client@{TCP\_client}!disconnect@{disconnect}}
+\index{disconnect@{disconnect}!TCP\_client@{TCP\_client}}
+\doxysubsubsection{\texorpdfstring{disconnect()}{disconnect()}}
+{\footnotesize\ttfamily \label{classTCP__client_ada9df6e01b880c2bc86bb00871bd1463} 
+bool TCP\+\_\+client\+::disconnect (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Severs connection with the server. 
+
+\begin{DoxyReturn}{Returns}
+Whether the connection was active and was severed successfully. 
+\end{DoxyReturn}
+\Hypertarget{classTCP__client_aa2b2f52addf9aa9617c7515d46b93c0a}\index{TCP\_client@{TCP\_client}!get\_message@{get\_message}}
+\index{get\_message@{get\_message}!TCP\_client@{TCP\_client}}
+\doxysubsubsection{\texorpdfstring{get\_message()}{get\_message()}}
+{\footnotesize\ttfamily \label{classTCP__client_aa2b2f52addf9aa9617c7515d46b93c0a} 
+\mbox{\hyperlink{structSocket__inbound__message}{Socket\+\_\+inbound\+\_\+message}} TCP\+\_\+client\+::get\+\_\+message (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Retrieves a message from inbox queue. 
+
+\begin{DoxyReturn}{Returns}
+Message paired with sender\textquotesingle{}s address. 
+\end{DoxyReturn}
+\Hypertarget{classTCP__client_a709e47280ca174b01b973a41c66e16b9}\index{TCP\_client@{TCP\_client}!send\_msg@{send\_msg}}
+\index{send\_msg@{send\_msg}!TCP\_client@{TCP\_client}}
+\doxysubsubsection{\texorpdfstring{send\_msg()}{send\_msg()}}
+{\footnotesize\ttfamily \label{classTCP__client_a709e47280ca174b01b973a41c66e16b9} 
+bool TCP\+\_\+client\+::send\+\_\+msg (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ char $>$ \&}]{msg}{}\end{DoxyParamCaption})}
+
+
+
+Ran by dedicated thread\+: checks for incoming messages on open sockets and processes them. 
+
+\begin{DoxyReturn}{Returns}
+Whether all bytes were delivered successfully. 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classTCP__client_a25a426b061bba4184c67ee6bf9b302fb}\index{TCP\_client@{TCP\_client}!handshake\_timeout\_ms@{handshake\_timeout\_ms}}
+\index{handshake\_timeout\_ms@{handshake\_timeout\_ms}!TCP\_client@{TCP\_client}}
+\doxysubsubsection{\texorpdfstring{handshake\_timeout\_ms}{handshake\_timeout\_ms}}
+{\footnotesize\ttfamily \label{classTCP__client_a25a426b061bba4184c67ee6bf9b302fb} 
+int TCP\+\_\+client\+::handshake\+\_\+timeout\+\_\+ms = 0}
+
+Duration for which the thread will wait for confirmation message after connecting. If set to 0 or less, the connection is assumed to be established in any case. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/network/TCP\+\_\+client.\+hpp\end{DoxyCompactItemize}

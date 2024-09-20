@@ -1,7 +1,7 @@
 #include "Game_master.hpp"
 #include "Ability.hpp"
 
-Game_master::Ability::Binding::Binding(Game_master::Trigger& trigger, Game_master::Reaction reaction) : trig(trigger), key()
+Game_master::Ability::Binding::Binding(Game_master::Cause& trigger, Game_master::Effect reaction) : trig(trigger), key()
 {
     trig.insert({key.get_id(), reaction});
 }

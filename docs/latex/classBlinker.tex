@@ -1,0 +1,84 @@
+\doxysection{Blinker Class Reference}
+\hypertarget{classBlinker}{}\label{classBlinker}\index{Blinker@{Blinker}}
+
+
+Object that toggles its children\textquotesingle{} visibility once in a period.  
+
+
+
+
+{\ttfamily \#include $<$Animations.\+hpp$>$}
+
+Inheritance diagram for Blinker\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classBlinker}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classBlinker_ad724a23010a9bb43d02004f0de3607b8}\label{classBlinker_ad724a23010a9bb43d02004f0de3607b8} 
+{\bfseries Blinker} (float period=0.\+5)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classAnimated}{Animated}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Animated} (float period, std\+::function$<$ void(void)$>$ on\+\_\+tick)
+\item 
+float {\bfseries get\+\_\+period} ()
+\item 
+void {\bfseries set\+\_\+period} (float period)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries UI\+\_\+\+Object} (int y=0, int x=0)
+\item 
+\mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \&other)=default
+\item 
+void {\bfseries draw} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classBlinker_a5bcf8ba84bffd970ab4943e74425d18e}\label{classBlinker_a5bcf8ba84bffd970ab4943e74425d18e} 
+void {\bfseries tick} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions inherited from \mbox{\hyperlink{classAnimated}{Animated}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{classAnimated_ad95f845fbe24114804924338594fd81a}{draw\+\_\+self}} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0) override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+int {\bfseries x} = 0
+\item 
+int {\bfseries y} = 0
+\item 
+bool {\bfseries use\+\_\+absolute\+\_\+position} = false
+\item 
+bool {\bfseries visible} = true
+\item 
+std\+::vector$<$ UIobj\+\_\+ref $>$ {\bfseries children} = \{\}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classAnimated}{Animated}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTimer}{Timer}} {\bfseries timer}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTUI}{TUI}} \& {\bfseries tui}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Object that toggles its children\textquotesingle{} visibility once in a period. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/Animations.\+hpp\end{DoxyCompactItemize}

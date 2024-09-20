@@ -1,4 +1,6 @@
-#include "Socket_wrappers.hpp"
+#include "Network.hpp"
+#include "TCP_server.hpp"
+
 #include <iostream>
 #include <string>
 

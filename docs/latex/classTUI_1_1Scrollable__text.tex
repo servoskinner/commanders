@@ -1,0 +1,109 @@
+\doxysection{TUI\+::Scrollable\+\_\+text Class Reference}
+\hypertarget{classTUI_1_1Scrollable__text}{}\label{classTUI_1_1Scrollable__text}\index{TUI::Scrollable\_text@{TUI::Scrollable\_text}}
+
+
+\doxylink{classTUI_1_1Text}{Text} that can be scrolled with input or by modifying its scroll\+\_\+pos.  
+
+
+
+
+{\ttfamily \#include $<$TUI.\+hpp$>$}
+
+Inheritance diagram for TUI\+::Scrollable\+\_\+text\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classTUI_1_1Scrollable__text}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_1_1Scrollable__text_a9057639170d449a26c45ae3709663836}\label{classTUI_1_1Scrollable__text_a9057639170d449a26c45ae3709663836} 
+{\bfseries Scrollable\+\_\+text} (std\+::string text="{}"{}, int height=0, int width=0, int y=0, int x=0, Color foreground=COLOR\+\_\+\+WHITE, Color background=COLOR\+\_\+\+BLACK)
+\item 
+\Hypertarget{classTUI_1_1Scrollable__text_a59e28f6b3018f94f7f6ad1dd44b3e3d9}\label{classTUI_1_1Scrollable__text_a59e28f6b3018f94f7f6ad1dd44b3e3d9} 
+\mbox{\hyperlink{classTUI_1_1Scrollable__text}{Scrollable\+\_\+text}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1Scrollable__text}{Scrollable\+\_\+text}} \&other)=default
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classTUI_1_1Text}{TUI\+::\+Text}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Text} (std\+::string text="{}"{}, int height=0, int width=0, int y=0, int x=0, Color foreground=COLOR\+\_\+\+WHITE, Color background=COLOR\+\_\+\+BLACK)
+\item 
+\mbox{\hyperlink{classTUI_1_1Text}{Text}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1Text}{Text}} \&other)=default
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries UI\+\_\+\+Object} (int y=0, int x=0)
+\item 
+\mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \&other)=default
+\item 
+void {\bfseries draw} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_1_1Scrollable__text_a4bb536a510aec994517418729657a0f3}\label{classTUI_1_1Scrollable__text_a4bb536a510aec994517418729657a0f3} 
+int {\bfseries scroll\+\_\+pos} = 0
+\item 
+\Hypertarget{classTUI_1_1Scrollable__text_a45c8392d239cbef45586546478a9b19d}\label{classTUI_1_1Scrollable__text_a45c8392d239cbef45586546478a9b19d} 
+bool {\bfseries from\+\_\+bottom} = false
+\begin{DoxyCompactList}\small\item\em Scroll offset in lines. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classTUI_1_1Text}{TUI\+::\+Text}}}
+\begin{DoxyCompactItemize}
+\item 
+Color {\bfseries background} = COLOR\+\_\+\+BLACK
+\item 
+Color {\bfseries foreground} = COLOR\+\_\+\+WHITE
+\item 
+int {\bfseries width} = 0
+\item 
+int {\bfseries height} = 0
+\item 
+std\+::string {\bfseries text}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+int {\bfseries x} = 0
+\item 
+int {\bfseries y} = 0
+\item 
+bool {\bfseries use\+\_\+absolute\+\_\+position} = false
+\item 
+bool {\bfseries visible} = true
+\item 
+std\+::vector$<$ UIobj\+\_\+ref $>$ {\bfseries children} = \{\}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{classTUI_1_1Scrollable__text_a6d1f452a6018989ddabbe7ff0377f456}{draw\+\_\+self}} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0) override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTUI}{TUI}} \& {\bfseries tui}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\doxylink{classTUI_1_1Text}{Text} that can be scrolled with input or by modifying its scroll\+\_\+pos. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classTUI_1_1Scrollable__text_a6d1f452a6018989ddabbe7ff0377f456}\index{TUI::Scrollable\_text@{TUI::Scrollable\_text}!draw\_self@{draw\_self}}
+\index{draw\_self@{draw\_self}!TUI::Scrollable\_text@{TUI::Scrollable\_text}}
+\doxysubsubsection{\texorpdfstring{draw\_self()}{draw\_self()}}
+{\footnotesize\ttfamily \label{classTUI_1_1Scrollable__text_a6d1f452a6018989ddabbe7ff0377f456} 
+virtual void TUI\+::\+Scrollable\+\_\+text\+::draw\+\_\+self (\begin{DoxyParamCaption}\item[{unsigned}]{input}{ = {\ttfamily 0}, }\item[{int}]{orig\+\_\+y}{ = {\ttfamily 0}, }\item[{int}]{orig\+\_\+x}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classTUI_1_1Text}{TUI\+::\+Text}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/TUI.\+hpp\end{DoxyCompactItemize}

@@ -1,6 +1,6 @@
-#include "Storage_manager.hpp"
+#include "Archivist.hpp"
 #include "TUI.hpp"
-#include "Event_timer.hpp"
+#include "Timer.hpp"
 #include "Serialization.hpp"
 #include "Animations.hpp"
 #include "Misc_functions.hpp"
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 
     if(!loaded.has_value())
     {
-        Storage_manager storage_manager(argv[1]);
+        Archivist storage_manager(argv[1]);
 
         if (argc < 4) {
             throw std::runtime_error("No width and height provided");

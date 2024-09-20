@@ -1,0 +1,173 @@
+\doxysection{Game\+\_\+master.\+hpp}
+\hypertarget{Game__master_8hpp_source}{}\label{Game__master_8hpp_source}\index{logic/include/gameplay/Game\_master.hpp@{logic/include/gameplay/Game\_master.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <list>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <queue>}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ "{}Commander.hpp"{}}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ "{}Card\_index.hpp"{}}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ "{}Misc\_functions.hpp"{}}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#define\ GRID\_WIDTH\ \ \ \ \ \ 8}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#define\ GRID\_HEIGHT\ \ \ \ \ 6}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#define\ BASIC\_INCOME\ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#define\ BONUS\_INCOME\ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#define\ BONUS\_INCOME\_THRESHOLD\ \ 2}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#define\ STARTING\_HAND\_SIZE\ \ \ \ \ \ 4\ }}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#define\ POINTS\_REQ\_FOR\_VICTORY\ \ 10}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#define\ EVENT\_QUEUE\_CAPACITY\ \ \ \ 1024}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master}{Game\_master}}}
+\DoxyCodeLine{00029\ \{}
+\DoxyCodeLine{00030\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Card}{Card}};}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{typedef}\ std::reference\_wrapper<Game\_master::Card>\ \ \ Card\_ref;}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Deck}{Deck}};}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{typedef}\ std::reference\_wrapper<Game\_master::Deck>\ \ \ Deck\_ref;}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Player}{Player}};}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{typedef}\ std::reference\_wrapper<Game\_master::Player>\ Player\_ref;}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Tile}{Tile}};}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{typedef}\ std::reference\_wrapper<Game\_master::Tile>\ \ \ Tile\_ref;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{typedef}\ std::function<void(std::vector<int>)>\ Effect;}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{typedef}\ std::vector<int>\ RArgs;}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{typedef}\ std::unordered\_map<int,\ Effect>\ Cause;}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{typedef}\ std::reference\_wrapper<Game\_master::Cause>\ \ \ Cause\_ref;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Ability}{Ability}};}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{class\ }Binding;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Ability__simple}{Ability\_simple}};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{keyword}{public}:\ \textcolor{comment}{//\ \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{enum}\ Gamemode\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ GM\_STANDARD,}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ GM\_SKIRMISH,}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ GM\_2V2}
+\DoxyCodeLine{00056\ \ \ \ \ \};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \mbox{\hyperlink{classGame__master}{Game\_master}}(\textcolor{keyword}{const}\ std::vector<std::vector<int>>\ \&deck\_images,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Gamemode\ gamemode\ =\ GM\_STANDARD,}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nplayers\ =\ 2,}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::vector<int>>\&\ terrain\ =\ \{\});}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{comment}{//\ Handle\ commander\ requests}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structCommander_1_1Game__state}{Commander::Game\_state}}\ \mbox{\hyperlink{classGame__master_aa81ada4679598ea237f45c4bf3b2d636}{get\_game\_state}}(\textcolor{keywordtype}{int}\ player\_id);}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classGame__master_abfe245e36ab98316a6c39e020b80a22a}{get\_turn}}()\ \{\ \textcolor{keywordflow}{return}\ turn;\ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classGame__master_a438242ea8b6f87847d067c4ac8d90881}{get\_absolute\_turn}}()\ \{\ \textcolor{keywordflow}{return}\ turn\_absolute;\ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classGame__master_ad763eec777a7739ce13c8b588bf02931}{is\_on}}()\ \{\ \textcolor{keywordflow}{return}\ game\_is\_on;\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00080\ \ \ \ \ \mbox{\hyperlink{structCommander_1_1Game__params}{Commander::Game\_params}}\ \mbox{\hyperlink{classGame__master_a635ad89c0443b86d531f36776176a5fd}{get\_static\_game\_info}}();}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00083\ \ \ \ \ std::pair<int,\ int>\ \mbox{\hyperlink{classGame__master_a17cc241679976e800cb488ebb75bdc37}{get\_grid\_params}}()\ \{\ \textcolor{keywordflow}{return}\ \{grid.size(),\ grid[0].size()\};\ \}}
+\DoxyCodeLine{00084\ \ \ \ \ }
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classGame__master_a0b3f21a05253d3fc48ea6f24fbb25cd8}{exec\_order}}(\textcolor{keywordtype}{int}\ player\_id,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander::Order}}\ \&order);}
+\DoxyCodeLine{00090\ \ \ \ \ }
+\DoxyCodeLine{00094\ \ \ \ \ std::optional<Commander::Event>\ \mbox{\hyperlink{classGame__master_aee4393e38aa31b946b9b0cc79ab64403}{get\_event}}(\textcolor{keywordtype}{int}\ player\_id);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classGame__master_a3a6b7fd1364ec710be3028fdfa424ed0}{pop\_event}}(\textcolor{keywordtype}{int}\ player\_id)}
+\DoxyCodeLine{00100\ \ \ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!event\_queues[player\_id].empty())\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ event\_queues[player\_id].pop();}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00107\ \ \ \ \ std::vector<std::function<void(\mbox{\hyperlink{structCommander_1_1Commander__message}{Commander::Event}})>>\ \mbox{\hyperlink{classGame__master_a1a659134fa799da97db3674472915239}{on\_event\_broadcast}};}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \textcolor{keyword}{private}:\ \textcolor{comment}{//\ \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}}
+\DoxyCodeLine{00110\ \ \ \ \ std::optional<Commander::Order>\ processed\_order;}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \ \ std::vector<std::queue<Commander::Event>>\ event\_queues;}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ std::list<Card>\ tokens;}
+\DoxyCodeLine{00115\ \ \ \ \ std::vector<Player>\ players;}
+\DoxyCodeLine{00116\ \ \ \ \ std::vector<Deck>\ decks;}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{comment}{//\ Playing\ field}}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \ \ std::vector<std::vector<Tile>>\ grid;\ }
+\DoxyCodeLine{00120\ \ \ \ \ std::vector<Game\_master::Card\_ref>\ active\_cards;\ \ \ }
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{comment}{//\ Global\ triggers}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ Cause\ any\_turn\_start;\ }
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \ \ Cause\ any\_enters\_play;\ }
+\DoxyCodeLine{00127\ \ \ \ \ Cause\ any\_leaves\_play;\ }
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ Cause\ any\_before\_attack;}
+\DoxyCodeLine{00130\ \ \ \ \ Cause\ any\_after\_attack;}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ Cause\ any\_before\_move;}
+\DoxyCodeLine{00133\ \ \ \ \ Cause\ any\_after\_move;}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keywordtype}{int}\ turn;\ }
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordtype}{int}\ turn\_absolute;\ }
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordtype}{bool}\ game\_is\_on;}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keywordtype}{void}\ end\_turn();}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00145\ \ \ \ \ std::optional<Card\_ref>\ find\_card(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ entity\_id);}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fire\_trigger(Cause\&\ trigger,\ std::vector<int>\ args);}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordtype}{bool}\ check\_dominance(\textcolor{keywordtype}{int}\ player\_id);}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ push\_event(\textcolor{keywordtype}{int}\ player\_id,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander::Event}}\&\ event);}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ broadcast\_event(\textcolor{keyword}{const}\ \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander::Event}}\&\ event);}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{comment}{//\ Card\ actions}}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordtype}{bool}\ deploy\_card(\mbox{\hyperlink{classGame__master_1_1Card}{Card}}\ \&card,\ \textcolor{keywordtype}{int}\ player,\ std::optional<Tile\_ref>\ target\ =\ \{\});\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Place\ a\ card\ in\ play.}}
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keywordtype}{bool}\ resolve\_movement(Card\ \&card,\ \textcolor{keywordtype}{int}\ direction);\ \ \ \textcolor{comment}{//\ Move\ a\ card\ in\ specified\ direction.}}
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordtype}{void}\ resolve\_destruction(Card\ \&card);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Remove\ a\ card\ from\ play\ and\ discard\ it.}}
+\DoxyCodeLine{00163\ \ \ \ \ \textcolor{keywordtype}{bool}\ resolve\_attack(Card\ \&card,\ \textcolor{keywordtype}{int}\ direction);\ \textcolor{comment}{//\ Resolve\ an\ attack\ from\ one\ tile\ to\ another.}}
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{keywordtype}{bool}\ inflict\_damage(Card\ \&card,\ \textcolor{keywordtype}{int}\ amount);}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keywordtype}{int}\ resolve\_combat(Card\ \&attacker,\ Card\ \&defender);\ \textcolor{comment}{//\ Resolve\ combat\ between\ two\ units.}}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keyword}{enum}\ Combat\_outcome}
+\DoxyCodeLine{00168\ \ \ \ \ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ COMBAT\_WIN\ =\ 1,}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ COMBAT\_TIE\ =\ 0,}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ COMBAT\_LOSE\ =\ -\/1}
+\DoxyCodeLine{00172\ \ \ \ \ \};}
+\DoxyCodeLine{00173\ \ \ \ \ \textcolor{comment}{//\ Tile}}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00176\ \ \ \ \ std::vector<std::optional<Game\_master::Tile\_ref>>\ get\_4neighbors(\textcolor{keyword}{const}\ Tile\ \&tile);}
+\DoxyCodeLine{00178\ \ \ \ \ std::vector<std::optional<Game\_master::Tile\_ref>>\ get\_8neighbors(\textcolor{keyword}{const}\ Tile\ \&tile);}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{comment}{//\ Players}}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keywordtype}{bool}\ resolve\_draw(\textcolor{keywordtype}{int}\ player\_id);\ \ \ \ \ \ }
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00190\ \ \ \ \ \textcolor{keywordtype}{bool}\ resolve\_draw\_multi(\textcolor{keywordtype}{int}\ player\_id,\ \textcolor{keywordtype}{int}\ n\_cards);}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \ \ \textcolor{keywordtype}{bool}\ discard(\textcolor{keywordtype}{int}\ player\_id,\ \textcolor{keywordtype}{int}\ hand\_index);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00199\ \ \ \ \ \textcolor{keywordtype}{bool}\ play\_card(\textcolor{keywordtype}{int}\ player\_id,\ \textcolor{keywordtype}{int}\ hand\_index,\ std::optional<Tile\_ref>\ target);}
+\DoxyCodeLine{00200\ \};}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \textcolor{preprocessor}{\#include\ "{}Card.hpp"{}}}
+\DoxyCodeLine{00203\ \textcolor{preprocessor}{\#include\ "{}Deck.hpp"{}}}
+\DoxyCodeLine{00204\ \textcolor{preprocessor}{\#include\ "{}Player.hpp"{}}}
+\DoxyCodeLine{00205\ \textcolor{preprocessor}{\#include\ "{}Tile.hpp"{}}}
+\DoxyCodeLine{00206\ \textcolor{preprocessor}{\#include\ "{}Ability.hpp"{}}}
+
+\end{DoxyCode}

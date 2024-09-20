@@ -1,0 +1,89 @@
+\doxysection{Animated Class Reference}
+\hypertarget{classAnimated}{}\label{classAnimated}\index{Animated@{Animated}}
+
+
+Base animated class.  
+
+
+
+
+{\ttfamily \#include $<$Animations.\+hpp$>$}
+
+Inheritance diagram for Animated\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classAnimated}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classAnimated_a7b1079441c7a2a58b916e3101df7a6d2}\label{classAnimated_a7b1079441c7a2a58b916e3101df7a6d2} 
+{\bfseries Animated} (float period, std\+::function$<$ void(void)$>$ on\+\_\+tick)
+\item 
+\Hypertarget{classAnimated_afec71758a7d47e5838a2af5d65ae8a22}\label{classAnimated_afec71758a7d47e5838a2af5d65ae8a22} 
+float {\bfseries get\+\_\+period} ()
+\item 
+\Hypertarget{classAnimated_a302ae9f7ae9af2d737ab3861a2417ffe}\label{classAnimated_a302ae9f7ae9af2d737ab3861a2417ffe} 
+void {\bfseries set\+\_\+period} (float period)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries UI\+\_\+\+Object} (int y=0, int x=0)
+\item 
+\mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \&other)=default
+\item 
+void {\bfseries draw} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{classAnimated_ad95f845fbe24114804924338594fd81a}{draw\+\_\+self}} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0) override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classAnimated_a6ddd6d0304a44e2c2cb145a3c63d187b}\label{classAnimated_a6ddd6d0304a44e2c2cb145a3c63d187b} 
+\mbox{\hyperlink{classTimer}{Timer}} {\bfseries timer}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTUI}{TUI}} \& {\bfseries tui}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+int {\bfseries x} = 0
+\item 
+int {\bfseries y} = 0
+\item 
+bool {\bfseries use\+\_\+absolute\+\_\+position} = false
+\item 
+bool {\bfseries visible} = true
+\item 
+std\+::vector$<$ UIobj\+\_\+ref $>$ {\bfseries children} = \{\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Base animated class. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classAnimated_ad95f845fbe24114804924338594fd81a}\index{Animated@{Animated}!draw\_self@{draw\_self}}
+\index{draw\_self@{draw\_self}!Animated@{Animated}}
+\doxysubsubsection{\texorpdfstring{draw\_self()}{draw\_self()}}
+{\footnotesize\ttfamily \label{classAnimated_ad95f845fbe24114804924338594fd81a} 
+virtual void Animated\+::draw\+\_\+self (\begin{DoxyParamCaption}\item[{unsigned}]{input}{ = {\ttfamily 0}, }\item[{int}]{orig\+\_\+y}{ = {\ttfamily 0}, }\item[{int}]{orig\+\_\+x}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/Animations.\+hpp\end{DoxyCompactItemize}

@@ -4,21 +4,23 @@
 #include "Unique.hpp"
 #include "Ability.hpp"
 
+/// @brief A gameplay-wise representation of a card.
 class Game_master::Card
 {
 public: // _____________________________________________________________________________
-    Card(Game_master& master, int id, int oid = -1);
+    Card(Game_master& master, Card_id id, int oid = -1);
+    /// @brief Re-initializes everything that could have changed when the card was on field (Power, etc.)
     void reset();
 
     // Identification
-    const int owner_id;
-    const int card_id;
-    int controller_id;
+    const int owner_id; /// ID of the player in whose deck was this card when the game began.
+    const Card_id card_id; /// Which card in game it is
+    int controller_id; /// ID of the player who can give orders to this card.
 
-    Unique entity_id;
+    Unique entity_id; /// Unique ID used to compare identities of different objects.
 
-    int type;
-    enum card_status
+    Card_type type;
+    enum Card_status
     {
         CSTATUS_UNDEFINED = -1,
         CSTATUS_LIBRARY = 0,
@@ -26,14 +28,14 @@ public: // _____________________________________________________________________
         CSTATUS_BATTLEFIELD = 2,
         CSTATUS_GRAVEYARD = 3
     };
-    int status;
+    Card_status status;
 
     Commander::Card_info get_info();
     // Gameplay
-    int x, y;
+    int x, y; /// The card's position on the grid, if it is there.
 
-    int cost;
-    int value;
+    int cost; /// Funds required to deploy the card.
+    int value; /// The unit's Combat Power or the contract's duration.
     int advantage;
     // Status effects
     bool can_attack;
@@ -42,17 +44,15 @@ public: // _____________________________________________________________________
 
     std::list<std::unique_ptr<Ability>> abilities;
     // Event triggers
-    Trigger enters_play;
-    Trigger leaves_play;
 
-    Trigger turn_start;
-    Trigger turn_end;
+    Cause enters_play; /// Triggered when card is deployed.
+    Cause leaves_play; /// Triggered when card is put into junk.
 
-    Trigger before_move;
-    Trigger after_move;
+    Cause before_move; /// Triggered after the card has been issued a valid move order and before it moves.
+    Cause after_move; /// Triggered after the card makes a valid move.
 
-    Trigger before_attack;
-    Trigger after_attack;
-    Trigger before_attacked;
-    Trigger after_attacked;
+    Cause before_attack; /// Triggered after the card has been issued a valid attack order and before it attacks.
+    Cause after_attack; /// Triggered after the card successfully executes an attack order. 
+    Cause before_attacked; /// Triggered after an attack has been declared on the card and before the combat is resolved.
+    Cause after_attacked; /// Triggered after the card was attacked, after the resolution of combat.
 };

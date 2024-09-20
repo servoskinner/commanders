@@ -1,0 +1,113 @@
+\doxysection{NCurses\+\_\+commander Class Reference}
+\hypertarget{classNCurses__commander}{}\label{classNCurses__commander}\index{NCurses\_commander@{NCurses\_commander}}
+Inheritance diagram for NCurses\+\_\+commander\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classNCurses__commander}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classNCurses__commander_aa8bda5a98cb70093b65839db363bc8bc}\label{classNCurses__commander_aa8bda5a98cb70093b65839db363bc8bc} 
+const bool {\bfseries is\+\_\+on} ()
+\item 
+std\+::optional$<$ \mbox{\hyperlink{structCommander_1_1Commander__message}{Order}} $>$ \mbox{\hyperlink{classNCurses__commander_ae378eee28793fea53a8d845c83ec1178}{get\+\_\+order}} () override
+\item 
+void \mbox{\hyperlink{classNCurses__commander_aaef6048cfb5d99dd8f782bed3b49dd11}{process\+\_\+event}} (\mbox{\hyperlink{structCommander_1_1Commander__message}{Event}} event) override
+\item 
+void \mbox{\hyperlink{classNCurses__commander_af062ee522da71806fa9470fe47ff9b7b}{process\+\_\+order\+\_\+feedback}} (int code)
+\item 
+\Hypertarget{classNCurses__commander_a88cab5c657ffd6a81ff434a982dba5d3}\label{classNCurses__commander_a88cab5c657ffd6a81ff434a982dba5d3} 
+void {\bfseries draw} (unsigned input)
+\item 
+void \mbox{\hyperlink{classNCurses__commander_a241238ab779250e106b6b62165ba7e67}{update\+\_\+state}} (\mbox{\hyperlink{structCommander_1_1Game__state}{Game\+\_\+state}} state) override
+\item 
+void \mbox{\hyperlink{classNCurses__commander_a79e37e74c1163e9c1ff4a688f61e3f0e}{set\+\_\+params}} (\mbox{\hyperlink{structCommander_1_1Game__params}{Game\+\_\+params}} params) override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classNCurses__commander_a9d6b5ffc9d9c818caadd05a5fc67de2c}\label{classNCurses__commander_a9d6b5ffc9d9c818caadd05a5fc67de2c} 
+int {\bfseries x\+\_\+scale}
+\item 
+\Hypertarget{classNCurses__commander_a5b3cd29d98fdfc93518a4379e174be56}\label{classNCurses__commander_a5b3cd29d98fdfc93518a4379e174be56} 
+int {\bfseries y\+\_\+scale}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classCommander}{Commander}}}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ int $>$ {\bfseries controlled\+\_\+ids}
+\item 
+int {\bfseries active\+\_\+id}
+\item 
+\mbox{\hyperlink{structCommander_1_1Game__params}{Game\+\_\+params}} {\bfseries game\+\_\+params}
+\item 
+\mbox{\hyperlink{structCommander_1_1Game__state}{Game\+\_\+state}} {\bfseries game\+\_\+state}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Types inherited from \mbox{\hyperlink{classCommander}{Commander}}}
+\begin{DoxyCompactItemize}
+\item 
+typedef \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+\_\+message}} {\bfseries Order}
+\item 
+typedef \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+\_\+message}} {\bfseries Event}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNCurses__commander_ae378eee28793fea53a8d845c83ec1178}\index{NCurses\_commander@{NCurses\_commander}!get\_order@{get\_order}}
+\index{get\_order@{get\_order}!NCurses\_commander@{NCurses\_commander}}
+\doxysubsubsection{\texorpdfstring{get\_order()}{get\_order()}}
+{\footnotesize\ttfamily \label{classNCurses__commander_ae378eee28793fea53a8d845c83ec1178} 
+std\+::optional$<$ \mbox{\hyperlink{structCommander_1_1Commander__message}{Order}} $>$ NCurses\+\_\+commander\+::get\+\_\+order (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCommander}{Commander}}.
+
+\Hypertarget{classNCurses__commander_aaef6048cfb5d99dd8f782bed3b49dd11}\index{NCurses\_commander@{NCurses\_commander}!process\_event@{process\_event}}
+\index{process\_event@{process\_event}!NCurses\_commander@{NCurses\_commander}}
+\doxysubsubsection{\texorpdfstring{process\_event()}{process\_event()}}
+{\footnotesize\ttfamily \label{classNCurses__commander_aaef6048cfb5d99dd8f782bed3b49dd11} 
+void NCurses\+\_\+commander\+::process\+\_\+event (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structCommander_1_1Commander__message}{Event}}}]{event}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCommander}{Commander}}.
+
+\Hypertarget{classNCurses__commander_af062ee522da71806fa9470fe47ff9b7b}\index{NCurses\_commander@{NCurses\_commander}!process\_order\_feedback@{process\_order\_feedback}}
+\index{process\_order\_feedback@{process\_order\_feedback}!NCurses\_commander@{NCurses\_commander}}
+\doxysubsubsection{\texorpdfstring{process\_order\_feedback()}{process\_order\_feedback()}}
+{\footnotesize\ttfamily \label{classNCurses__commander_af062ee522da71806fa9470fe47ff9b7b} 
+void NCurses\+\_\+commander\+::process\+\_\+order\+\_\+feedback (\begin{DoxyParamCaption}\item[{int}]{code}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCommander}{Commander}}.
+
+\Hypertarget{classNCurses__commander_a79e37e74c1163e9c1ff4a688f61e3f0e}\index{NCurses\_commander@{NCurses\_commander}!set\_params@{set\_params}}
+\index{set\_params@{set\_params}!NCurses\_commander@{NCurses\_commander}}
+\doxysubsubsection{\texorpdfstring{set\_params()}{set\_params()}}
+{\footnotesize\ttfamily \label{classNCurses__commander_a79e37e74c1163e9c1ff4a688f61e3f0e} 
+void NCurses\+\_\+commander\+::set\+\_\+params (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structCommander_1_1Game__params}{Game\+\_\+params}}}]{params}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classCommander}{Commander}}.
+
+\Hypertarget{classNCurses__commander_a241238ab779250e106b6b62165ba7e67}\index{NCurses\_commander@{NCurses\_commander}!update\_state@{update\_state}}
+\index{update\_state@{update\_state}!NCurses\_commander@{NCurses\_commander}}
+\doxysubsubsection{\texorpdfstring{update\_state()}{update\_state()}}
+{\footnotesize\ttfamily \label{classNCurses__commander_a241238ab779250e106b6b62165ba7e67} 
+void NCurses\+\_\+commander\+::update\+\_\+state (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structCommander_1_1Game__state}{Game\+\_\+state}}}]{state}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classCommander}{Commander}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/interface/NCurses\+\_\+commander.\+hpp\end{DoxyCompactItemize}

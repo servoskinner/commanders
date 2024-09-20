@@ -10,7 +10,7 @@ public: // _____________________________________________________________________
     int x, y;
     int type;
 
-    enum tile_neighbourhood
+    enum Tile_neighbor
     {
         UP,
         RIGHT,
@@ -21,7 +21,7 @@ public: // _____________________________________________________________________
         DOWNLEFT,
         UPLEFT
     };
-    enum tile_types
+    enum Tile_type
     {
         NORMAL      = -1,
         OBJECTIVE   = -2,
@@ -32,5 +32,5 @@ public: // _____________________________________________________________________
         TERR_DISADV = -6
     }; // Non-negatives refer to deploy zones of players with same IDs
 
-    std::optional<Card_ref> card;
+    std::optional<Card_ref> card; /// The card that was placed on tile.
 };

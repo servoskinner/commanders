@@ -1,13 +1,14 @@
 #pragma once
 
 #include "TUI.hpp"
-#include "Event_timer.hpp"
+#include "Timer.hpp"
 
 #include <string>
 #include <vector>
 #include <queue>
 #include <functional>
 
+/// @brief Base animated class. 
 class Animated : public TUI::UI_Object
 {
     public:
@@ -17,7 +18,7 @@ class Animated : public TUI::UI_Object
     inline void set_period(float period) { timer.events.back().t_seconds = period;}
 
     protected:
-    Event_timer timer;
+    Timer timer;
     virtual void draw_self(unsigned input = 0, int orig_y = 0, int orig_x = 0) override
     {
         if (visible) {
@@ -27,6 +28,7 @@ class Animated : public TUI::UI_Object
     }
 };
 
+/// @brief Object that toggles its children' visibility once in a period.
 class Blinker : public Animated
 {
     public:
@@ -36,6 +38,7 @@ class Blinker : public Animated
     void tick();
 };
 
+/// @brief Box with text moving around its contour.
 class Crazy_box : public Animated
 {
     public:
@@ -51,6 +54,7 @@ class Crazy_box : public Animated
     void draw_self(unsigned input = 0, int orig_y = 0, int orig_x = 0) override;
 };
 
+/// @brief Text that appears dynamically as if it's being typed
 class Rolling_text : public Animated
 {
     public:

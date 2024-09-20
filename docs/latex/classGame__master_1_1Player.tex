@@ -1,0 +1,64 @@
+\doxysection{Game\+\_\+master\+::Player Class Reference}
+\hypertarget{classGame__master_1_1Player}{}\label{classGame__master_1_1Player}\index{Game\_master::Player@{Game\_master::Player}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_1_1Player_ae91bfdf97907dd96ef39dbee4dbe4427}\label{classGame__master_1_1Player_ae91bfdf97907dd96ef39dbee4dbe4427} 
+{\bfseries Player} (int player\+\_\+id, \mbox{\hyperlink{classGame__master_1_1Deck}{Deck}} \&p\+\_\+deck)
+\item 
+\mbox{\hyperlink{structCommander_1_1Player__info}{Commander\+::\+Player\+\_\+info}} \mbox{\hyperlink{classGame__master_1_1Player_abe647ca772994f6bf3360d86da5fb304}{get\+\_\+info}} ()
+\begin{DoxyCompactList}\small\item\em Funds used to play cards and fire abilities. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_1_1Player_a9a52658db75549635372e632d454cd7d}\label{classGame__master_1_1Player_a9a52658db75549635372e632d454cd7d} 
+const int {\bfseries id}
+\item 
+\Hypertarget{classGame__master_1_1Player_a8dd245f5437e383d10e694c64ff346e0}\label{classGame__master_1_1Player_a8dd245f5437e383d10e694c64ff346e0} 
+bool {\bfseries is\+\_\+active}
+\begin{DoxyCompactList}\small\item\em \doxylink{classUnique}{Unique} player ID and turn no. on which it issues orders. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Player_add6acba7f8d0dfc2d043a95cef2f35c6}\label{classGame__master_1_1Player_add6acba7f8d0dfc2d043a95cef2f35c6} 
+std\+::vector$<$ Card\+\_\+ref $>$ {\bfseries hand}
+\begin{DoxyCompactList}\small\item\em Whether the player is allowed to actively participate in game. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Player_a2ae8add7a6e67471440e26ce94d8b7b0}\label{classGame__master_1_1Player_a2ae8add7a6e67471440e26ce94d8b7b0} 
+Deck\+\_\+ref {\bfseries deck}
+\item 
+\Hypertarget{classGame__master_1_1Player_ae3a83a020c0abe68299406549134fc8a}\label{classGame__master_1_1Player_ae3a83a020c0abe68299406549134fc8a} 
+int {\bfseries points}
+\item 
+\Hypertarget{classGame__master_1_1Player_a7b9de013c1c462179c64ecb091d5da68}\label{classGame__master_1_1Player_a7b9de013c1c462179c64ecb091d5da68} 
+int {\bfseries funds}
+\begin{DoxyCompactList}\small\item\em Dominance Points scored by the player. a total of POINTS\+\_\+\+REQ\+\_\+\+FOR\+\_\+\+VICTORY is required to win the game;. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Player_a3196d9b0e6dd4707db4193c8cea6b64d}\label{classGame__master_1_1Player_a3196d9b0e6dd4707db4193c8cea6b64d} 
+Cause {\bfseries turn\+\_\+start}
+\item 
+\Hypertarget{classGame__master_1_1Player_a71881adf16b263767ce835364dcc88a0}\label{classGame__master_1_1Player_a71881adf16b263767ce835364dcc88a0} 
+Cause {\bfseries turn\+\_\+end}
+\item 
+\Hypertarget{classGame__master_1_1Player_aa36028913a8b9cc044214867c42c240d}\label{classGame__master_1_1Player_aa36028913a8b9cc044214867c42c240d} 
+Cause {\bfseries deploys}
+\item 
+\Hypertarget{classGame__master_1_1Player_aa24a553745a7ddb0456e9c95c4c43186}\label{classGame__master_1_1Player_aa24a553745a7ddb0456e9c95c4c43186} 
+Cause {\bfseries draws}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classGame__master_1_1Player_abe647ca772994f6bf3360d86da5fb304}\index{Game\_master::Player@{Game\_master::Player}!get\_info@{get\_info}}
+\index{get\_info@{get\_info}!Game\_master::Player@{Game\_master::Player}}
+\doxysubsubsection{\texorpdfstring{get\_info()}{get\_info()}}
+{\footnotesize\ttfamily \label{classGame__master_1_1Player_abe647ca772994f6bf3360d86da5fb304} 
+\mbox{\hyperlink{structCommander_1_1Player__info}{Commander\+::\+Player\+\_\+info}} Game\+\_\+master\+::\+Player\+::get\+\_\+info (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Funds used to play cards and fire abilities. 
+
+\begin{DoxyReturn}{Returns}
+\doxylink{classGame__master_1_1Player}{Player} information to display on interface, formatted and stripped of technical details. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/gameplay/Player.\+hpp\end{DoxyCompactItemize}

@@ -1,0 +1,137 @@
+\doxysection{TUI\+::Rect Class Reference}
+\hypertarget{classTUI_1_1Rect}{}\label{classTUI_1_1Rect}\index{TUI::Rect@{TUI::Rect}}
+
+
+A rectangle.  
+
+
+
+
+{\ttfamily \#include $<$TUI.\+hpp$>$}
+
+Inheritance diagram for TUI\+::Rect\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classTUI_1_1Rect}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_1_1Rect_a54392697670c75a8f77ef45b38183ab0}\label{classTUI_1_1Rect_a54392697670c75a8f77ef45b38183ab0} 
+{\bfseries Rect} (int height=1, int width=1, int y=0, int x=0, Color foreground=COLOR\+\_\+\+WHITE, Color background=COLOR\+\_\+\+BLACK)
+\item 
+\Hypertarget{classTUI_1_1Rect_a6d375bcd6049080fc928de7da31c940d}\label{classTUI_1_1Rect_a6d375bcd6049080fc928de7da31c940d} 
+\mbox{\hyperlink{classTUI_1_1Rect}{Rect}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1Rect}{Rect}} \&other)=default
+\item 
+\Hypertarget{classTUI_1_1Rect_a4aa3f199eaacffa974c82b7f3fe98e5a}\label{classTUI_1_1Rect_a4aa3f199eaacffa974c82b7f3fe98e5a} 
+void {\bfseries set\+\_\+border\+\_\+color} (Color foreground=COLOR\+\_\+\+WHITE, Color background=COLOR\+\_\+\+BLACK)
+\item 
+\Hypertarget{classTUI_1_1Rect_ad39902e775c7211f72675a0fc5e7e6b2}\label{classTUI_1_1Rect_ad39902e775c7211f72675a0fc5e7e6b2} 
+void {\bfseries set\+\_\+hborders} (\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} glyph)
+\item 
+\Hypertarget{classTUI_1_1Rect_a03926abe76d4b0ca009a22e897de7fd9}\label{classTUI_1_1Rect_a03926abe76d4b0ca009a22e897de7fd9} 
+void {\bfseries set\+\_\+vborders} (\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} glyph)
+\item 
+\Hypertarget{classTUI_1_1Rect_a1048e771e0d77187a8df457f5f152e60}\label{classTUI_1_1Rect_a1048e771e0d77187a8df457f5f152e60} 
+void {\bfseries set\+\_\+borders} (\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} glyph)
+\item 
+\Hypertarget{classTUI_1_1Rect_afe2f2187a0efd5afc0c9ab8aec56e3f6}\label{classTUI_1_1Rect_afe2f2187a0efd5afc0c9ab8aec56e3f6} 
+void {\bfseries set\+\_\+corners} (\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} glyph)
+\item 
+\Hypertarget{classTUI_1_1Rect_a68a61c19bfac9460706b92e7dea021d9}\label{classTUI_1_1Rect_a68a61c19bfac9460706b92e7dea021d9} 
+void {\bfseries set\+\_\+all} (\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} glyph)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries UI\+\_\+\+Object} (int y=0, int x=0)
+\item 
+\mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \& {\bfseries operator=} (const \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\+\_\+\+Object}} \&other)=default
+\item 
+void {\bfseries draw} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTUI_1_1Rect_a3dbdf59495402937c9abef214f9fc624}\label{classTUI_1_1Rect_a3dbdf59495402937c9abef214f9fc624} 
+int {\bfseries width} = 0
+\item 
+\Hypertarget{classTUI_1_1Rect_ae179a90517bdb85dcea789158de47291}\label{classTUI_1_1Rect_ae179a90517bdb85dcea789158de47291} 
+int {\bfseries height} = 0
+\item 
+\Hypertarget{classTUI_1_1Rect_ab8aa20d75036b9db080d0984824323e9}\label{classTUI_1_1Rect_ab8aa20d75036b9db080d0984824323e9} 
+\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} {\bfseries tl\+\_\+corner} = \{ACS\+\_\+\+ULCORNER\}
+\item 
+\Hypertarget{classTUI_1_1Rect_a518b369ee5238f07306a2a21a0e90470}\label{classTUI_1_1Rect_a518b369ee5238f07306a2a21a0e90470} 
+\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} {\bfseries tr\+\_\+corner} = \{ACS\+\_\+\+URCORNER\}
+\item 
+\Hypertarget{classTUI_1_1Rect_a873b99edc8f64e53e8431d50debefd8c}\label{classTUI_1_1Rect_a873b99edc8f64e53e8431d50debefd8c} 
+\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} {\bfseries bl\+\_\+corner} = \{ACS\+\_\+\+LLCORNER\}
+\item 
+\Hypertarget{classTUI_1_1Rect_a0fb596bd1450d32d97270e7285c25f12}\label{classTUI_1_1Rect_a0fb596bd1450d32d97270e7285c25f12} 
+\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} {\bfseries br\+\_\+corner} = \{ACS\+\_\+\+LRCORNER\}
+\item 
+\Hypertarget{classTUI_1_1Rect_ae972a012aa9763d40ef6850b2707cbc9}\label{classTUI_1_1Rect_ae972a012aa9763d40ef6850b2707cbc9} 
+\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} {\bfseries t\+\_\+border} = \{ACS\+\_\+\+HLINE\}
+\item 
+\Hypertarget{classTUI_1_1Rect_a9df67416e1aad33c8ecde7e8d1f715ef}\label{classTUI_1_1Rect_a9df67416e1aad33c8ecde7e8d1f715ef} 
+\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} {\bfseries b\+\_\+border} = \{ACS\+\_\+\+HLINE\}
+\item 
+\Hypertarget{classTUI_1_1Rect_abcc973e21f86b56eaaa0ff8cea7a87d8}\label{classTUI_1_1Rect_abcc973e21f86b56eaaa0ff8cea7a87d8} 
+\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} {\bfseries l\+\_\+border} = \{ACS\+\_\+\+VLINE\}
+\item 
+\Hypertarget{classTUI_1_1Rect_a67a25f8dcf7cb88bfa1bc62e6943f351}\label{classTUI_1_1Rect_a67a25f8dcf7cb88bfa1bc62e6943f351} 
+\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} {\bfseries r\+\_\+border} = \{ACS\+\_\+\+VLINE\}
+\item 
+\Hypertarget{classTUI_1_1Rect_aaa2b03e8e3932d78f727263b81224f91}\label{classTUI_1_1Rect_aaa2b03e8e3932d78f727263b81224f91} 
+\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}} {\bfseries fill} = \{\}
+\item 
+\Hypertarget{classTUI_1_1Rect_af2b04740b9074d680d301548921a2e5c}\label{classTUI_1_1Rect_af2b04740b9074d680d301548921a2e5c} 
+bool {\bfseries draw\+\_\+filled} = false
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+int {\bfseries x} = 0
+\item 
+int {\bfseries y} = 0
+\item 
+bool {\bfseries use\+\_\+absolute\+\_\+position} = false
+\item 
+bool {\bfseries visible} = true
+\item 
+std\+::vector$<$ UIobj\+\_\+ref $>$ {\bfseries children} = \{\}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{classTUI_1_1Rect_a48ea4729dc6e738cc7f964cc69c94d42}{draw\+\_\+self}} (unsigned input=0, int orig\+\_\+y=0, int orig\+\_\+x=0) override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTUI}{TUI}} \& {\bfseries tui}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A rectangle. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classTUI_1_1Rect_a48ea4729dc6e738cc7f964cc69c94d42}\index{TUI::Rect@{TUI::Rect}!draw\_self@{draw\_self}}
+\index{draw\_self@{draw\_self}!TUI::Rect@{TUI::Rect}}
+\doxysubsubsection{\texorpdfstring{draw\_self()}{draw\_self()}}
+{\footnotesize\ttfamily \label{classTUI_1_1Rect_a48ea4729dc6e738cc7f964cc69c94d42} 
+virtual void TUI\+::\+Rect\+::draw\+\_\+self (\begin{DoxyParamCaption}\item[{unsigned}]{input}{ = {\ttfamily 0}, }\item[{int}]{orig\+\_\+y}{ = {\ttfamily 0}, }\item[{int}]{orig\+\_\+x}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classTUI_1_1UI__Object}{TUI\+::\+UI\+\_\+\+Object}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/utility/TUI.\+hpp\end{DoxyCompactItemize}

@@ -17,10 +17,12 @@ class Network_commander;
 
 typedef std::reference_wrapper<Commander> commander_ref;
 
+/// @brief Generates standardized Orders from interface input and processes Events in the opposite direction.
 class Commander // Acts as an interface between the Game Master and whoever is providing the player input.
 {
 public:
-    struct Player_info // Information about other players seen by everyone.
+    // @
+    struct Player_info
     {
         char id;
         short points;
@@ -55,7 +57,7 @@ public:
     struct Commander_message // Data structure that represents the player's in-game actions.
     {
         unsigned short type;
-        enum order_type 
+        enum Order_type 
         {
             ORD_DO_NOTHING, 
             ORD_PASS, 
@@ -66,7 +68,7 @@ public:
             ORD_CHOICE,
             ORD_ABILITY
         };
-        enum order_feedback
+        enum Order_result
         {
             ORD_SUCCESS,
             ORD_UNKNOWN,
@@ -78,7 +80,7 @@ public:
             ORD_EXHAUSTED,
             ORD_NOFUNDS
         };
-        enum event_type 
+        enum Event_type 
         {
             EV_DUMMY,
             EV_ORDER_FEEDBACK,

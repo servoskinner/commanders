@@ -1,0 +1,84 @@
+\doxysection{CLI\+\_\+commander Class Reference}
+\hypertarget{classCLI__commander}{}\label{classCLI__commander}\index{CLI\_commander@{CLI\_commander}}
+Inheritance diagram for CLI\+\_\+commander\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classCLI__commander}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structCommander_1_1Commander__message}{Order}} \mbox{\hyperlink{classCLI__commander_a1f97ce6307595500a0985e21b3bb257d}{get\+\_\+order}} () override
+\item 
+void \mbox{\hyperlink{classCLI__commander_a20cc0740e608a4c816c3a643103933c3}{process\+\_\+order\+\_\+feedback}} (int code)
+\item 
+void \mbox{\hyperlink{classCLI__commander_a3f1d3ec7594445c34e5afc5c214cbe8f}{process\+\_\+event}} (\mbox{\hyperlink{structCommander_1_1Commander__message}{Event}} event)
+\item 
+\Hypertarget{classCLI__commander_a9c749069994ec98df2f3d85938cf69f0}\label{classCLI__commander_a9c749069994ec98df2f3d85938cf69f0} 
+void {\bfseries apply\+\_\+updates} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classCommander}{Commander}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual void {\bfseries update\+\_\+state} (\mbox{\hyperlink{structCommander_1_1Game__state}{Game\+\_\+state}} state)
+\item 
+virtual void {\bfseries set\+\_\+params} (\mbox{\hyperlink{structCommander_1_1Game__params}{Game\+\_\+params}} params)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Types inherited from \mbox{\hyperlink{classCommander}{Commander}}}
+\begin{DoxyCompactItemize}
+\item 
+typedef \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+\_\+message}} {\bfseries Order}
+\item 
+typedef \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+\_\+message}} {\bfseries Event}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classCommander}{Commander}}}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ int $>$ {\bfseries controlled\+\_\+ids}
+\item 
+int {\bfseries active\+\_\+id}
+\item 
+\mbox{\hyperlink{structCommander_1_1Game__params}{Game\+\_\+params}} {\bfseries game\+\_\+params}
+\item 
+\mbox{\hyperlink{structCommander_1_1Game__state}{Game\+\_\+state}} {\bfseries game\+\_\+state}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classCLI__commander_a1f97ce6307595500a0985e21b3bb257d}\index{CLI\_commander@{CLI\_commander}!get\_order@{get\_order}}
+\index{get\_order@{get\_order}!CLI\_commander@{CLI\_commander}}
+\doxysubsubsection{\texorpdfstring{get\_order()}{get\_order()}}
+{\footnotesize\ttfamily \label{classCLI__commander_a1f97ce6307595500a0985e21b3bb257d} 
+\mbox{\hyperlink{structCommander_1_1Commander__message}{Order}} CLI\+\_\+commander\+::get\+\_\+order (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCommander}{Commander}}.
+
+\Hypertarget{classCLI__commander_a3f1d3ec7594445c34e5afc5c214cbe8f}\index{CLI\_commander@{CLI\_commander}!process\_event@{process\_event}}
+\index{process\_event@{process\_event}!CLI\_commander@{CLI\_commander}}
+\doxysubsubsection{\texorpdfstring{process\_event()}{process\_event()}}
+{\footnotesize\ttfamily \label{classCLI__commander_a3f1d3ec7594445c34e5afc5c214cbe8f} 
+void CLI\+\_\+commander\+::process\+\_\+event (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structCommander_1_1Commander__message}{Event}}}]{event}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCommander}{Commander}}.
+
+\Hypertarget{classCLI__commander_a20cc0740e608a4c816c3a643103933c3}\index{CLI\_commander@{CLI\_commander}!process\_order\_feedback@{process\_order\_feedback}}
+\index{process\_order\_feedback@{process\_order\_feedback}!CLI\_commander@{CLI\_commander}}
+\doxysubsubsection{\texorpdfstring{process\_order\_feedback()}{process\_order\_feedback()}}
+{\footnotesize\ttfamily \label{classCLI__commander_a20cc0740e608a4c816c3a643103933c3} 
+void CLI\+\_\+commander\+::process\+\_\+order\+\_\+feedback (\begin{DoxyParamCaption}\item[{int}]{code}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCommander}{Commander}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/interface/CLI\+\_\+commander.\+hpp\end{DoxyCompactItemize}

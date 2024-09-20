@@ -1,0 +1,207 @@
+\doxysection{Game\+\_\+master Class Reference}
+\hypertarget{classGame__master}{}\label{classGame__master}\index{Game\_master@{Game\_master}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classGame__master_1_1Ability}{Ability}}
+\begin{DoxyCompactList}\small\item\em Represents a collection of trigger-\/event pairs and memory related to them associated with a card. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classGame__master_1_1Ability__simple}{Ability\+\_\+simple}}
+\begin{DoxyCompactList}\small\item\em Single Cause-\/\+Effect pair with no memory. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classGame__master_1_1Card}{Card}}
+\begin{DoxyCompactList}\small\item\em A gameplay-\/wise representation of a card. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classGame__master_1_1Deck}{Deck}}
+\item 
+class \mbox{\hyperlink{classGame__master_1_1Player}{Player}}
+\item 
+class \mbox{\hyperlink{classGame__master_1_1Tile}{Tile}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_a0ab9290f830c3e19f24e00fd9cc081aa}\label{classGame__master_a0ab9290f830c3e19f24e00fd9cc081aa} 
+enum {\bfseries Gamemode} \{ {\bfseries GM\+\_\+\+STANDARD}
+, {\bfseries GM\+\_\+\+SKIRMISH}
+, {\bfseries GM\+\_\+2\+V2}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_ac712f0cade5af59b6897e9a5e2cfda14}\label{classGame__master_ac712f0cade5af59b6897e9a5e2cfda14} 
+{\bfseries Game\+\_\+master} (const std\+::vector$<$ std\+::vector$<$ int $>$ $>$ \&deck\+\_\+images, Gamemode gamemode=GM\+\_\+\+STANDARD, int nplayers=2, const std\+::vector$<$ std\+::vector$<$ int $>$ $>$ \&terrain=\{\})
+\item 
+const \mbox{\hyperlink{structCommander_1_1Game__state}{Commander\+::\+Game\+\_\+state}} \mbox{\hyperlink{classGame__master_aa81ada4679598ea237f45c4bf3b2d636}{get\+\_\+game\+\_\+state}} (int player\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Returns game state as seen from perspective of given player. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classGame__master_abfe245e36ab98316a6c39e020b80a22a}{get\+\_\+turn}} ()
+\item 
+int \mbox{\hyperlink{classGame__master_a438242ea8b6f87847d067c4ac8d90881}{get\+\_\+absolute\+\_\+turn}} ()
+\item 
+bool \mbox{\hyperlink{classGame__master_ad763eec777a7739ce13c8b588bf02931}{is\+\_\+on}} ()
+\item 
+\mbox{\hyperlink{structCommander_1_1Game__params}{Commander\+::\+Game\+\_\+params}} \mbox{\hyperlink{classGame__master_a635ad89c0443b86d531f36776176a5fd}{get\+\_\+static\+\_\+game\+\_\+info}} ()
+\item 
+std\+::pair$<$ int, int $>$ \mbox{\hyperlink{classGame__master_a17cc241679976e800cb488ebb75bdc37}{get\+\_\+grid\+\_\+params}} ()
+\item 
+int \mbox{\hyperlink{classGame__master_a0b3f21a05253d3fc48ea6f24fbb25cd8}{exec\+\_\+order}} (int player\+\_\+id, const \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+::\+Order}} \&order)
+\begin{DoxyCompactList}\small\item\em executes an order from the perspective of given player. \end{DoxyCompactList}\item 
+std\+::optional$<$ \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+::\+Event}} $>$ \mbox{\hyperlink{classGame__master_aee4393e38aa31b946b9b0cc79ab64403}{get\+\_\+event}} (int player\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Gets the least recent event that given player was notified of. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGame__master_a3a6b7fd1364ec710be3028fdfa424ed0}{pop\+\_\+event}} (int player\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Discards the least recent event that given player was notified of. Call this after the event has been fully processed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_a1a659134fa799da97db3674472915239}\label{classGame__master_a1a659134fa799da97db3674472915239} 
+std\+::vector$<$ std\+::function$<$ void(\mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+::\+Event}})$>$ $>$ {\bfseries on\+\_\+event\+\_\+broadcast}
+\begin{DoxyCompactList}\small\item\em Callback for whenever an event visible to all players happens. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_a2975648cab0784c0d7806be96854bd38}\label{classGame__master_a2975648cab0784c0d7806be96854bd38} 
+typedef std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{classGame__master_1_1Card}{Game\+\_\+master\+::\+Card}} $>$ {\bfseries Card\+\_\+ref}
+\item 
+\Hypertarget{classGame__master_ab26552eecd65a47a2088ca5101f4f708}\label{classGame__master_ab26552eecd65a47a2088ca5101f4f708} 
+typedef std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{classGame__master_1_1Deck}{Game\+\_\+master\+::\+Deck}} $>$ {\bfseries Deck\+\_\+ref}
+\item 
+\Hypertarget{classGame__master_aa1da57586e13ed5d6b4da78ef3890e78}\label{classGame__master_aa1da57586e13ed5d6b4da78ef3890e78} 
+typedef std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{classGame__master_1_1Player}{Game\+\_\+master\+::\+Player}} $>$ {\bfseries Player\+\_\+ref}
+\item 
+\Hypertarget{classGame__master_a7a044765a25273cc946973f0249921f1}\label{classGame__master_a7a044765a25273cc946973f0249921f1} 
+typedef std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{classGame__master_1_1Tile}{Game\+\_\+master\+::\+Tile}} $>$ {\bfseries Tile\+\_\+ref}
+\item 
+\Hypertarget{classGame__master_a4fc29da9ba80449bda3bd4f63862861c}\label{classGame__master_a4fc29da9ba80449bda3bd4f63862861c} 
+typedef std\+::function$<$ void(std\+::vector$<$ int $>$)$>$ {\bfseries Effect}
+\item 
+\Hypertarget{classGame__master_a361ddaea139f10d6b917b73b05d43c22}\label{classGame__master_a361ddaea139f10d6b917b73b05d43c22} 
+typedef std\+::vector$<$ int $>$ {\bfseries RArgs}
+\item 
+\Hypertarget{classGame__master_a3f794bc4bf87fe8c51ae15560be442c5}\label{classGame__master_a3f794bc4bf87fe8c51ae15560be442c5} 
+typedef std\+::unordered\+\_\+map$<$ int, Effect $>$ {\bfseries Cause}
+\item 
+\Hypertarget{classGame__master_a5ab5d6994a807d7d360e102bc5cbec98}\label{classGame__master_a5ab5d6994a807d7d360e102bc5cbec98} 
+typedef std\+::reference\+\_\+wrapper$<$ Game\+\_\+master\+::\+Cause $>$ {\bfseries Cause\+\_\+ref}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classGame__master_a0b3f21a05253d3fc48ea6f24fbb25cd8}\index{Game\_master@{Game\_master}!exec\_order@{exec\_order}}
+\index{exec\_order@{exec\_order}!Game\_master@{Game\_master}}
+\doxysubsubsection{\texorpdfstring{exec\_order()}{exec\_order()}}
+{\footnotesize\ttfamily \label{classGame__master_a0b3f21a05253d3fc48ea6f24fbb25cd8} 
+int Game\+\_\+master\+::exec\+\_\+order (\begin{DoxyParamCaption}\item[{int}]{player\+\_\+id}{, }\item[{const \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+::\+Order}} \&}]{order}{}\end{DoxyParamCaption})}
+
+
+
+executes an order from the perspective of given player. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+\_\+id} & id of player who issues the order. \\
+\hline
+{\em order} & order to execute. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 if order was executed successfully, or an error code describing why it failed. 
+\end{DoxyReturn}
+\Hypertarget{classGame__master_a438242ea8b6f87847d067c4ac8d90881}\index{Game\_master@{Game\_master}!get\_absolute\_turn@{get\_absolute\_turn}}
+\index{get\_absolute\_turn@{get\_absolute\_turn}!Game\_master@{Game\_master}}
+\doxysubsubsection{\texorpdfstring{get\_absolute\_turn()}{get\_absolute\_turn()}}
+{\footnotesize\ttfamily \label{classGame__master_a438242ea8b6f87847d067c4ac8d90881} 
+int Game\+\_\+master\+::get\+\_\+absolute\+\_\+turn (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the total number of turns that have passed since the beginning of match. 
+\end{DoxyReturn}
+\Hypertarget{classGame__master_aee4393e38aa31b946b9b0cc79ab64403}\index{Game\_master@{Game\_master}!get\_event@{get\_event}}
+\index{get\_event@{get\_event}!Game\_master@{Game\_master}}
+\doxysubsubsection{\texorpdfstring{get\_event()}{get\_event()}}
+{\footnotesize\ttfamily \label{classGame__master_aee4393e38aa31b946b9b0cc79ab64403} 
+std\+::optional$<$ \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+::\+Event}} $>$ Game\+\_\+master\+::get\+\_\+event (\begin{DoxyParamCaption}\item[{int}]{player\+\_\+id}{}\end{DoxyParamCaption})}
+
+
+
+Gets the least recent event that given player was notified of. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+\_\+id} & id of player who received the event. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+game event. 
+\end{DoxyReturn}
+\Hypertarget{classGame__master_aa81ada4679598ea237f45c4bf3b2d636}\index{Game\_master@{Game\_master}!get\_game\_state@{get\_game\_state}}
+\index{get\_game\_state@{get\_game\_state}!Game\_master@{Game\_master}}
+\doxysubsubsection{\texorpdfstring{get\_game\_state()}{get\_game\_state()}}
+{\footnotesize\ttfamily \label{classGame__master_aa81ada4679598ea237f45c4bf3b2d636} 
+const \mbox{\hyperlink{structCommander_1_1Game__state}{Commander\+::\+Game\+\_\+state}} Game\+\_\+master\+::get\+\_\+game\+\_\+state (\begin{DoxyParamCaption}\item[{int}]{player\+\_\+id}{}\end{DoxyParamCaption})}
+
+
+
+Returns game state as seen from perspective of given player. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+\_\+id} & id of player, the available information for whom is returned. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The current game state. 
+\end{DoxyReturn}
+\Hypertarget{classGame__master_a17cc241679976e800cb488ebb75bdc37}\index{Game\_master@{Game\_master}!get\_grid\_params@{get\_grid\_params}}
+\index{get\_grid\_params@{get\_grid\_params}!Game\_master@{Game\_master}}
+\doxysubsubsection{\texorpdfstring{get\_grid\_params()}{get\_grid\_params()}}
+{\footnotesize\ttfamily \label{classGame__master_a17cc241679976e800cb488ebb75bdc37} 
+std\+::pair$<$ int, int $>$ Game\+\_\+master\+::get\+\_\+grid\+\_\+params (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+height and width of the battlefield. 
+\end{DoxyReturn}
+\Hypertarget{classGame__master_a635ad89c0443b86d531f36776176a5fd}\index{Game\_master@{Game\_master}!get\_static\_game\_info@{get\_static\_game\_info}}
+\index{get\_static\_game\_info@{get\_static\_game\_info}!Game\_master@{Game\_master}}
+\doxysubsubsection{\texorpdfstring{get\_static\_game\_info()}{get\_static\_game\_info()}}
+{\footnotesize\ttfamily \label{classGame__master_a635ad89c0443b86d531f36776176a5fd} 
+\mbox{\hyperlink{structCommander_1_1Game__params}{Commander\+::\+Game\+\_\+params}} Game\+\_\+master\+::get\+\_\+static\+\_\+game\+\_\+info (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+game information that does not change over time and is available to each player. 
+\end{DoxyReturn}
+\Hypertarget{classGame__master_abfe245e36ab98316a6c39e020b80a22a}\index{Game\_master@{Game\_master}!get\_turn@{get\_turn}}
+\index{get\_turn@{get\_turn}!Game\_master@{Game\_master}}
+\doxysubsubsection{\texorpdfstring{get\_turn()}{get\_turn()}}
+{\footnotesize\ttfamily \label{classGame__master_abfe245e36ab98316a6c39e020b80a22a} 
+int Game\+\_\+master\+::get\+\_\+turn (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the id of player who goes now. 
+\end{DoxyReturn}
+\Hypertarget{classGame__master_ad763eec777a7739ce13c8b588bf02931}\index{Game\_master@{Game\_master}!is\_on@{is\_on}}
+\index{is\_on@{is\_on}!Game\_master@{Game\_master}}
+\doxysubsubsection{\texorpdfstring{is\_on()}{is\_on()}}
+{\footnotesize\ttfamily \label{classGame__master_ad763eec777a7739ce13c8b588bf02931} 
+bool Game\+\_\+master\+::is\+\_\+on (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+Whether a game is active. 
+\end{DoxyReturn}
+\Hypertarget{classGame__master_a3a6b7fd1364ec710be3028fdfa424ed0}\index{Game\_master@{Game\_master}!pop\_event@{pop\_event}}
+\index{pop\_event@{pop\_event}!Game\_master@{Game\_master}}
+\doxysubsubsection{\texorpdfstring{pop\_event()}{pop\_event()}}
+{\footnotesize\ttfamily \label{classGame__master_a3a6b7fd1364ec710be3028fdfa424ed0} 
+void Game\+\_\+master\+::pop\+\_\+event (\begin{DoxyParamCaption}\item[{int}]{player\+\_\+id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Discards the least recent event that given player was notified of. Call this after the event has been fully processed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+\_\+id} & id of player who received the event. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/gameplay/Game\+\_\+master.\+hpp\end{DoxyCompactItemize}

@@ -1,6 +1,6 @@
-#include "Storage_manager.hpp"
+#include "Archivist.hpp"
 
-Storage_manager::Storage_manager(std::string storage_file) : filename(storage_file)
+Archivist::Archivist(std::string storage_file) : filename(storage_file)
 {   
     file.open(storage_file, std::ios::in | std::ios::out | std::ios::binary);
     if (file.bad() || file.fail()) {
@@ -30,18 +30,18 @@ Storage_manager::Storage_manager(std::string storage_file) : filename(storage_fi
     }
 }
 
-Storage_manager::~Storage_manager() {
+Archivist::~Archivist() {
     file.flush();
     file.close();
 }
 
-Storage_manager& Storage_manager::get_default()
+Archivist& Archivist::get_default()
 {
-    static Storage_manager storage_manager(DEFAULT_STORAGE_FILE);
+    static Archivist storage_manager(DEFAULT_STORAGE_FILE);
     return storage_manager;
 }
 
-std::optional<unsigned> Storage_manager::next_entry(unsigned prev_pos)
+std::optional<unsigned> Archivist::next_entry(unsigned prev_pos)
 {
     file.seekg(prev_pos);
     if (file.fail() || file.eof()) {
@@ -70,7 +70,7 @@ std::optional<unsigned> Storage_manager::next_entry(unsigned prev_pos)
     return {(unsigned)file.tellg()};
 }
 
-std::optional<unsigned> Storage_manager::locate_entry_indexed(int index)
+std::optional<unsigned> Archivist::locate_entry_indexed(int index)
 {
     if (index >= n_entries) {
         return {};
@@ -94,7 +94,7 @@ std::optional<unsigned> Storage_manager::locate_entry_indexed(int index)
     return {(unsigned)file.tellg()};
 }
 
-std::optional<unsigned> Storage_manager::locate_entry(std::string locator)
+std::optional<unsigned> Archivist::locate_entry(std::string locator)
 {
     file.seekg(4);
     
@@ -129,7 +129,7 @@ std::optional<unsigned> Storage_manager::locate_entry(std::string locator)
     }
 }
 
-std::optional<Serialized> Storage_manager::read_entry_at(unsigned at_pos)
+std::optional<Serialized> Archivist::read_entry_at(unsigned at_pos)
 {
     Serialized data;
 
@@ -160,7 +160,7 @@ std::optional<Serialized> Storage_manager::read_entry_at(unsigned at_pos)
     return {data};
 }
 
-bool Storage_manager::write_entry_at(unsigned at_pos, Storage_manager::Storage_entry& entry)
+bool Archivist::write_entry_at(unsigned at_pos, Archivist::Storage_entry& entry)
 {
     file.seekp(at_pos);
     if (file.fail() || file.eof()) {
@@ -179,7 +179,7 @@ bool Storage_manager::write_entry_at(unsigned at_pos, Storage_manager::Storage_e
     return !(file.fail() || file.eof());
 }
 
-std::optional<Serialized> Storage_manager::get_serialized(std::string locator)
+std::optional<Serialized> Archivist::get_serialized(std::string locator)
 {
     std::optional<unsigned int> location = locate_entry(locator);
     if (!location.has_value()) {
@@ -190,7 +190,7 @@ std::optional<Serialized> Storage_manager::get_serialized(std::string locator)
     return data;
 }
 
-bool Storage_manager::put_serialized(std::string locator, std::vector<char> value)
+bool Archivist::put_serialized(std::string locator, std::vector<char> value)
 {
     Storage_entry entry;
     entry.locator = locator;
@@ -246,7 +246,7 @@ bool Storage_manager::put_serialized(std::string locator, std::vector<char> valu
     return true;
 }
 
-bool Storage_manager::del(std::string locator)
+bool Archivist::del(std::string locator)
 {
     std::optional<unsigned> entry_loc = locate_entry(locator);
     if (!entry_loc.has_value()) {

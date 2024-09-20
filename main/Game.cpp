@@ -18,7 +18,7 @@ int main()
     // Global variables
     // -----------------
 
-    Storage_manager& storage = Storage_manager::get_default();
+    Archivist& storage = Archivist::get_default();
 
     enum game_screen {
         GAME_INTRO,
@@ -39,7 +39,7 @@ int main()
     // Intro
     // ------
 
-    Event_timer intro_timer;
+    Timer intro_timer;
     intro_timer.skip_stalled = false;
 
     TUI::Rect intro_rect(28, 54, 8, 3);

@@ -1,0 +1,41 @@
+\doxysection{Timer.\+hpp}
+\hypertarget{Timer_8hpp_source}{}\label{Timer_8hpp_source}\index{logic/include/utility/Timer.hpp@{logic/include/utility/Timer.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classTimer}{Timer}}}
+\DoxyCodeLine{00011\ \{}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ get\_cur\_time\_s();}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{float}\ prev\_time,\ delta\_time;}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00017\ \ \ \ \ \mbox{\hyperlink{classTimer}{Timer}}()\ :\ events(),\ delta\_time(0),\ \(\backslash\)}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prev\_time(get\_cur\_time\_s()),\ skip\_stalled(\textcolor{keyword}{true})\ \{\}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structTimer_1_1Timed__event}{Timed\_event}}}
+\DoxyCodeLine{00022\ \ \ \ \ \{}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ std::function<void(\textcolor{keywordtype}{void})>\ \textcolor{keyword}{event}\ =\ \{\};}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ std::optional<std::reference\_wrapper<std::mutex>>\ mutex;\ }
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structTimer_1_1Timed__event_a41048d282bdfe833be24311dca3215da}{t\_seconds}}\ =\ 0.0;}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ countdown\ =\ 0.0;}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\_repeat\ =\ -\/1;}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structTimer_1_1Timed__event_a204e5b5f2ee333e681a78922ada93cce}{Timed\_event}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{void})>\ event,\ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structTimer_1_1Timed__event_a41048d282bdfe833be24311dca3215da}{t\_seconds}},\ \textcolor{keywordtype}{int}\ n\_repeat\ =\ -\/1)\ :\ event(event),\ \mbox{\hyperlink{structTimer_1_1Timed__event_a41048d282bdfe833be24311dca3215da}{t\_seconds}}(\mbox{\hyperlink{structTimer_1_1Timed__event_a41048d282bdfe833be24311dca3215da}{t\_seconds}}),\ \(\backslash\)}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ countdown(\mbox{\hyperlink{structTimer_1_1Timed__event_a41048d282bdfe833be24311dca3215da}{t\_seconds}}),\ mutex(),}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n\_repeat(n\_repeat)\ \{\}}
+\DoxyCodeLine{00036\ \ \ \ \ \};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{void}\ process();}
+\DoxyCodeLine{00039\ \ \ \ \ std::vector<Timed\_event>\ events;}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{bool}\ skip\_stalled;}
+\DoxyCodeLine{00041\ \};}
+
+\end{DoxyCode}

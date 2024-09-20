@@ -1,0 +1,57 @@
+\doxysection{Socket\+\_\+info Struct Reference}
+\hypertarget{structSocket__info}{}\label{structSocket__info}\index{Socket\_info@{Socket\_info}}
+
+
+Combination of a socket\textquotesingle{}s port and IP address.  
+
+
+
+
+{\ttfamily \#include $<$Network.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structSocket__info_a56d2020cae51627b006efff879af9a77}\label{structSocket__info_a56d2020cae51627b006efff879af9a77} 
+{\bfseries Socket\+\_\+info} (u\+\_\+short n\+\_\+port, const char \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{structSocket__info_a9e97dddb9ded2030e0bf909b04348b28}{addrstr}}="{}127.\+0.\+0.\+1"{})
+\item 
+\Hypertarget{structSocket__info_ae6c0302ae31a077083f1f62ffb8f1a3d}\label{structSocket__info_ae6c0302ae31a077083f1f62ffb8f1a3d} 
+{\bfseries Socket\+\_\+info} (u\+\_\+short n\+\_\+port, std\+::string \mbox{\hyperlink{structSocket__info_a9e97dddb9ded2030e0bf909b04348b28}{addrstr}}="{}127.\+0.\+0.\+1"{})
+\item 
+\Hypertarget{structSocket__info_a171e38a039d6f71fe5624dbb58d97a68}\label{structSocket__info_a171e38a039d6f71fe5624dbb58d97a68} 
+{\bfseries Socket\+\_\+info} (u\+\_\+short n\+\_\+port, in\+\_\+addr\+\_\+t addr)
+\item 
+\Hypertarget{structSocket__info_aba5244f911f24d577532349f8dadf4de}\label{structSocket__info_aba5244f911f24d577532349f8dadf4de} 
+const bool {\bfseries operator==} (const \mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}} \&other)
+\item 
+const std\+::string \mbox{\hyperlink{structSocket__info_a9e97dddb9ded2030e0bf909b04348b28}{addrstr}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structSocket__info_a15f50f3eaaf8cbba8598d83ea8aacef9}\label{structSocket__info_a15f50f3eaaf8cbba8598d83ea8aacef9} 
+u\+\_\+short {\bfseries port} = 0
+\item 
+\Hypertarget{structSocket__info_a89418ea47451741c9672be543bad193f}\label{structSocket__info_a89418ea47451741c9672be543bad193f} 
+in\+\_\+addr\+\_\+t {\bfseries address} = 0
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Combination of a socket\textquotesingle{}s port and IP address. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structSocket__info_a9e97dddb9ded2030e0bf909b04348b28}\index{Socket\_info@{Socket\_info}!addrstr@{addrstr}}
+\index{addrstr@{addrstr}!Socket\_info@{Socket\_info}}
+\doxysubsubsection{\texorpdfstring{addrstr()}{addrstr()}}
+{\footnotesize\ttfamily \label{structSocket__info_a9e97dddb9ded2030e0bf909b04348b28} 
+const std\+::string Socket\+\_\+info\+::addrstr (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+Address represented as string. 
+\end{DoxyReturn}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/network/Network.\+hpp\end{DoxyCompactItemize}

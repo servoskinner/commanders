@@ -1,0 +1,255 @@
+\doxysection{TCP\+\_\+server Class Reference}
+\hypertarget{classTCP__server}{}\label{classTCP__server}\index{TCP\_server@{TCP\_server}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTCP__server_a115208dce129a1e8dfa33862655cfe1d}{TCP\+\_\+server}} (u\+\_\+short port)
+\begin{DoxyCompactList}\small\item\em Constructor of \doxylink{classTCP__server}{TCP\+\_\+server}. \end{DoxyCompactList}\item 
+\Hypertarget{classTCP__server_a3055d51884d319647a493d732457173e}\label{classTCP__server_a3055d51884d319647a493d732457173e} 
+void {\bfseries poll\+\_\+events} ()
+\begin{DoxyCompactList}\small\item\em Ran by dedicated thread\+: checks for incoming messages on open sockets and processes them. \end{DoxyCompactList}\item 
+\Hypertarget{classTCP__server_ab5c0d710cc925dd7f0d20b41d1392ff6}\label{classTCP__server_ab5c0d710cc925dd7f0d20b41d1392ff6} 
+void {\bfseries allow\+\_\+ip} (in\+\_\+addr\+\_\+t addr)
+\begin{DoxyCompactList}\small\item\em Allows connection requests from clients with given IP address. \end{DoxyCompactList}\item 
+\Hypertarget{classTCP__server_ae4d6c90a77add45d96987b4404d073ad}\label{classTCP__server_ae4d6c90a77add45d96987b4404d073ad} 
+void {\bfseries disallow\+\_\+ip} (in\+\_\+addr\+\_\+t addr)
+\begin{DoxyCompactList}\small\item\em Forbids connection requests from clients with given IP address. \end{DoxyCompactList}\item 
+const std\+::set$<$ in\+\_\+addr\+\_\+t $>$ \mbox{\hyperlink{classTCP__server_af0a10702522fe18967df27bb5d7081bf}{get\+\_\+allowed\+\_\+ips}} ()
+\item 
+const u\+\_\+short \mbox{\hyperlink{classTCP__server_afe74f74a3a5de61a41e50cb969f15e38}{get\+\_\+port}} ()
+\item 
+\Hypertarget{classTCP__server_a9688e4d543bb876399b119c62be4e166}\label{classTCP__server_a9688e4d543bb876399b119c62be4e166} 
+const std\+::optional$<$ \mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}} $>$ {\bfseries get\+\_\+connection\+\_\+event} ()
+\begin{DoxyCompactList}\small\item\em Pops first value from queue that holds Socket\+\_\+infos of recently connected peers. \end{DoxyCompactList}\item 
+\Hypertarget{classTCP__server_ad5636e2d021f955e8c4885a651fc6921}\label{classTCP__server_ad5636e2d021f955e8c4885a651fc6921} 
+const std\+::vector$<$ \mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}} $>$ {\bfseries get\+\_\+peers} ()
+\item 
+bool \mbox{\hyperlink{classTCP__server_ad20fdfdaab5bb5d566767fce6213105b}{send\+\_\+to}} (int id, std\+::vector$<$ char $>$ message)
+\begin{DoxyCompactList}\small\item\em Sends message to peer with given id. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classTCP__server_a3695b078ec21f883a051ef990ebe1bcb}{send\+\_\+all}} (std\+::vector$<$ char $>$ message)
+\begin{DoxyCompactList}\small\item\em Sends message to all connected peers. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structSocket__inbound__message}{Socket\+\_\+inbound\+\_\+message}} \mbox{\hyperlink{classTCP__server_a48c0ae654fff267578735cf5008406f4}{get\+\_\+message}} ()
+\begin{DoxyCompactList}\small\item\em Retrieves a received message from the queue. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classTCP__server_a57176d55bc600923cb8bb5a6b360dd2b}{disconnect\+\_\+peer}} (int id)
+\begin{DoxyCompactList}\small\item\em Terminates connection with a peer. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classTCP__server_a7363def05b63083c8e87ac1636b2eeef}{disconnect\+\_\+peer\+\_\+addr}} (\mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}} \mbox{\hyperlink{classTCP__server_af7a9502e5874fb363754c00fbe31f428}{peer\+\_\+info}})
+\begin{DoxyCompactList}\small\item\em Terminates connection with a peer with matching IP address and port. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTCP__server_ae7d04721c1edc76ad1c16ea2af0adbc7}\label{classTCP__server_ae7d04721c1edc76ad1c16ea2af0adbc7} 
+std\+::set$<$ in\+\_\+addr\+\_\+t $>$ {\bfseries allowed\+\_\+ips}
+\begin{DoxyCompactList}\small\item\em IP addresses that can connect to the server. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classTCP__server_ab021f353a070bab6b22fdf4a86603992}{accept\+\_\+all}} = false
+\item 
+\Hypertarget{classTCP__server_ab7f5760dafe8cdf1cad127280a0dd70d}\label{classTCP__server_ab7f5760dafe8cdf1cad127280a0dd70d} 
+bool {\bfseries do\+\_\+handshake} = false
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTCP__server_abbf37e5cfeee1876d92ee0da590e7728}\label{classTCP__server_abbf37e5cfeee1876d92ee0da590e7728} 
+void {\bfseries handle\+\_\+request} ()
+\begin{DoxyCompactList}\small\item\em Handle new connection request received by service (0th) socket. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classTCP__server_a949ccf491f855e9baf7fb75f00c46a02}{handle\+\_\+client}} (int id)
+\begin{DoxyCompactList}\small\item\em Receives a message from client socket and tries to queue it in inbox. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classTCP__server_ac58f70ec0b2ea2ea45f448fcc5ed51f8}\label{classTCP__server_ac58f70ec0b2ea2ea45f448fcc5ed51f8} 
+u\+\_\+short {\bfseries own\+\_\+port}
+\begin{DoxyCompactList}\small\item\em Port to receive connection requests. \end{DoxyCompactList}\item 
+\Hypertarget{classTCP__server_a029e9b115b5290795a885e9592e436e2}\label{classTCP__server_a029e9b115b5290795a885e9592e436e2} 
+std\+::vector$<$ pollfd $>$ {\bfseries polled}
+\begin{DoxyCompactList}\small\item\em Description of polled sockets, including their descriptors. \end{DoxyCompactList}\item 
+\Hypertarget{classTCP__server_af7a9502e5874fb363754c00fbe31f428}\label{classTCP__server_af7a9502e5874fb363754c00fbe31f428} 
+std\+::vector$<$ \mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}} $>$ {\bfseries peer\+\_\+info}
+\begin{DoxyCompactList}\small\item\em Peer IP addresses and ports. \end{DoxyCompactList}\item 
+\Hypertarget{classTCP__server_ad910536017f1b268702bb292fd18574f}\label{classTCP__server_ad910536017f1b268702bb292fd18574f} 
+std\+::queue$<$ \mbox{\hyperlink{structSocket__inbound__message}{Socket\+\_\+inbound\+\_\+message}} $>$ {\bfseries inbox}
+\begin{DoxyCompactList}\small\item\em Received messages queued for retrieval. \end{DoxyCompactList}\item 
+\Hypertarget{classTCP__server_a135f0291e7936a204a509ac775b10799}\label{classTCP__server_a135f0291e7936a204a509ac775b10799} 
+std\+::queue$<$ \mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}} $>$ {\bfseries connection\+\_\+log}
+\begin{DoxyCompactList}\small\item\em Sockets that have been connected. \end{DoxyCompactList}\item 
+\Hypertarget{classTCP__server_abbbd84ac7ef1a4f6316e4803fe9f8dcb}\label{classTCP__server_abbbd84ac7ef1a4f6316e4803fe9f8dcb} 
+std\+::thread {\bfseries receiver\+\_\+thread}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{classTCP__server_a02ae86f53ff55ae0f3d7c8d344c71e08}{is\+\_\+running}}
+\item 
+\Hypertarget{classTCP__server_a8cc612a8c767065dc6dd24e60cac6d32}\label{classTCP__server_a8cc612a8c767065dc6dd24e60cac6d32} 
+std\+::mutex {\bfseries inbox\+\_\+mutex}
+\item 
+\Hypertarget{classTCP__server_a12915b723c48e1602486f2258d8b2999}\label{classTCP__server_a12915b723c48e1602486f2258d8b2999} 
+std\+::mutex {\bfseries peer\+\_\+list\+\_\+mutex}
+\item 
+\Hypertarget{classTCP__server_af69c4f6db95fbb87e79ad1c58847ee16}\label{classTCP__server_af69c4f6db95fbb87e79ad1c58847ee16} 
+std\+::mutex {\bfseries socket\+\_\+mutex}
+\item 
+\Hypertarget{classTCP__server_a353333229f24e96edae22793d76c8c26}\label{classTCP__server_a353333229f24e96edae22793d76c8c26} 
+std\+::mutex {\bfseries allowed\+\_\+list\+\_\+mutex}
+\item 
+\Hypertarget{classTCP__server_adeb7ae6a98c9cbd09484bb8627c3c715}\label{classTCP__server_adeb7ae6a98c9cbd09484bb8627c3c715} 
+std\+::mutex {\bfseries connection\+\_\+log\+\_\+mutex}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classTCP__server_a115208dce129a1e8dfa33862655cfe1d}\index{TCP\_server@{TCP\_server}!TCP\_server@{TCP\_server}}
+\index{TCP\_server@{TCP\_server}!TCP\_server@{TCP\_server}}
+\doxysubsubsection{\texorpdfstring{TCP\_server()}{TCP\_server()}}
+{\footnotesize\ttfamily \label{classTCP__server_a115208dce129a1e8dfa33862655cfe1d} 
+TCP\+\_\+server\+::\+TCP\+\_\+server (\begin{DoxyParamCaption}\item[{u\+\_\+short}]{port}{}\end{DoxyParamCaption})}
+
+
+
+Constructor of \doxylink{classTCP__server}{TCP\+\_\+server}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em port} & port to host the service socket used to request new connections. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classTCP__server_a57176d55bc600923cb8bb5a6b360dd2b}\index{TCP\_server@{TCP\_server}!disconnect\_peer@{disconnect\_peer}}
+\index{disconnect\_peer@{disconnect\_peer}!TCP\_server@{TCP\_server}}
+\doxysubsubsection{\texorpdfstring{disconnect\_peer()}{disconnect\_peer()}}
+{\footnotesize\ttfamily \label{classTCP__server_a57176d55bc600923cb8bb5a6b360dd2b} 
+bool TCP\+\_\+server\+::disconnect\+\_\+peer (\begin{DoxyParamCaption}\item[{int}]{id}{}\end{DoxyParamCaption})}
+
+
+
+Terminates connection with a peer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id of peer. Addresses can be accessed using get\+\_\+peers(). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Whether terminating connection was successful. 
+\end{DoxyReturn}
+\Hypertarget{classTCP__server_a7363def05b63083c8e87ac1636b2eeef}\index{TCP\_server@{TCP\_server}!disconnect\_peer\_addr@{disconnect\_peer\_addr}}
+\index{disconnect\_peer\_addr@{disconnect\_peer\_addr}!TCP\_server@{TCP\_server}}
+\doxysubsubsection{\texorpdfstring{disconnect\_peer\_addr()}{disconnect\_peer\_addr()}}
+{\footnotesize\ttfamily \label{classTCP__server_a7363def05b63083c8e87ac1636b2eeef} 
+bool TCP\+\_\+server\+::disconnect\+\_\+peer\+\_\+addr (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}}}]{peer\+\_\+info}{}\end{DoxyParamCaption})}
+
+
+
+Terminates connection with a peer with matching IP address and port. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em addr} & Address and port of peer. Addresses can be accessed using get\+\_\+peers(). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Whether terminating connection was successful. 
+\end{DoxyReturn}
+\Hypertarget{classTCP__server_af0a10702522fe18967df27bb5d7081bf}\index{TCP\_server@{TCP\_server}!get\_allowed\_ips@{get\_allowed\_ips}}
+\index{get\_allowed\_ips@{get\_allowed\_ips}!TCP\_server@{TCP\_server}}
+\doxysubsubsection{\texorpdfstring{get\_allowed\_ips()}{get\_allowed\_ips()}}
+{\footnotesize\ttfamily \label{classTCP__server_af0a10702522fe18967df27bb5d7081bf} 
+const std\+::set$<$ in\+\_\+addr\+\_\+t $>$ TCP\+\_\+server\+::get\+\_\+allowed\+\_\+ips (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+A set of IPs that are allowed to connect. 
+\end{DoxyReturn}
+\Hypertarget{classTCP__server_a48c0ae654fff267578735cf5008406f4}\index{TCP\_server@{TCP\_server}!get\_message@{get\_message}}
+\index{get\_message@{get\_message}!TCP\_server@{TCP\_server}}
+\doxysubsubsection{\texorpdfstring{get\_message()}{get\_message()}}
+{\footnotesize\ttfamily \label{classTCP__server_a48c0ae654fff267578735cf5008406f4} 
+\mbox{\hyperlink{structSocket__inbound__message}{Socket\+\_\+inbound\+\_\+message}} TCP\+\_\+server\+::get\+\_\+message (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Retrieves a received message from the queue. 
+
+\begin{DoxyReturn}{Returns}
+The message itself as byte vector combined with sender\textquotesingle{}s port and IP address. 
+\end{DoxyReturn}
+\Hypertarget{classTCP__server_afe74f74a3a5de61a41e50cb969f15e38}\index{TCP\_server@{TCP\_server}!get\_port@{get\_port}}
+\index{get\_port@{get\_port}!TCP\_server@{TCP\_server}}
+\doxysubsubsection{\texorpdfstring{get\_port()}{get\_port()}}
+{\footnotesize\ttfamily \label{classTCP__server_afe74f74a3a5de61a41e50cb969f15e38} 
+const u\+\_\+short TCP\+\_\+server\+::get\+\_\+port (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+The port that handles connection requests. 
+\end{DoxyReturn}
+\Hypertarget{classTCP__server_a949ccf491f855e9baf7fb75f00c46a02}\index{TCP\_server@{TCP\_server}!handle\_client@{handle\_client}}
+\index{handle\_client@{handle\_client}!TCP\_server@{TCP\_server}}
+\doxysubsubsection{\texorpdfstring{handle\_client()}{handle\_client()}}
+{\footnotesize\ttfamily \label{classTCP__server_a949ccf491f855e9baf7fb75f00c46a02} 
+void TCP\+\_\+server\+::handle\+\_\+client (\begin{DoxyParamCaption}\item[{int}]{id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Receives a message from client socket and tries to queue it in inbox. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & the client\textquotesingle{}s id. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classTCP__server_a3695b078ec21f883a051ef990ebe1bcb}\index{TCP\_server@{TCP\_server}!send\_all@{send\_all}}
+\index{send\_all@{send\_all}!TCP\_server@{TCP\_server}}
+\doxysubsubsection{\texorpdfstring{send\_all()}{send\_all()}}
+{\footnotesize\ttfamily \label{classTCP__server_a3695b078ec21f883a051ef990ebe1bcb} 
+bool TCP\+\_\+server\+::send\+\_\+all (\begin{DoxyParamCaption}\item[{std\+::vector$<$ char $>$}]{message}{}\end{DoxyParamCaption})}
+
+
+
+Sends message to all connected peers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & byte vector to send. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Whether all send operations were successful. 
+\end{DoxyReturn}
+\Hypertarget{classTCP__server_ad20fdfdaab5bb5d566767fce6213105b}\index{TCP\_server@{TCP\_server}!send\_to@{send\_to}}
+\index{send\_to@{send\_to}!TCP\_server@{TCP\_server}}
+\doxysubsubsection{\texorpdfstring{send\_to()}{send\_to()}}
+{\footnotesize\ttfamily \label{classTCP__server_ad20fdfdaab5bb5d566767fce6213105b} 
+bool TCP\+\_\+server\+::send\+\_\+to (\begin{DoxyParamCaption}\item[{int}]{id}{, }\item[{std\+::vector$<$ char $>$}]{message}{}\end{DoxyParamCaption})}
+
+
+
+Sends message to peer with given id. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id of peer to send the message to. \\
+\hline
+{\em message} & byte vector to send. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Whether all bytes were delivered successfully. 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classTCP__server_ab021f353a070bab6b22fdf4a86603992}\index{TCP\_server@{TCP\_server}!accept\_all@{accept\_all}}
+\index{accept\_all@{accept\_all}!TCP\_server@{TCP\_server}}
+\doxysubsubsection{\texorpdfstring{accept\_all}{accept\_all}}
+{\footnotesize\ttfamily \label{classTCP__server_ab021f353a070bab6b22fdf4a86603992} 
+bool TCP\+\_\+server\+::accept\+\_\+all = false}
+
+If set to true, accepts all connection requests without checking sender IP against allowed\+\_\+ips. \Hypertarget{classTCP__server_a02ae86f53ff55ae0f3d7c8d344c71e08}\index{TCP\_server@{TCP\_server}!is\_running@{is\_running}}
+\index{is\_running@{is\_running}!TCP\_server@{TCP\_server}}
+\doxysubsubsection{\texorpdfstring{is\_running}{is\_running}}
+{\footnotesize\ttfamily \label{classTCP__server_a02ae86f53ff55ae0f3d7c8d344c71e08} 
+std\+::atomic$<$bool$>$ TCP\+\_\+server\+::is\+\_\+running\hspace{0.3cm}{\ttfamily [protected]}}
+
+Determines if server is monitoring its descriptors. Used to stop the receiver thread when set to false. ~\newline
+ 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/network/TCP\+\_\+server.\+hpp\end{DoxyCompactItemize}

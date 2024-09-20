@@ -1,4 +1,6 @@
-#include "Socket_wrappers.hpp"
+#include "Network.hpp"
+#include "UDP_peer.hpp"
+
 #include <iostream>
 #include <string>
 
@@ -9,7 +11,7 @@ int main()
     std::cout << "Enter user port: " << std::flush;
     std::cin >> user_port;
 
-    UDP_wrapper socket_self(user_port);
+    UDP_peer socket_self(user_port);
 
     std::cout << "Enter peer port: " << std::flush;
     std::cin >> peer_port;

@@ -1,0 +1,116 @@
+\doxysection{Game\+\_\+master\+::Card Class Reference}
+\hypertarget{classGame__master_1_1Card}{}\label{classGame__master_1_1Card}\index{Game\_master::Card@{Game\_master::Card}}
+
+
+A gameplay-\/wise representation of a card.  
+
+
+
+
+{\ttfamily \#include $<$Card.\+hpp$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_1_1Card_a9a04fcde033cbe381ddc8df6e676c17c}\label{classGame__master_1_1Card_a9a04fcde033cbe381ddc8df6e676c17c} 
+enum {\bfseries Card\+\_\+status} \{ \newline
+{\bfseries CSTATUS\+\_\+\+UNDEFINED} = -\/1
+, {\bfseries CSTATUS\+\_\+\+LIBRARY} = 0
+, {\bfseries CSTATUS\+\_\+\+HAND} = 1
+, {\bfseries CSTATUS\+\_\+\+BATTLEFIELD} = 2
+, \newline
+{\bfseries CSTATUS\+\_\+\+GRAVEYARD} = 3
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_1_1Card_abc145d1b9ef754a7034ee233aae95c5f}\label{classGame__master_1_1Card_abc145d1b9ef754a7034ee233aae95c5f} 
+{\bfseries Card} (\mbox{\hyperlink{classGame__master}{Game\+\_\+master}} \&master, Card\+\_\+id id, int oid=-\/1)
+\item 
+\Hypertarget{classGame__master_1_1Card_a51cd854946f1caba692b9c62a3cf21c9}\label{classGame__master_1_1Card_a51cd854946f1caba692b9c62a3cf21c9} 
+void {\bfseries reset} ()
+\begin{DoxyCompactList}\small\item\em Re-\/initializes everything that could have changed when the card was on field (Power, etc.) \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_a367b3944f555b5821707fdcbbbc8c69d}\label{classGame__master_1_1Card_a367b3944f555b5821707fdcbbbc8c69d} 
+\mbox{\hyperlink{structCommander_1_1Card__info}{Commander\+::\+Card\+\_\+info}} {\bfseries get\+\_\+info} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_1_1Card_af024c7debf1ba5e83a5d6923a0095fd3}\label{classGame__master_1_1Card_af024c7debf1ba5e83a5d6923a0095fd3} 
+const int {\bfseries owner\+\_\+id}
+\item 
+\Hypertarget{classGame__master_1_1Card_af156c315295cccb7c2712f0a4b26e4ff}\label{classGame__master_1_1Card_af156c315295cccb7c2712f0a4b26e4ff} 
+const Card\+\_\+id {\bfseries card\+\_\+id}
+\begin{DoxyCompactList}\small\item\em ID of the player in whose deck was this card when the game began. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_ad4b403bc11444dec2c40cbb1af770fc4}\label{classGame__master_1_1Card_ad4b403bc11444dec2c40cbb1af770fc4} 
+int {\bfseries controller\+\_\+id}
+\begin{DoxyCompactList}\small\item\em Which card in game it is. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_a488e672b70ad1d74d4aa6237de4b0ed4}\label{classGame__master_1_1Card_a488e672b70ad1d74d4aa6237de4b0ed4} 
+\mbox{\hyperlink{classUnique}{Unique}} {\bfseries entity\+\_\+id}
+\begin{DoxyCompactList}\small\item\em ID of the player who can give orders to this card. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_a554ecaab37791f1dd3d2049120e615dc}\label{classGame__master_1_1Card_a554ecaab37791f1dd3d2049120e615dc} 
+Card\+\_\+type {\bfseries type}
+\begin{DoxyCompactList}\small\item\em \doxylink{classUnique}{Unique} ID used to compare identities of different objects. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_a15762ee8754cebf63c323a03a4129175}\label{classGame__master_1_1Card_a15762ee8754cebf63c323a03a4129175} 
+Card\+\_\+status {\bfseries status}
+\item 
+\Hypertarget{classGame__master_1_1Card_a4e96a21d1c6f2c111163f3a3b3f46eec}\label{classGame__master_1_1Card_a4e96a21d1c6f2c111163f3a3b3f46eec} 
+int {\bfseries x}
+\item 
+\Hypertarget{classGame__master_1_1Card_a2d0f99f0fdf57ba04d4ac59ec9a745ae}\label{classGame__master_1_1Card_a2d0f99f0fdf57ba04d4ac59ec9a745ae} 
+int {\bfseries y}
+\item 
+\Hypertarget{classGame__master_1_1Card_ae1c8f0768906c6a1dd8d14a0135fc3a4}\label{classGame__master_1_1Card_ae1c8f0768906c6a1dd8d14a0135fc3a4} 
+int {\bfseries cost}
+\begin{DoxyCompactList}\small\item\em The card\textquotesingle{}s position on the grid, if it is there. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_a287134638afb3de613b9d9380c551a91}\label{classGame__master_1_1Card_a287134638afb3de613b9d9380c551a91} 
+int {\bfseries value}
+\begin{DoxyCompactList}\small\item\em Funds required to deploy the card. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_a9dc89896ad683db3c957225342d8b33c}\label{classGame__master_1_1Card_a9dc89896ad683db3c957225342d8b33c} 
+int {\bfseries advantage}
+\begin{DoxyCompactList}\small\item\em The unit\textquotesingle{}s Combat Power or the contract\textquotesingle{}s duration. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_a9e099f58cec2843674fb26ecad2e7b83}\label{classGame__master_1_1Card_a9e099f58cec2843674fb26ecad2e7b83} 
+bool {\bfseries can\+\_\+attack}
+\item 
+\Hypertarget{classGame__master_1_1Card_ab5be6c57d6a08ede2310bca503fafba1}\label{classGame__master_1_1Card_ab5be6c57d6a08ede2310bca503fafba1} 
+bool {\bfseries can\+\_\+move}
+\item 
+\Hypertarget{classGame__master_1_1Card_a4f58fe730409a8259b8c02a0dd13b9b3}\label{classGame__master_1_1Card_a4f58fe730409a8259b8c02a0dd13b9b3} 
+bool {\bfseries is\+\_\+overwhelmed}
+\item 
+\Hypertarget{classGame__master_1_1Card_a6f67b4d3b4301ab446cc9b0697e107db}\label{classGame__master_1_1Card_a6f67b4d3b4301ab446cc9b0697e107db} 
+std\+::list$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGame__master_1_1Ability}{Ability}} $>$ $>$ {\bfseries abilities}
+\item 
+\Hypertarget{classGame__master_1_1Card_a4ae2d87c433c8ef07b0313bd56a46b13}\label{classGame__master_1_1Card_a4ae2d87c433c8ef07b0313bd56a46b13} 
+Cause {\bfseries enters\+\_\+play}
+\item 
+\Hypertarget{classGame__master_1_1Card_a7626bb813bd96f165461455f52821fd5}\label{classGame__master_1_1Card_a7626bb813bd96f165461455f52821fd5} 
+Cause {\bfseries leaves\+\_\+play}
+\begin{DoxyCompactList}\small\item\em Triggered when card is deployed. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_a7efe7e7a1e4144e7388307c577562517}\label{classGame__master_1_1Card_a7efe7e7a1e4144e7388307c577562517} 
+Cause {\bfseries before\+\_\+move}
+\begin{DoxyCompactList}\small\item\em Triggered when card is put into junk. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_af2cc04f8cc88fad6feee5f417997d4c4}\label{classGame__master_1_1Card_af2cc04f8cc88fad6feee5f417997d4c4} 
+Cause {\bfseries after\+\_\+move}
+\begin{DoxyCompactList}\small\item\em Triggered after the card has been issued a valid move order and before it moves. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_a91249d682aad9df31c9e359e9451967f}\label{classGame__master_1_1Card_a91249d682aad9df31c9e359e9451967f} 
+Cause {\bfseries before\+\_\+attack}
+\begin{DoxyCompactList}\small\item\em Triggered after the card makes a valid move. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_a46237e65b6a121c9ba1224c310c6efeb}\label{classGame__master_1_1Card_a46237e65b6a121c9ba1224c310c6efeb} 
+Cause {\bfseries after\+\_\+attack}
+\begin{DoxyCompactList}\small\item\em Triggered after the card has been issued a valid attack order and before it attacks. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_a621cc08f3865bd5b0cf6c4f214a1cfe0}\label{classGame__master_1_1Card_a621cc08f3865bd5b0cf6c4f214a1cfe0} 
+Cause {\bfseries before\+\_\+attacked}
+\begin{DoxyCompactList}\small\item\em Triggered after the card successfully executes an attack order. \end{DoxyCompactList}\item 
+\Hypertarget{classGame__master_1_1Card_af934d2531938d9336b131b45fa93d050}\label{classGame__master_1_1Card_af934d2531938d9336b131b45fa93d050} 
+Cause {\bfseries after\+\_\+attacked}
+\begin{DoxyCompactList}\small\item\em Triggered after an attack has been declared on the card and before the combat is resolved. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A gameplay-\/wise representation of a card. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/gameplay/Card.\+hpp\end{DoxyCompactItemize}

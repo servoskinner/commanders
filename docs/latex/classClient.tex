@@ -1,0 +1,51 @@
+\doxysection{Client Class Reference}
+\hypertarget{classClient}{}\label{classClient}\index{Client@{Client}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structClient_1_1Server__list__entry}{Server\+\_\+list\+\_\+entry}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classClient_ae76283c35f94df08450b151b26213ce9}\label{classClient_ae76283c35f94df08450b151b26213ce9} 
+{\bfseries Client} (unsigned short port=CLIENT\+\_\+\+PORT)
+\item 
+\Hypertarget{classClient_abececf7e54b2c13ce571217e3b5fabfc}\label{classClient_abececf7e54b2c13ce571217e3b5fabfc} 
+virtual void {\bfseries process\+\_\+msgs} (int limit=-\/1)
+\item 
+\Hypertarget{classClient_a3c7de3be701bff786b9e639fcc4ae375}\label{classClient_a3c7de3be701bff786b9e639fcc4ae375} 
+virtual void {\bfseries process\+\_\+timers} ()
+\item 
+\Hypertarget{classClient_abc842a27d42785b3f1611897a7ec876c}\label{classClient_abc842a27d42785b3f1611897a7ec876c} 
+void {\bfseries bcast\+\_\+discovery\+\_\+msg} (unsigned short server\+\_\+port=9898)
+\item 
+\Hypertarget{classClient_a7eab04dc3da32e4e5a54fe10e1e126f5}\label{classClient_a7eab04dc3da32e4e5a54fe10e1e126f5} 
+const std\+::vector$<$ \mbox{\hyperlink{structClient_1_1Server__list__entry}{Server\+\_\+list\+\_\+entry}} $>$ {\bfseries get\+\_\+discovered\+\_\+connections} ()
+\item 
+\Hypertarget{classClient_a27764770ff118c3f074bb6c1d331c211}\label{classClient_a27764770ff118c3f074bb6c1d331c211} 
+void {\bfseries request\+\_\+connection} (\mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}} server)
+\item 
+\Hypertarget{classClient_aefdf8742689c2262c5bb50f88156abe3}\label{classClient_aefdf8742689c2262c5bb50f88156abe3} 
+std\+::vector$<$ \mbox{\hyperlink{structCommander_1_1Card__info}{Commander\+::\+Card\+\_\+info}} $>$ {\bfseries get\+\_\+active\+\_\+cards} ()
+\item 
+\Hypertarget{classClient_a548e2b845c62f4a1370c8fb540d16443}\label{classClient_a548e2b845c62f4a1370c8fb540d16443} 
+std\+::vector$<$ \mbox{\hyperlink{structCommander_1_1Player__info}{Commander\+::\+Player\+\_\+info}} $>$ {\bfseries get\+\_\+players} ()
+\item 
+\Hypertarget{classClient_ac765d1a6367a774e7976c4c23318dc50}\label{classClient_ac765d1a6367a774e7976c4c23318dc50} 
+std\+::vector$<$ std\+::vector$<$ std\+::optional$<$ \mbox{\hyperlink{structCommander_1_1Card__info}{Commander\+::\+Card\+\_\+info}} $>$ $>$ $>$ {\bfseries get\+\_\+field} ()
+\item 
+\Hypertarget{classClient_a489aaab73285b6b6e71053c581e3aadf}\label{classClient_a489aaab73285b6b6e71053c581e3aadf} 
+const int {\bfseries events\+\_\+size} ()
+\item 
+\Hypertarget{classClient_a71f8b7e321acdcb8e9297177b6f0dd1a}\label{classClient_a71f8b7e321acdcb8e9297177b6f0dd1a} 
+const \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\+::\+Event}} {\bfseries events\+\_\+back} ()
+\item 
+\Hypertarget{classClient_a577e1e9d41332b729cd219b82ab58150}\label{classClient_a577e1e9d41332b729cd219b82ab58150} 
+bool {\bfseries events\+\_\+pop\+\_\+back} ()
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/interaction/Client.\+hpp\end{DoxyCompactItemize}

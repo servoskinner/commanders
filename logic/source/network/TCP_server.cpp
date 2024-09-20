@@ -1,4 +1,5 @@
-#include "Socket_wrappers.hpp"
+#include "Network.hpp"
+#include "TCP_server.hpp"
 
 TCP_server::TCP_server(u_short port) : own_port(port), polled(0) 
 {

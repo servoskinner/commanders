@@ -12,7 +12,7 @@ void complex_event()
 
 int main()
 {
-    Event_timer timer;
+    Timer timer;
     timer.events.push_back({simple_event, 1.0, 3});
     timer.events.push_back({complex_event, 0.25, 10});
 

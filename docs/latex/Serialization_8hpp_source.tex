@@ -1,0 +1,104 @@
+\doxysection{Serialization.\+hpp}
+\hypertarget{Serialization_8hpp_source}{}\label{Serialization_8hpp_source}\index{logic/include/utility/Serialization.hpp@{logic/include/utility/Serialization.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <cstring>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <cstdlib>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{typedef}\ std::vector<char>\ Serialized;}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Type>}
+\DoxyCodeLine{00014\ Serialized\ serialize(\textcolor{keyword}{const}\ Type\&\ \textcolor{keywordtype}{object})}
+\DoxyCodeLine{00015\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ std::vector<char>\ serialized(\textcolor{keyword}{sizeof}(Type));}
+\DoxyCodeLine{00017\ \ \ \ \ std::memcpy(serialized.data(),\ \&\textcolor{keywordtype}{object},\ \textcolor{keyword}{sizeof}(Type));}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordflow}{return}\ serialized;}
+\DoxyCodeLine{00019\ \}}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{inline}\ std::vector<char>\ serialize\_string(std::string\ str)\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordflow}{return}\ std::vector<char>(str.begin(),\ str.end());}
+\DoxyCodeLine{00023\ \}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00026\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Type>}
+\DoxyCodeLine{00027\ Serialized\ serialize\_vector(std::vector<Type>\ vector)}
+\DoxyCodeLine{00028\ \{}
+\DoxyCodeLine{00029\ \ \ \ \ Serialized\ serialized(vector.size()*\textcolor{keyword}{sizeof}(Type));}
+\DoxyCodeLine{00030\ \ \ \ \ }
+\DoxyCodeLine{00031\ \ \ \ \ std::memcpy(serialized.data(),\ \(\backslash\)}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{char}*)(vector.data()),\ \(\backslash\)}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vector.size()*\textcolor{keyword}{sizeof}(Type));}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordflow}{return}\ serialized;}
+\DoxyCodeLine{00035\ \}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Keytype,\ \textcolor{keyword}{typename}\ Valtype>}
+\DoxyCodeLine{00039\ Serialized\ serialize\_map(std::unordered\_map<Keytype,\ Valtype>\ map)}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ Serialized\ serialized;}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordflow}{for}\ (std::pair<Keytype,\ Valtype>\ pair\ :\ map)\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ Serialized\ serialized\_key\ =\ serialize(pair.first);}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ Serialized\ serialized\_value\ =\ serialize(pair.second);}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ append\ to\ result}}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ std::copy(serialized\_key.begin(),\ serialized\_key.end(),\ std::back\_inserter(serialized));\ }
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ std::copy(serialized\_value.begin(),\ serialized\_value.end(),\ std::back\_inserter(serialized));\ }
+\DoxyCodeLine{00048\ \ \ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{return}\ serialized;}
+\DoxyCodeLine{00050\ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Type>}
+\DoxyCodeLine{00054\ Type\ deserialize(Serialized\ serialized)}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ Type\ new\_obj;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordflow}{if}(serialized.size()\ !=\ \textcolor{keyword}{sizeof}(Type))\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}deserialize\_struct():\ byte\ vector\ size\ is\ not\ equal\ to\ type\ size"{}});}
+\DoxyCodeLine{00059\ \ \ \ \ \}}
+\DoxyCodeLine{00060\ \ \ \ \ std::memcpy(\&new\_obj,\ serialized.data(),\ \textcolor{keyword}{sizeof}(Type));}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{return}\ new\_obj;}
+\DoxyCodeLine{00062\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{inline}\ std::string\ deserialize\_string(Serialized\ serialized)\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordflow}{return}\ std::string(serialized.data());}
+\DoxyCodeLine{00067\ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00070\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Type>}
+\DoxyCodeLine{00071\ std::vector<Type>\ deserialize\_vector(Serialized\ serialized)}
+\DoxyCodeLine{00072\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordflow}{if}\ (serialized.size()\ \%\ \textcolor{keyword}{sizeof}(Type)\ !=\ 0)\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}deserialize\_vector():\ byte\ vector\ not\ divisible\ by\ type\ size"{}});}
+\DoxyCodeLine{00075\ \ \ \ \ \}}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ vector\_size\ =\ serialized.size()\ /\ \textcolor{keyword}{sizeof}(Type);}
+\DoxyCodeLine{00077\ \ \ \ \ }
+\DoxyCodeLine{00078\ \ \ \ \ std::vector<Type>\ vector;}
+\DoxyCodeLine{00079\ \ \ \ \ vector.resize(vector\_size);}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ std::memcpy((\textcolor{keywordtype}{char}*)(vector.data()),\ serialized.data(),\ \textcolor{keyword}{sizeof}(Type)*vector\_size);}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordflow}{return}\ vector;}
+\DoxyCodeLine{00083\ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00086\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Keytype,\ \textcolor{keyword}{typename}\ Valtype>}
+\DoxyCodeLine{00087\ std::unordered\_map<Keytype,\ Valtype>\ deserialize\_map(Serialized\ serialized)}
+\DoxyCodeLine{00088\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{if}\ (serialized.size()\ \%\ (\textcolor{keyword}{sizeof}(Keytype)\ +\ \textcolor{keyword}{sizeof}(Valtype)))\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}deserialize\_map():\ byte\ vector\ size\ not\ divisible\ by\ key+value\ size"{}});}
+\DoxyCodeLine{00091\ \ \ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ map\_size\ =\ serialized.size()\ /\ (\textcolor{keyword}{sizeof}(Keytype)\ +\ \textcolor{keyword}{sizeof}(Valtype));}
+\DoxyCodeLine{00093\ \ \ \ \ std::unordered\_map<Keytype,\ Valtype>\ map;}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ map\_size;\ i++)\ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ Serialized\ serialized\_key(serialized.begin()\ +\ i*(\textcolor{keyword}{sizeof}(Keytype)\ +\ \textcolor{keyword}{sizeof}(Valtype)),\ \(\backslash\)}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ serialized.begin()\ +\ i*(\textcolor{keyword}{sizeof}(Keytype)\ +\ \textcolor{keyword}{sizeof}(Valtype))\ +\ \textcolor{keyword}{sizeof}(Keytype));}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ Keytype\ key\ =\ deserialize<Keytype>(serialized\_key);}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ Serialized\ serialized\_val(serialized.begin()\ +\ i*(\textcolor{keyword}{sizeof}(Keytype)\ +\ \textcolor{keyword}{sizeof}(Valtype))\ +\ \textcolor{keyword}{sizeof}(Keytype),\ \(\backslash\)}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ serialized.begin()\ +\ i*(\textcolor{keyword}{sizeof}(Keytype)\ +\ \textcolor{keyword}{sizeof}(Valtype))\ +\ \textcolor{keyword}{sizeof}(Keytype)\ \(\backslash\)}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{keyword}{sizeof}(Valtype));}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ Valtype\ val\ =\ deserialize<Valtype>(serialized\_val);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ map.insert(\{key,\ val\});}
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordflow}{return}\ map;}
+\DoxyCodeLine{00106\ \}}
+
+\end{DoxyCode}

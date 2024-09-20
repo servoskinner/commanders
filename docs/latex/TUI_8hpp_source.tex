@@ -1,0 +1,246 @@
+\doxysection{TUI.\+hpp}
+\hypertarget{TUI_8hpp_source}{}\label{TUI_8hpp_source}\index{logic/include/utility/TUI.hpp@{logic/include/utility/TUI.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <ncurses.h>}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#define\ COLOR\_BRIGHT\_BLACK\ \ \ \ \ \ 8}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#define\ COLOR\_BRIGHT\_RED\ \ \ \ \ \ \ \ 9}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#define\ COLOR\_BRIGHT\_GREEN\ \ \ \ \ \ 10}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#define\ COLOR\_BRIGHT\_YELLOW\ \ \ \ \ 11}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#define\ COLOR\_BRIGHT\_BLUE\ \ \ \ \ \ \ 12}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#define\ COLOR\_BRIGHT\_MAGENTA\ \ \ \ 13}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#define\ COLOR\_BRIGHT\_CYAN\ \ \ \ \ \ \ 14}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#define\ COLOR\_BRIGHT\_WHITE\ \ \ \ \ \ 15}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#define\ KEY\_ESC\ \ \ \ \ \ \ \ \ 27}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#define\ KEY\_TAB\ \ \ \ \ \ \ \ \ 9}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#define\ KEY\_ENTR\ \ \ \ \ \ \ \ 10}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#define\ KEY\_UARROW\ \ \ \ \ \ 91}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#define\ KEY\_DARROW\ \ \ \ \ \ 66}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#define\ KEY\_RARROW\ \ \ \ \ \ 67}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#define\ KEY\_LARROW\ \ \ \ \ \ 68}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#define\ KEY\_MWHEELDN\ \ \ \ 65}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#define\ KEY\_MWHEELUP\ \ \ \ 66}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#define\ SYM\_FILL\ \ \ \ \ \ \ \ 219}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{class\ }Rect;}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class\ }Text\_box;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class\ }Scroll\_box;}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ Color;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classTUI}{TUI}}}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI}{TUI}}();}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI}{TUI}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classTUI}{TUI}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI}{TUI}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classTUI}{TUI}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00051\ \ \ \ \ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classTUI}{TUI}}\&\ \mbox{\hyperlink{classTUI_aa7c4343d11b517f6ab4d26f972e0ca4b}{get}}();}
+\DoxyCodeLine{00054\ \ \ \ \ \mbox{\hyperlink{classTUI}{\string~TUI}}();}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTUI_ad770dd11879d86075d6647a08a5a4a80}{clear}}()\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ erase();}
+\DoxyCodeLine{00059\ \ \ \ \ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTUI_a77be03d3201ba7b7336571376f0a0ebe}{render}}()\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ refresh();}
+\DoxyCodeLine{00064\ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ set\_color\_pair(\textcolor{keywordtype}{short}\ \textcolor{keywordtype}{id},\ \textcolor{keywordtype}{short}\ foreground,\ \textcolor{keywordtype}{short}\ background)\ \{\ }
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ init\_pair(\textcolor{keywordtype}{id},\ foreground,\ background);}
+\DoxyCodeLine{00067\ \ \ \ \ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{inline}\ std::pair<int,\ int>\ \mbox{\hyperlink{classTUI_a56a140656f58ddbc2b33de718fd972f5}{get\_size}}()\ \{\ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{getmaxy(stdscr),\ getmaxx(stdscr)\};}
+\DoxyCodeLine{00072\ \ \ \ \ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{inline}\ std::pair<int,\ int>\ \mbox{\hyperlink{classTUI_ac8562dd91da691f0a09690e9d788a035}{get\_center}}()\ \{\ }
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{getmaxy(stdscr)/2,\ getmaxx(stdscr)/2\};}
+\DoxyCodeLine{00077\ \ \ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classTUI_aadb511a0c8bb0385ed8a351040922028}{get\_input}}();}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ \mbox{\hyperlink{classTUI_a848eb8ba8124f44de35e8997cc8a2f76}{get\_color\_code}}(Color\ foreground\ =\ COLOR\_WHITE,\ Color\ background\ =\ COLOR\_BLACK)}
+\DoxyCodeLine{00084\ \ \ \ \ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (foreground\ ==\ COLOR\_WHITE\ \&\&\ background\ ==\ COLOR\_BLACK)\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ background\ *\ 16\ +\ foreground;}
+\DoxyCodeLine{00089\ \ \ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \ \ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}}
+\DoxyCodeLine{00093\ \ \ \ \ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ symbol\ =\ \textcolor{charliteral}{'\ '};\ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ Color\ foreground\ =\ COLOR\_WHITE;}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ Color\ background\ =\ COLOR\_BLACK;}
+\DoxyCodeLine{00097\ \ \ \ \ \};}
+\DoxyCodeLine{00098\ \ \ \ \ }
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTUI_a13bdd68ae23b5c587e5e747c058b36dc}{draw\_glyph}}(\textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ x,\ \mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ glyph)\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ attron(COLOR\_PAIR(\mbox{\hyperlink{classTUI_a848eb8ba8124f44de35e8997cc8a2f76}{get\_color\_code}}(glyph.foreground,\ glyph.background)));}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ mvaddch(y,\ x,\ glyph.symbol);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ attroff(COLOR\_PAIR(\mbox{\hyperlink{classTUI_a848eb8ba8124f44de35e8997cc8a2f76}{get\_color\_code}}(glyph.foreground,\ glyph.background)));}
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keyword}{class\ }UI\_Object;}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keyword}{typedef}\ std::reference\_wrapper<UI\_Object>\ UIobj\_ref;}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classTUI_1_1UI__Object}{UI\_Object}}}
+\DoxyCodeLine{00111\ \ \ \ \ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\_Object}}(\textcolor{keywordtype}{int}\ y\ =\ 0,\ \textcolor{keywordtype}{int}\ x\ =\ 0)\ :\ x(x),\ y(y),\ tui(\mbox{\hyperlink{classTUI_aa7c4343d11b517f6ab4d26f972e0ca4b}{TUI::get}}())\ \{\}}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\_Object}}\&\ operator=\ (\textcolor{keyword}{const}\ \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\_Object}}\&\ other)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ x\ =\ 0,\ y\ =\ 0;\ \ }
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ use\_absolute\_position\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ visible\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ std::vector<UIobj\_ref>\ children\ =\ \{\};}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ draw(\textcolor{keywordtype}{unsigned}\ input\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_y\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_x\ =\ 0);}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI}{TUI}}\&\ tui;}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ draw\_self(\textcolor{keywordtype}{unsigned}\ input\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_y\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_x\ =\ 0)\ \{\}}
+\DoxyCodeLine{00126\ \ \ \ \ \};}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classTUI_1_1Rect}{Rect}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\_Object}}}
+\DoxyCodeLine{00130\ \ \ \ \ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Rect}{Rect}}(\textcolor{keywordtype}{int}\ height\ =\ 1,\ \textcolor{keywordtype}{int}\ width\ =\ 1,\ \textcolor{keywordtype}{int}\ y\ =\ 0,\ \textcolor{keywordtype}{int}\ x\ =\ 0,\ }
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ Color\ foreground\ =\ COLOR\_WHITE,\ Color\ background\ =\ COLOR\_BLACK)\ :\ height(height),\ width(width),\ \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\_Object}}(y,\ x)}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \{\ set\_border\_color(foreground,\ background);\ \}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Rect}{Rect}}\&\ operator=\ (\textcolor{keyword}{const}\ \mbox{\hyperlink{classTUI_1_1Rect}{Rect}}\&\ other)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ width\ =\ 0,\ height\ =\ 0;}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ tl\_corner\ =\ \{ACS\_ULCORNER\},\ tr\_corner\ =\ \{ACS\_URCORNER\},\ bl\_corner\ =\ \{ACS\_LLCORNER\},\ br\_corner\ =\ \{ACS\_LRCORNER\};}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ t\_border\ =\ \{ACS\_HLINE\},\ b\_border\ =\ \{ACS\_HLINE\},\ l\_border\ =\ \{ACS\_VLINE\},\ r\_border\ =\ \{ACS\_VLINE\};}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ fill\ =\ \{\};}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ draw\_filled\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ set\_border\_color(Color\ foreground\ =\ COLOR\_WHITE,\ Color\ background\ =\ COLOR\_BLACK)\ \{}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ tl\_corner.foreground\ =\ foreground;}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ tr\_corner.foreground\ =\ foreground;}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ bl\_corner.foreground\ =\ foreground;}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ br\_corner.foreground\ =\ foreground;}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ t\_border.foreground\ =\ foreground;}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ b\_border.foreground\ =\ foreground;}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ l\_border.foreground\ =\ foreground;}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ r\_border.foreground\ =\ foreground;}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ tl\_corner.background\ =\ background;}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ tr\_corner.background\ =\ background;}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ bl\_corner.background\ =\ background;}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ br\_corner.background\ =\ background;}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ t\_border.background\ =\ background;}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ b\_border.background\ =\ background;}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ l\_border.background\ =\ background;}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ r\_border.background\ =\ background;}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ set\_hborders(\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ glyph)\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ t\_border\ =\ glyph;}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ b\_border\ =\ glyph;}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ set\_vborders(\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ glyph)\ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ l\_border\ =\ glyph;}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ r\_border\ =\ glyph;}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ set\_borders(\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ glyph)\ \{}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ set\_hborders(glyph);}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ set\_vborders(glyph);\ \ \ \ \ \ \ }
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ set\_corners(\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ glyph)\ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ tl\_corner\ =\ glyph;}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ tr\_corner\ =\ glyph;}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ bl\_corner\ =\ glyph;}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ br\_corner\ =\ glyph;}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ set\_all(\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ glyph)\ \{}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ set\_borders(glyph);}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ set\_corners(glyph);}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ fill\ =\ glyph;}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ draw\_self(\textcolor{keywordtype}{unsigned}\ input\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_y\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_x\ =\ 0)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00190\ \ \ \ \ \};}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00193\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classTUI_1_1Sprite}{Sprite}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\_Object}}}
+\DoxyCodeLine{00194\ \ \ \ \ \{}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Sprite}{Sprite}}(\textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ y\ =\ 0,\ \textcolor{keywordtype}{int}\ x\ =\ 0);}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Sprite}{Sprite}}\&\ operator=(\mbox{\hyperlink{classTUI_1_1Sprite}{Sprite}}\ \&other)\ \{\ sprite\ =\ other.sprite;\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\};}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Sprite}{Sprite}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classTUI_1_1Sprite}{Sprite}}\&\ other)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ std::pair<int,\ int>\ get\_size()\ \{\ \textcolor{keywordflow}{return}\ \{sprite.size(),\ sprite[0].size()\};\};}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ get\_glyph(\textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ x)\ \{\ \textcolor{keywordflow}{return}\ sprite[y][x];\};}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ set\_glyph(\textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ x,\ \mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ glyph)\ \{\ sprite[y][x]\ =\ glyph;\};}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ set\_all(\mbox{\hyperlink{structTUI_1_1Glyph}{Glyph}}\ glyph);}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ std::vector<std::vector<Glyph>>\ sprite;}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ draw\_self(\textcolor{keywordtype}{unsigned}\ input\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_y\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_x\ =\ 0)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00208\ \ \ \ \ \};}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00211\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classTUI_1_1Text}{Text}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\_Object}}}
+\DoxyCodeLine{00212\ \ \ \ \ \{}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Text}{Text}}(std::string\ text\ =\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{keywordtype}{int}\ height\ =\ 0,\ \textcolor{keywordtype}{int}\ width\ =\ 0,\ \textcolor{keywordtype}{int}\ y\ =\ 0,\ \textcolor{keywordtype}{int}\ x\ =\ 0,\ }
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ Color\ foreground\ =\ COLOR\_WHITE,\ Color\ background\ =\ COLOR\_BLACK)}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ :\ text(text),\ height(height),\ width(width),\ background(background),\ foreground(foreground),\ \mbox{\hyperlink{classTUI_1_1UI__Object}{UI\_Object}}(y,\ x)\ \{\}}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Text}{Text}}\&\ operator=\ (\textcolor{keyword}{const}\ \mbox{\hyperlink{classTUI_1_1Text}{Text}}\&\ other)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ Color\ background\ =\ COLOR\_BLACK;}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ Color\ foreground\ =\ COLOR\_WHITE;}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ width\ =\ 0,\ height\ =\ 0;}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ std::string\ text;}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ draw\_self(\textcolor{keywordtype}{unsigned}\ input\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_y\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_x\ =\ 0)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00226\ \ \ \ \ \};}
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00229\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classTUI_1_1Scrollable__text}{Scrollable\_text}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classTUI_1_1Text}{Text}}}
+\DoxyCodeLine{00230\ \ \ \ \ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Scrollable__text}{Scrollable\_text}}(std::string\ text\ =\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{keywordtype}{int}\ height\ =\ 0,\ \textcolor{keywordtype}{int}\ width\ =\ 0,\ \textcolor{keywordtype}{int}\ y\ =\ 0,\ \textcolor{keywordtype}{int}\ x\ =\ 0,}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Color\ foreground\ =\ COLOR\_WHITE,\ Color\ background\ =\ COLOR\_BLACK)}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classTUI_1_1Text}{Text}}(text,\ height,\ width,\ y,\ x,\ foreground,\ background)\ \{\}}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Scrollable__text}{Scrollable\_text}}\&\ operator=\ (\textcolor{keyword}{const}\ \mbox{\hyperlink{classTUI_1_1Scrollable__text}{Scrollable\_text}}\&\ other)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ scroll\_pos\ =\ 0;\ }
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classTUI_1_1Scrollable__text_a45c8392d239cbef45586546478a9b19d}{from\_bottom}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ draw\_self(\textcolor{keywordtype}{unsigned}\ input\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_y\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_x\ =\ 0)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00242\ \ \ \ \ \};}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00245\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classTUI_1_1Text__input}{Text\_input}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classTUI_1_1Text}{Text}}}
+\DoxyCodeLine{00246\ \ \ \ \ \{}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Text__input}{Text\_input}}(\textcolor{keywordtype}{int}\ height\ =\ -\/1,\ \textcolor{keywordtype}{int}\ width\ =\ -\/1,\ \textcolor{keywordtype}{int}\ y\ =\ 0,\ \textcolor{keywordtype}{int}\ x\ =\ 0,}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Color\ foreground\ =\ COLOR\_WHITE,\ Color\ background\ =\ COLOR\_BLACK)}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classTUI_1_1Text}{Text}}(\textcolor{stringliteral}{"{}"{}},\ height,\ width,\ y,\ x,\ foreground,\ background)\ \{\}}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTUI_1_1Text__input}{Text\_input}}\&\ operator=\ (\textcolor{keyword}{const}\ \mbox{\hyperlink{classTUI_1_1Text__input}{Text\_input}}\&\ other)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ draw\_self(\textcolor{keywordtype}{unsigned}\ input\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_y\ =\ 0,\ \textcolor{keywordtype}{int}\ orig\_x\ =\ 0)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00255\ \ \ \ \ \};}
+\DoxyCodeLine{00256\ \};}
+
+\end{DoxyCode}

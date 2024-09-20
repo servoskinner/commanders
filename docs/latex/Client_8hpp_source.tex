@@ -1,0 +1,70 @@
+\doxysection{Client.\+hpp}
+\hypertarget{Client_8hpp_source}{}\label{Client_8hpp_source}\index{logic/include/interaction/Client.hpp@{logic/include/interaction/Client.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}Misc\_functions.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}TCP\_server.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}UDP\_peer.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}Commander.hpp"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <queue>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#define\ CLIENT\_PORT\ 8989}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#define\ SERVER\_UPKEEP\_COUNTDOWN\ 4}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#define\ SERVER\_UPKEEP\_DELAY\_MS\ 100}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#define\ CONNECTED\_UPKEEP\_COUNTDOWN\ 4}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#define\ CONNECTED\_UPKEEP\_DELAY\_MS\ 100}}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classClient}{Client}}}
+\DoxyCodeLine{00022\ \{}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00024\ \ \ \ \ \mbox{\hyperlink{classClient}{Client}}(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ port\ =\ CLIENT\_PORT)\ :\ client\_socket(port)\ \{\}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structClient_1_1Server__list__entry}{Server\_list\_entry}}\ }
+\DoxyCodeLine{00027\ \ \ \ \ \{}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structSocket__info}{Socket\_info}}\ socket;}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ upkeep;}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structServer__info}{Server\_info}}\ info;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structClient_1_1Server__list__entry}{Server\_list\_entry}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00033\ \ \ \ \ \};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ process\_msgs(\textcolor{keywordtype}{int}\ limit\ =\ -\/1);}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ process\_timers();}
+\DoxyCodeLine{00037\ \ \ \ \ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{void}\ bcast\_discovery\_msg(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ server\_port\ =\ 9898);}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<Server\_list\_entry>\ get\_discovered\_connections()\ \{\ \textcolor{keywordflow}{return}\ discovered\_servers;\ \}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{void}\ request\_connection(\mbox{\hyperlink{structSocket__info}{Socket\_info}}\ server);}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \ \ std::vector<Commander::Card\_info>\ get\_active\_cards();}
+\DoxyCodeLine{00043\ \ \ \ \ std::vector<Commander::Player\_info>\ get\_players();}
+\DoxyCodeLine{00044\ \ \ \ \ std::vector<std::vector<std::optional<Commander::Card\_info>>>\ get\_field()\ \{\ \textcolor{keywordflow}{return}\ field;\}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ events\_size()\ \{\ \textcolor{keywordflow}{return}\ events.size();\ \}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander::Event}}\ events\_back()\ \{\ \textcolor{keywordflow}{return}\ events.back();\ \}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{bool}\ events\_pop\_back();}
+\DoxyCodeLine{00049\ \ \ \ \ }
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{void}\ handle\_control\_message(\mbox{\hyperlink{structSocket__inbound__message}{Socket\_inbound\_message}}\ msg);}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{void}\ manage\_upkeep();}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ \mbox{\hyperlink{classUDP__peer}{UDP\_peer}}\ client\_socket;}
+\DoxyCodeLine{00055\ \ \ \ \ std::optional<Socket\_info>\ connection;}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{int}\ connection\_upkeep;}
+\DoxyCodeLine{00057\ \ \ \ \ std::vector<Server\_list\_entry>\ discovered\_servers;}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ std::queue<Commander::Event>\ events;}
+\DoxyCodeLine{00060\ \ \ \ \ std::vector<std::vector<std::optional<Commander::Card\_info>>>\ field;}
+\DoxyCodeLine{00061\ \ \ \ \ std::vector<Commander::Player\_info>\ players;}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{int}\ grid\_width,\ grid\_height;}
+\DoxyCodeLine{00064\ \};}
+
+\end{DoxyCode}

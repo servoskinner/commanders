@@ -23,7 +23,7 @@ Commander::Player_info Game_master::Player::get_info()
 
     info.deck_total_size = deck.get().all.size();
     info.library_size = deck.get().library.size();
-    info.discard_size = deck.get().graveyard.size();
+    info.discard_size = deck.get().junk.size();
     info.hand_size = hand.size();
 
     return info;

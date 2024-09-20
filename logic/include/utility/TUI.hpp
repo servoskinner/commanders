@@ -38,6 +38,7 @@ class Scroll_box;
 
 typedef unsigned short Color;
 
+/// @brief The singleton that manages Text-based User Interface.
 class TUI
 {
     private:
@@ -48,12 +49,16 @@ class TUI
 
     public:
     
+    /// @return The active instance of TUI.
     static TUI& get();
     ~TUI();
 
+    /// @brief Clears screen buffer.
     inline void clear() {
         erase();
     }
+
+    /// @brief Displays screen buffer/.
     inline void render() {
         refresh();
     }
@@ -61,16 +66,20 @@ class TUI
         init_pair(id, foreground, background);
     }
 
+    /// @return Terminal dimensions
     inline std::pair<int, int> get_size() { 
         return {getmaxy(stdscr), getmaxx(stdscr)};
     }
 
+    /// @return Terminal center
     inline std::pair<int, int> get_center() { 
         return {getmaxy(stdscr)/2, getmaxx(stdscr)/2};
     }
 
+    /// @return Code of last key pressed
     unsigned get_input();
 
+    /// @brief Maps color combinations to color pair ids.
     inline static unsigned short get_color_code(Color foreground = COLOR_WHITE, Color background = COLOR_BLACK)
     {
         if (foreground == COLOR_WHITE && background == COLOR_BLACK) {
@@ -78,7 +87,8 @@ class TUI
         }
         return background * 16 + foreground;
     }
-
+    
+    /// @brief A single terminal cell.
     struct Glyph
     {
         unsigned symbol = ' '; 
@@ -86,6 +96,7 @@ class TUI
         Color background = COLOR_BLACK;
     };
     
+    /// @brief Places given glyph at coordinates.
     inline void draw_glyph(int y, int x, Glyph glyph) {
         attron(COLOR_PAIR(get_color_code(glyph.foreground, glyph.background)));
         mvaddch(y, x, glyph.symbol);
@@ -94,6 +105,8 @@ class TUI
 
     class UI_Object;
     typedef std::reference_wrapper<UI_Object> UIobj_ref;
+
+    /// @brief Abstract TUI Object, multiple can be composed as children.
     class UI_Object
     {
         public:
@@ -112,6 +125,7 @@ class TUI
         virtual void draw_self(unsigned input = 0, int orig_y = 0, int orig_x = 0) {}
     };
 
+    /// @brief A rectangle.
     class Rect : public UI_Object
     {
         public:
@@ -175,6 +189,7 @@ class TUI
         virtual void draw_self(unsigned input = 0, int orig_y = 0, int orig_x = 0) override;
     };
 
+    /// @brief A drawable patch of individually adjustable Glyphs.
     class Sprite : public UI_Object
     {
         public:
@@ -192,6 +207,7 @@ class TUI
         virtual void draw_self(unsigned input = 0, int orig_y = 0, int orig_x = 0) override;
     };
 
+    /// @brief Basic non-interactive text.
     class Text : public UI_Object
     {
         public:
@@ -209,6 +225,7 @@ class TUI
         virtual void draw_self(unsigned input = 0, int orig_y = 0, int orig_x = 0) override;
     };
 
+    /// @brief Text that can be scrolled with input or by modifying its scroll_pos.
     class Scrollable_text : public Text
     {
         public:
@@ -217,13 +234,14 @@ class TUI
          : Text(text, height, width, y, x, foreground, background) {}
         Scrollable_text& operator= (const Scrollable_text& other) = default;
 
-        int scroll_pos = 0;
+        int scroll_pos = 0; /// Scroll offset in lines.
         bool from_bottom = false;
 
         protected:
         virtual void draw_self(unsigned input = 0, int orig_y = 0, int orig_x = 0) override;
     };
 
+    /// @brief Dynamic text that can be appended via input.
     class Text_input : public Text
     {
         public:

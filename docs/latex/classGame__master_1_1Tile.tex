@@ -1,0 +1,55 @@
+\doxysection{Game\+\_\+master\+::Tile Class Reference}
+\hypertarget{classGame__master_1_1Tile}{}\label{classGame__master_1_1Tile}\index{Game\_master::Tile@{Game\_master::Tile}}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_1_1Tile_aad86c4485a425f4b106655cb5a8ebedf}\label{classGame__master_1_1Tile_aad86c4485a425f4b106655cb5a8ebedf} 
+enum {\bfseries Tile\+\_\+neighbor} \{ \newline
+{\bfseries UP}
+, {\bfseries RIGHT}
+, {\bfseries DOWN}
+, {\bfseries LEFT}
+, \newline
+{\bfseries UPRIGHT}
+, {\bfseries DOWNRIGHT}
+, {\bfseries DOWNLEFT}
+, {\bfseries UPLEFT}
+ \}
+\item 
+\Hypertarget{classGame__master_1_1Tile_a741f9f492defaf75e0e0b5f7a5f8ab4c}\label{classGame__master_1_1Tile_a741f9f492defaf75e0e0b5f7a5f8ab4c} 
+enum {\bfseries Tile\+\_\+type} \{ \newline
+{\bfseries NORMAL} = -\/1
+, {\bfseries OBJECTIVE} = -\/2
+, {\bfseries OBSTACLE} = -\/3
+, {\bfseries NO\+\_\+\+DEPLOY} = -\/4
+, \newline
+{\bfseries TERR\+\_\+\+ADV} = -\/5
+, {\bfseries TERR\+\_\+\+DISADV} = -\/6
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_1_1Tile_aa7fc1edad7c22bf270fc6e7d276afe1c}\label{classGame__master_1_1Tile_aa7fc1edad7c22bf270fc6e7d276afe1c} 
+{\bfseries Tile} (int nx=-\/1, int ny=-\/1, int ntype=NORMAL)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classGame__master_1_1Tile_ad425c1c1635a638cfbc27ee5f04096f0}\label{classGame__master_1_1Tile_ad425c1c1635a638cfbc27ee5f04096f0} 
+int {\bfseries x}
+\item 
+\Hypertarget{classGame__master_1_1Tile_aa9f16c4f3195f867647b4523b5b2da27}\label{classGame__master_1_1Tile_aa9f16c4f3195f867647b4523b5b2da27} 
+int {\bfseries y}
+\item 
+\Hypertarget{classGame__master_1_1Tile_a3012d8e8d8cce02e2aea87d6583beacf}\label{classGame__master_1_1Tile_a3012d8e8d8cce02e2aea87d6583beacf} 
+int {\bfseries type}
+\item 
+\Hypertarget{classGame__master_1_1Tile_a2db69a5d2df2bc6265aec2d1b167d467}\label{classGame__master_1_1Tile_a2db69a5d2df2bc6265aec2d1b167d467} 
+std\+::optional$<$ Card\+\_\+ref $>$ {\bfseries card}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/gameplay/Tile.\+hpp\end{DoxyCompactItemize}

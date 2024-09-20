@@ -1,0 +1,121 @@
+\doxysection{Archivist.\+hpp}
+\hypertarget{Archivist_8hpp_source}{}\label{Archivist_8hpp_source}\index{logic/include/utility/Archivist.hpp@{logic/include/utility/Archivist.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <filesystem>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}Serialization.hpp"{}}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#define\ DEFAULT\_STORAGE\_FILE\ "{}userdata"{}}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classArchivist}{Archivist}}}
+\DoxyCodeLine{00015\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00017\ \ \ \ \ std::string\ filename;}
+\DoxyCodeLine{00018\ \ \ \ \ \mbox{\hyperlink{classArchivist}{Archivist}}\&\ operator=(\mbox{\hyperlink{classArchivist}{Archivist}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00019\ \ \ \ \ \mbox{\hyperlink{classArchivist}{Archivist}}(\mbox{\hyperlink{classArchivist}{Archivist}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{int}\ n\_entries;}
+\DoxyCodeLine{00021\ \ \ \ \ std::fstream\ file;}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keyword}{struct\ }Storage\_entry}
+\DoxyCodeLine{00025\ \ \ \ \ \{\ \ \ }
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ uint16\ locator\_size}}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ int\ data\_size}}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ std::string\ locator;}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ std::vector<char>\ data;}
+\DoxyCodeLine{00030\ \ \ \ \ \};}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{bool}\ write\_entry\_at(\textcolor{keywordtype}{unsigned}\ at\_pos,\ Storage\_entry\&\ entry);}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00038\ \ \ \ \ std::optional<unsigned>\ next\_entry(\textcolor{keywordtype}{unsigned}\ prev\_pos);}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00043\ \ \ \ \ std::optional<Serialized>\ read\_entry\_at(\textcolor{keywordtype}{unsigned}\ at\_pos);}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00047\ \ \ \ \ std::optional<unsigned\ int>\ locate\_entry(std::string\ locator);}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00051\ \ \ \ \ std::optional<unsigned>\ locate\_entry\_indexed(\textcolor{keywordtype}{int}\ index);}
+\DoxyCodeLine{00052\ \ \ \ \ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00054\ \ \ \ \ \mbox{\hyperlink{classArchivist}{\string~Archivist}}();}
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{classArchivist}{Archivist}}(std::string\ storage\_file\ =\ DEFAULT\_STORAGE\_FILE);}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classArchivist}{Archivist}}\&\ \mbox{\hyperlink{classArchivist_a7d2636f9d9c5d1859d81e4915e5783fb}{get\_default}}();}
+\DoxyCodeLine{00059\ \ \ \ \ }
+\DoxyCodeLine{00061\ \ \ \ \ std::optional<Serialized>\ \mbox{\hyperlink{classArchivist_a2655517c2e455f94ba5bca02a3a66f56}{get\_serialized}}(std::string\ locator);}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classArchivist_ae74091daf5a9eb22e76a7b971bb70380}{put\_serialized}}(std::string\ locator,\ std::vector<char>\ value);}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classArchivist_acd2444e8508b222ce37e739d8a6b11e7}{del}}(std::string\ locator);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Type>}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{inline}\ std::optional<Type>\ get(std::string\ locator)}
+\DoxyCodeLine{00073\ \ \ \ \ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ std::optional<Serialized>\ serialized\ =\ \mbox{\hyperlink{classArchivist_a2655517c2e455f94ba5bca02a3a66f56}{get\_serialized}}(locator);}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!serialized.has\_value())\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{deserialize<Type>(serialized.value())\};}
+\DoxyCodeLine{00079\ \ \ \ \ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Type>}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{inline}\ std::optional<std::vector<Type>>\ get\_vector(std::string\ locator)}
+\DoxyCodeLine{00083\ \ \ \ \ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ std::optional<Serialized>\ serialized\ =\ \mbox{\hyperlink{classArchivist_a2655517c2e455f94ba5bca02a3a66f56}{get\_serialized}}(locator);}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!serialized.has\_value())\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{deserialize\_vector<Type>(serialized.value())\};}
+\DoxyCodeLine{00089\ \ \ \ \ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keyword}{inline}\ std::optional<std::string>\ get\_string(std::string\ locator)}
+\DoxyCodeLine{00092\ \ \ \ \ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ std::optional<Serialized>\ serialized\ =\ \mbox{\hyperlink{classArchivist_a2655517c2e455f94ba5bca02a3a66f56}{get\_serialized}}(locator);}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!serialized.has\_value())\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{deserialize\_string(serialized.value())\};}
+\DoxyCodeLine{00098\ \ \ \ \ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Keytype,\ \textcolor{keyword}{typename}\ Valtype>}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{inline}\ std::optional<std::unordered\_map<Keytype,\ Valtype>>\ get\_map(std::string\ locator)}
+\DoxyCodeLine{00102\ \ \ \ \ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ std::optional<Serialized>\ serialized\ =\ \mbox{\hyperlink{classArchivist_a2655517c2e455f94ba5bca02a3a66f56}{get\_serialized}}(locator);}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!serialized.has\_value())\ \{}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{deserialize\_map<Keytype,\ Valtype>(serialized.value())\};}
+\DoxyCodeLine{00108\ \ \ \ \ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Type>}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ put(std::string\ locator,\ Type\ value)}
+\DoxyCodeLine{00112\ \ \ \ \ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ Serialized\ serialized\ =\ serialize(value);}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classArchivist_ae74091daf5a9eb22e76a7b971bb70380}{put\_serialized}}(locator,\ serialized);}
+\DoxyCodeLine{00115\ \ \ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ put\_string(std::string\ locator,\ std::string\ value)}
+\DoxyCodeLine{00118\ \ \ \ \ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ Serialized\ serialized\ =\ serialize\_string(value);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classArchivist_ae74091daf5a9eb22e76a7b971bb70380}{put\_serialized}}(locator,\ serialized);}
+\DoxyCodeLine{00121\ \ \ \ \ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Type>}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ put\_vector(std::string\ locator,\ std::vector<Type>\ value)}
+\DoxyCodeLine{00125\ \ \ \ \ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ Serialized\ serialized\ =\ serialize\_vector(value);}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classArchivist_ae74091daf5a9eb22e76a7b971bb70380}{put\_serialized}}(locator,\ serialized);}
+\DoxyCodeLine{00128\ \ \ \ \ \}}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Keytype,\ \textcolor{keyword}{typename}\ Valtype>}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ get\_map(std::string\ locator,\ std::unordered\_map<Keytype,\ Valtype>\ value)}
+\DoxyCodeLine{00132\ \ \ \ \ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ Serialized\ serialized\ =\ serialize\_map(value);}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classArchivist_ae74091daf5a9eb22e76a7b971bb70380}{put\_serialized}}(locator,\ serialized);}
+\DoxyCodeLine{00135\ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,141 @@
+\doxysection{Commander.\+hpp}
+\hypertarget{Commander_8hpp_source}{}\label{Commander_8hpp_source}\index{logic/include/interaction/Commander.hpp@{logic/include/interaction/Commander.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <cstring>}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classCommander}{Commander}};}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classCLI__commander}{CLI\_commander}};}
+\DoxyCodeLine{00015\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNCurses__commander}{NCurses\_commander}};}
+\DoxyCodeLine{00016\ \textcolor{keyword}{class\ }Network\_commander;}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{typedef}\ std::reference\_wrapper<Commander>\ commander\_ref;}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classCommander}{Commander}}\ \textcolor{comment}{//\ Acts\ as\ an\ interface\ between\ the\ Game\ Master\ and\ whoever\ is\ providing\ the\ player\ input.}}
+\DoxyCodeLine{00022\ \{}
+\DoxyCodeLine{00023\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{comment}{//\ @}}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structCommander_1_1Player__info}{Player\_info}}}
+\DoxyCodeLine{00026\ \ \ \ \ \{}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ id;}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{short}\ points;}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{short}\ funds;}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ deck\_total\_size;}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ library\_size;}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ discard\_size;}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ hand\_size;}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structCommander_1_1Player__info}{Player\_info}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00037\ \ \ \ \ \};}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structCommander_1_1Card__info}{Card\_info}}\ \textcolor{comment}{//\ Card\ information\ to\ be\ exchanged\ between\ commanders\ and\ the\ master}}
+\DoxyCodeLine{00039\ \ \ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ card\_id;}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ entity\_id;}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ owner\_id;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ x,\ y;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ can\_attack;}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ can\_move;}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ is\_overwhelmed;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ value;}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ cost;}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{short}\ advantage;}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ type;}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structCommander_1_1Card__info}{Card\_info}}()\ =\ \textcolor{keywordflow}{default};\ }
+\DoxyCodeLine{00056\ \ \ \ \ \};}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\_message}}\ \textcolor{comment}{//\ Data\ structure\ that\ represents\ the\ player's\ in-\/game\ actions.}}
+\DoxyCodeLine{00058\ \ \ \ \ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ type;}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ Order\_type\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_DO\_NOTHING,\ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_PASS,\ }
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_SURRENDER,\ }
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_PLAY\_CARD,\ }
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_MOVE,\ }
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_ATTACK,\ }
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_CHOICE,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_ABILITY}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ Order\_result}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_SUCCESS,}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_UNKNOWN,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_INVTYPE,}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_INVARGS,}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_PERMISSION,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_NOSELECT,}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_NOTARGET,}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_EXHAUSTED,}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ ORD\_NOFUNDS}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ Event\_type\ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_DUMMY,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_ORDER\_FEEDBACK,}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_GAME\_WON\_BY,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_TURN\_PASSED\_TO,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_PLAYER\_DEPLOYS,}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_CARD\_MOVED,}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_CARD\_ATTACKS,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_CARD\_DESTROYED,}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_PLAYER\_DRAWS,}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_PLAYER\_DISCARDS,}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_DECK\_REFRESH,}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_DECK\_NOREFRESH,}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ EV\_CHOICE\_PROMPT}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ std::vector<int>\ data;}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\_message}}()\ :\ type(ORD\_DO\_NOTHING),\ data(0)\ \{\}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\_message}}(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ type,\ std::vector<int>\ data)\ :\ type(type),\ data(data)\ \{\}}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<char>\ packed();}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\_message}}(\textcolor{keyword}{const}\ std::vector<char>\&\ packed);}
+\DoxyCodeLine{00105\ \ \ \ \ \};}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structCommander_1_1Game__params}{Game\_params}}}
+\DoxyCodeLine{00108\ \ \ \ \ \{}
+\DoxyCodeLine{00109\ \ \ \ \ std::unordered\_map<unsigned\ int,\ Card\_info>\ card\_manifest;}
+\DoxyCodeLine{00110\ \ \ \ \ std::pair<int,\ int>\ grid\_size;}
+\DoxyCodeLine{00111\ \ \ \ \ \};}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structCommander_1_1Game__state}{Game\_state}}}
+\DoxyCodeLine{00114\ \ \ \ \ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ turn,\ turn\_absolute;}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ std::vector<Card\_info>\ active\_cards;}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ std::vector<Player\_info>\ players;}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ std::vector<std::vector<Card\_info>>\ hands;}
+\DoxyCodeLine{00119\ \ \ \ \ \};}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\_message}}\ \mbox{\hyperlink{structCommander_1_1Commander__message}{Order}};\ \textcolor{comment}{//\ Command\ issued\ by\ player}}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{structCommander_1_1Commander__message}{Commander\_message}}\ \mbox{\hyperlink{structCommander_1_1Commander__message}{Event}};\ \textcolor{comment}{//\ Message\ describing\ a\ happening\ in\ game.}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ std::vector<int>\ controlled\_ids;\ \textcolor{comment}{//\ All\ players\ controlled\ by\ the\ commander}}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordtype}{int}\ active\_id;\ \ \ \ }
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \ \ \mbox{\hyperlink{structCommander_1_1Game__params}{Game\_params}}\ game\_params;}
+\DoxyCodeLine{00128\ \ \ \ \ \mbox{\hyperlink{structCommander_1_1Game__state}{Game\_state}}\ game\_state;}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keyword}{virtual}\ std::optional<Order>\ get\_order()\ =\ 0;\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ process\_event(\mbox{\hyperlink{structCommander_1_1Commander__message}{Event}}\ event)\ =\ 0;}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ process\_order\_feedback(\textcolor{keywordtype}{int}\ code)\ =\ 0;}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ update\_state(\mbox{\hyperlink{structCommander_1_1Game__state}{Game\_state}}\ state)\ \{\ game\_state\ =\ state;\}}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ set\_params(Game\_params\ params)\ \{\ game\_params\ =\ params;\}}
+\DoxyCodeLine{00136\ \};}
+
+\end{DoxyCode}

@@ -28,7 +28,7 @@ add_executable(game_test logic/source/gameplay/Ability.cpp logic/source/gameplay
 
 add_executable(socket_test_p2p logic/source/network/UDP_wrapper.cpp main/Socket_test_p2p.cpp )
 add_executable(tcp_client logic/source/network/TCP_client.cpp main/TCP_test_client.cpp)
-add_executable(tcp_server logic/source/network/Socket_wrappers.cpp logic/source/network/TCP_server.cpp main/TCP_test_server.cpp)
+add_executable(tcp_server logic/source/network/Network.cpp logic/source/network/TCP_server.cpp main/TCP_test_server.cpp)
 
 add_executable(timer_test logic/source/utility/Event_timer.cpp main/Timer_test.cpp)
 add_executable(unique_test logic/source/utility/Unique.cpp main/Unique_test.cpp)
@@ -39,9 +39,9 @@ add_executable(tui_test logic/source/utility/TUI.cpp logic/source/utility/Focus.
                logic/source/utility/Storage_manager.cpp logic/source/utility/Sprite_storage.cpp main/TUI_test.cpp)
 
 add_executable(generic_client_test logic/source/network/TCP_client.cpp logic/source/network/UDP_wrapper.cpp 
-               logic/source/network/Socket_wrappers.cpp main/Generic_client_test.cpp)
+               logic/source/network/Network.cpp main/Generic_client_test.cpp)
 add_executable(generic_server_test logic/source/network/TCP_server.cpp logic/source/network/UDP_wrapper.cpp 
-               logic/source/network/Socket_wrappers.cpp main/Generic_server_test.cpp)
+               logic/source/network/Network.cpp main/Generic_server_test.cpp)
 
 add_executable(sprite_editor logic/source/utility/Sprite_editor.cpp logic/source/utility/TUI.cpp logic/source/utility/Misc_functions.cpp  
                logic/source/utility/Animations.cpp logic/source/utility/Event_timer.cpp logic/source/utility/Sprite_storage.cpp

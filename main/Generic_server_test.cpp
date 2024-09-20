@@ -1,4 +1,6 @@
-#include "Socket_wrappers.hpp"
+#include "Network.hpp"
+#include "UDP_peer.hpp"
+#include "TCP_server.hpp"
 #include "Serialization.hpp"
 
 #include <iostream>
@@ -15,8 +17,9 @@ int main()
     std::cout << "Enter magic number: " << std::flush; 
     std::cin >> magic_number;
 
-    UDP_wrapper discovery_socket(server_port);
+    UDP_peer discovery_socket(server_port);
     TCP_server service_socket(server_port+1);
+    service_socket.do_handshake = true;
 
     std::cout << service_socket.get_port() << std::endl;
 

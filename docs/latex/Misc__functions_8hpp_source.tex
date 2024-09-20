@@ -1,0 +1,77 @@
+\doxysection{Misc\+\_\+functions.\+hpp}
+\hypertarget{Misc__functions_8hpp_source}{}\label{Misc__functions_8hpp_source}\index{logic/include/utility/Misc\_functions.hpp@{logic/include/utility/Misc\_functions.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Type,\ \textcolor{keyword}{typename}\ Key\_type>}
+\DoxyCodeLine{00012\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ pop\_element(std::vector<Type>\&\ vec,\ Key\_type\&\ key,\ \(\backslash\)}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::function<\textcolor{keywordtype}{bool}(Type\&,\ Key\_type\&)>\ compare\ =\ \(\backslash\)}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ [](Type\&\ left,\ Key\_type\&\ right)\{\ \textcolor{keywordflow}{return}\ left\ ==\ right;\ \})\ }
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Remove\ element\ that\ matches\ comparison\ criterion\ from\ a\ vector\ (==\ by\ default).}}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Returns\ TRUE\ if\ element\ was\ found\ and\ destroyed\ and\ FALSE\ otherwise}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ CAUTION:\ mind\ the\ order\ of\ Type\ and\ Keytype.\ don't\ repeat\ my\ mistakes}}
+\DoxyCodeLine{00019\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{auto}\ iter\ =\ vec.begin();\ iter\ !=\ vec.end();\ iter++)}
+\DoxyCodeLine{00021\ \ \ \ \ \{}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(compare(*iter,\ key))}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \ \ \ \ vec.erase(iter);}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00027\ \ \ \ \ \}}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00029\ \}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Type,\ \textcolor{keyword}{typename}\ Key\_type>}
+\DoxyCodeLine{00034\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ find\_index(std::vector<Type>\ vec,\ Key\_type\&\ key,\ \(\backslash\)}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::function<\textcolor{keywordtype}{bool}(Type\&,\ Key\_type\&)>\ compare\ =\ \(\backslash\)}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ [](Type\&\ left,\ Key\_type\&\ right)\{\ \textcolor{keywordflow}{return}\ left\ ==\ right;\ \})\ }
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Remove\ element\ that\ matches\ comparison\ criterion\ from\ a\ vector\ (==\ by\ default).}}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Returns\ TRUE\ if\ element\ was\ found\ and\ destroyed\ and\ FALSE\ otherwise}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ CAUTION:\ mind\ the\ order\ of\ Type\ and\ Keytype.\ don't\ repeat\ my\ mistakes}}
+\DoxyCodeLine{00041\ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{int}\ index\ =\ 0;}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{auto}\ iter\ =\ vec.begin();\ iter\ !=\ vec.end();\ iter++,\ index++)\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(compare(*iter,\ key))\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ index;}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00047\ \ \ \ \ \}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00049\ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Type>}
+\DoxyCodeLine{00054\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ pop\_index(std::vector<Type>\&\ vec,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\&\ index)\ \textcolor{comment}{//Remove\ element\ with\ target\ index\ from\ a\ vector}}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordflow}{if}(index\ >=\ vec.size()\ ||\ index\ <\ 0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{auto}\ iter\ =\ vec.begin()\ +\ index;}
+\DoxyCodeLine{00059\ \ \ \ \ vec.erase(iter);}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00062\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00065\ std::vector<std::string>\ wrap\_text(\textcolor{keyword}{const}\ std::string\&\ text,\ \textcolor{keywordtype}{int}\ line\_width);}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ is\_printable(\textcolor{keywordtype}{unsigned}\ ch)}
+\DoxyCodeLine{00069\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordflow}{return}\ (31\ <\ ch\ \&\&\ ch\ <\ 127);}
+\DoxyCodeLine{00071\ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00074\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ flatten\_index(std::pair<int,\ int>\ indices,\ \textcolor{keywordtype}{int}\ width)}
+\DoxyCodeLine{00075\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{return}\ indices.first\ *\ width\ +\ indices.second;}
+\DoxyCodeLine{00077\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00080\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ std::pair<int,\ int>\ unflatten\_index(\textcolor{keywordtype}{int}\ index,\ \textcolor{keywordtype}{int}\ width)}
+\DoxyCodeLine{00081\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordflow}{return}\ \{index\ /\ width,\ index\ \%\ width\};}
+\DoxyCodeLine{00083\ \}}
+
+\end{DoxyCode}

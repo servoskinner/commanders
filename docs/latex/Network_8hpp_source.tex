@@ -1,0 +1,84 @@
+\doxysection{Network.\+hpp}
+\hypertarget{Network_8hpp_source}{}\label{Network_8hpp_source}\index{logic/include/network/Network.hpp@{logic/include/network/Network.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}Misc\_functions.hpp"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <netinet/in.h>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <sys/socket.h>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <arpa/inet.h>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <unistd.h>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <fcntl.h>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <poll.h>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <cstdlib>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <cstring>}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <thread>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <queue>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <atomic>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <set>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#define\ SOCKET\_BUFFER\_SIZE\ \ \ \ \ \ \ \ \ \ \ 1024}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#define\ BROADCAST\_IP\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "{}255.255.255.255"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#define\ DISCOVER\_REPLY\_SIZE\ \ \ \ \ \ \ \ \ \ sizeof(Server\_info)+1}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#define\ TCP\_CLIENT\_MAX\_INBOX\ \ \ \ \ \ \ \ \ 1024}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#define\ TCP\_SERVER\_MAX\_LOG\_QUEUE\ \ \ \ \ 256}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#define\ TCP\_SERVER\_MAX\_INBOX\ \ \ \ \ \ \ \ \ 1024}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#define\ TCP\_SERVER\_MAX\_REQ\ \ \ \ \ \ \ \ \ \ \ 64}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#define\ TCP\_SERVER\_MAX\_CLIENTS\ \ \ \ \ \ \ 1023}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{enum}\ inet\_message\_tag}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \ \ \ \ MSG\_CONTROL,}
+\DoxyCodeLine{00039\ \ \ \ \ MSG\_GAMEPLAY,}
+\DoxyCodeLine{00040\ \ \ \ \ MSG\_CHAT}
+\DoxyCodeLine{00041\ \};\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{enum}\ inet\_control\_tag}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ ICTRL\_ACK,}
+\DoxyCodeLine{00045\ \ \ \ \ ICTRL\_NACK,}
+\DoxyCodeLine{00046\ \ \ \ \ ICTRL\_UPKEEP,}
+\DoxyCodeLine{00047\ \ \ \ \ ICTRL\_DISCOVER,}
+\DoxyCodeLine{00048\ \ \ \ \ ICTRL\_DISCOVER\_REPLY,}
+\DoxyCodeLine{00049\ \ \ \ \ ICTRL\_CONNECTION\_REQUEST,}
+\DoxyCodeLine{00050\ \ \ \ \ ICTRL\_SERVER\_FORCE\_DISCONNECT}
+\DoxyCodeLine{00051\ \};}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structServer__info}{Server\_info}}}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{char}\ description[128];}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{char}\ connected\_players;}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{char}\ flags[8];}
+\DoxyCodeLine{00059\ \};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00062\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structSocket__info}{Socket\_info}}}
+\DoxyCodeLine{00063\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ u\_short\ port\ =\ 0;}
+\DoxyCodeLine{00065\ \ \ \ \ in\_addr\_t\ address\ =\ 0;}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \mbox{\hyperlink{structSocket__info}{Socket\_info}}(u\_short\ n\_port,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\mbox{\hyperlink{structSocket__info_a9e97dddb9ded2030e0bf909b04348b28}{addrstr}}\ =\ \textcolor{stringliteral}{"{}127.0.0.1"{}})\ :\ port(n\_port),\ address(inet\_addr(\mbox{\hyperlink{structSocket__info_a9e97dddb9ded2030e0bf909b04348b28}{addrstr}}))\ \{\}}
+\DoxyCodeLine{00068\ \ \ \ \ \mbox{\hyperlink{structSocket__info}{Socket\_info}}(u\_short\ n\_port,\ std::string\ \mbox{\hyperlink{structSocket__info_a9e97dddb9ded2030e0bf909b04348b28}{addrstr}}\ =\ \textcolor{stringliteral}{"{}127.0.0.1"{}})\ :\ port(n\_port),\ address(inet\_addr(\mbox{\hyperlink{structSocket__info_a9e97dddb9ded2030e0bf909b04348b28}{addrstr}}.c\_str()))\ \{\}}
+\DoxyCodeLine{00069\ \ \ \ \ \mbox{\hyperlink{structSocket__info}{Socket\_info}}(u\_short\ n\_port,\ in\_addr\_t\ addr)\ :\ port(n\_port),\ address(addr)\ \{\}}
+\DoxyCodeLine{00070\ \ \ \ \ \mbox{\hyperlink{structSocket__info}{Socket\_info}}()\ :\ port(0),\ address(0)\ \{\}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structSocket__info}{Socket\_info}}\&\ other)\ \{\textcolor{keywordflow}{return}\ port\ ==\ other.port\ \&\&\ address\ ==\ other.address;\ \}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \mbox{\hyperlink{structSocket__info_a9e97dddb9ded2030e0bf909b04348b28}{addrstr}}();}
+\DoxyCodeLine{00075\ \};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structSocket__inbound__message}{Socket\_inbound\_message}}}
+\DoxyCodeLine{00079\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \mbox{\hyperlink{structSocket__info}{Socket\_info}}\ sender\ =\ \{\};}
+\DoxyCodeLine{00081\ \ \ \ \ std::vector<char>\ msg\ =\ \{\};}
+\DoxyCodeLine{00082\ \};}
+
+\end{DoxyCode}

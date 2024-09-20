@@ -1,0 +1,43 @@
+\doxysection{UDP\+\_\+peer Class Reference}
+\hypertarget{classUDP__peer}{}\label{classUDP__peer}\index{UDP\_peer@{UDP\_peer}}
+
+
+Class used to send and receive byte arrays over network using UDP.  
+
+
+
+
+{\ttfamily \#include $<$UDP\+\_\+peer.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classUDP__peer_a43808202789a6fd8495d69fd65711287}\label{classUDP__peer_a43808202789a6fd8495d69fd65711287} 
+{\bfseries UDP\+\_\+peer} (u\+\_\+short port)
+\item 
+\Hypertarget{classUDP__peer_a3f8b83dac83b972b0b0f36dfae06bd26}\label{classUDP__peer_a3f8b83dac83b972b0b0f36dfae06bd26} 
+const \mbox{\hyperlink{structSocket__inbound__message}{Socket\+\_\+inbound\+\_\+message}} {\bfseries get\+\_\+message} ()
+\item 
+\Hypertarget{classUDP__peer_aeb018c1686898594e08bbab5342398fb}\label{classUDP__peer_aeb018c1686898594e08bbab5342398fb} 
+const bool {\bfseries send\+\_\+to} (const \mbox{\hyperlink{structSocket__info}{Socket\+\_\+info}} \&dest, const std\+::vector$<$ char $>$ \&msg)
+\item 
+\Hypertarget{classUDP__peer_a3561a1033a5e50fa477b133fb2151c33}\label{classUDP__peer_a3561a1033a5e50fa477b133fb2151c33} 
+const u\+\_\+short {\bfseries get\+\_\+port} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classUDP__peer_a1367b74597e527536d8aedf42d603104}\label{classUDP__peer_a1367b74597e527536d8aedf42d603104} 
+u\+\_\+short {\bfseries own\+\_\+port} = -\/1
+\item 
+\Hypertarget{classUDP__peer_a5a4d0f074fb8ed7bf92485fbced90b12}\label{classUDP__peer_a5a4d0f074fb8ed7bf92485fbced90b12} 
+int {\bfseries socket\+\_\+fdesc} = -\/1
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class used to send and receive byte arrays over network using UDP. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+logic/include/network/UDP\+\_\+peer.\+hpp\end{DoxyCompactItemize}

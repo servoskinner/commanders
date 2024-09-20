@@ -1,0 +1,31 @@
+\doxysection{Player.\+hpp}
+\hypertarget{Player_8hpp_source}{}\label{Player_8hpp_source}\index{logic/include/gameplay/Player.hpp@{logic/include/gameplay/Player.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}Game\_master.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}Ability.hpp"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classGame__master_1_1Player}{Game\_master::Player}}}
+\DoxyCodeLine{00007\ \ \ \ \ \{}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keyword}{public}:\ \textcolor{comment}{//\ \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}}
+\DoxyCodeLine{00009\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classGame__master_1_1Player}{Player}}(\textcolor{keywordtype}{int}\ player\_id,\ \mbox{\hyperlink{classGame__master_1_1Deck}{Deck}}\&\ p\_deck);}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ id;\ }
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classGame__master_1_1Player_a8dd245f5437e383d10e694c64ff346e0}{is\_active}};\ }
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \ \ std::vector<Card\_ref>\ \mbox{\hyperlink{classGame__master_1_1Player_add6acba7f8d0dfc2d043a95cef2f35c6}{hand}};}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \ \ Deck\_ref\ deck;}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ points;\ }
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classGame__master_1_1Player_a7b9de013c1c462179c64ecb091d5da68}{funds}};\ \ }
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structCommander_1_1Player__info}{Commander::Player\_info}}\ \mbox{\hyperlink{classGame__master_1_1Player_abe647ca772994f6bf3360d86da5fb304}{get\_info}}();\ }
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ Cause\ turn\_start;}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ Cause\ turn\_end;}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ Cause\ deploys;}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ Cause\ draws;}
+\DoxyCodeLine{00026\ \ \ \ \ \};}
+
+\end{DoxyCode}

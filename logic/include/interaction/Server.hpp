@@ -5,7 +5,8 @@
 #include <functional>
 #include <queue>
 
-#include "Socket_wrappers.hpp"
+#include "UDP_peer.hpp"
+#include "TCP_client.hpp"
 #include "Game_master.hpp"
 #include "Proxy_commander.hpp"
 #include "Misc_functions.hpp"
@@ -45,7 +46,7 @@ class Server
     std::vector<std::optional<Client_slot>> client_slots;
     std::vector<Proxy_commander> commanders;
 
-    UDP_wrapper discovery_socket;
+    UDP_peer discovery_socket;
     std::optional<Game_master> master;
 
     std::vector<char> pack_commander_data(int index);
