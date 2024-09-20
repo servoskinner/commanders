@@ -13,7 +13,7 @@
 #include <string>
 #include <array>
 
-#include "Event_timer.hpp"
+#include "Timer.hpp"
 
 #define XSCALE          10
 #define YSCALE          7  

@@ -8,13 +8,13 @@
 class Game_master::Card
 {
 public: // _____________________________________________________________________________
-    Card(Game_master& master, Card_id id, int oid = -1);
+    Card(Game_master& master, int id, int oid = -1);
     /// @brief Re-initializes everything that could have changed when the card was on field (Power, etc.)
     void reset();
 
     // Identification
     const int owner_id; /// ID of the player in whose deck was this card when the game began.
-    const Card_id card_id; /// Which card in game it is
+    const int card_id; /// Which card in game it is
     int controller_id; /// ID of the player who can give orders to this card.
 
     Unique entity_id; /// Unique ID used to compare identities of different objects.
