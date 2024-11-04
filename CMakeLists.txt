@@ -31,7 +31,6 @@ add_executable(tcp_client logic/source/network/TCP_client.cpp main/TCP_test_clie
 add_executable(tcp_server logic/source/network/Network.cpp logic/source/network/TCP_server.cpp main/TCP_test_server.cpp)
 
 add_executable(timer_test logic/source/utility/Timer.cpp main/Timer_test.cpp)
-add_executable(timer_test logic/source/utility/Timer.cpp main/Timer_test.cpp)
 add_executable(unique_test logic/source/utility/Unique.cpp main/Unique_test.cpp)
 add_executable(storage_test logic/source/utility/Archivist.cpp main/Storage_test.cpp)
 
