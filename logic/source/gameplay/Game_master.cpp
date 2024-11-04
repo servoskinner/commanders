@@ -6,7 +6,7 @@
 #include <memory>
 
 Game_master::Game_master(const std::vector<std::vector<int>>& deck_images,
-                         int gamemode,
+                         Gamemode gamemode,
                          int nplayers,
                          const std::vector<std::vector<int>>& terrain)
 {

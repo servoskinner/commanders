@@ -1,4 +1,4 @@
-#include "Event_timer.hpp"
+#include "Timer.hpp"
 
 float Timer::get_cur_time_s() {
     auto now = std::chrono::steady_clock::now();

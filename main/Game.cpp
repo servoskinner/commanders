@@ -1,6 +1,6 @@
 #include "TUI.hpp"
 #include "Animations.hpp"
-#include "Event_timer.hpp"
+#include "Timer.hpp"
 #include "Sprite_storage.hpp"
 #include "Misc_functions.hpp"
 
