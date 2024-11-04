@@ -1,4 +1,4 @@
-#include "Event_timer.hpp"
+#include "Timer.hpp"
 #include <iostream>
 
 void simple_event()
