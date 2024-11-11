@@ -4,7 +4,7 @@
 #include <mutex>
 #include <stdexcept>
 
-#define UNIQUE_ENTITY_LIMIT 8192
+#define UNIQUE_ENTITY_LIMIT 1048576
 
 /// @brief A unique unsigned int tag.
 class Unique 
@@ -28,11 +28,15 @@ class Unique
     Unique();
     ~Unique();
 
-    const bool operator==(const Unique& other) { return other.id == id;}
-    const bool operator!=(const Unique& other) { return other.id != id;}
+    bool operator==(const Unique& other) const 
+    { return other.id == id;}
+    bool operator!=(const Unique& other) const 
+    { return other.id != id;}
 
-    const bool operator==(const unsigned int& other) { return other == id;}
-    const bool operator!=(const unsigned int& other) { return other != id;}
+    bool operator==(const unsigned int& other) const 
+    { return other == id;}
+    bool operator!=(const unsigned int& other) const 
+    { return other != id;}
 
     const unsigned int get_id() { return id;}
 };

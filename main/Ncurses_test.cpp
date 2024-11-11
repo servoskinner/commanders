@@ -2,6 +2,9 @@
 #include "Card_index.hpp"
 #include "Game_master.hpp"
 
+#define LOGGER_ON
+#include "Logger.hpp"
+
 #include <thread>
 
 
@@ -52,6 +55,8 @@ int main()
         UNICYCLONE
     };
 
+    Logger::get().enable("log.txt");
+
     std::vector<std::vector<int>> deck_images = {deck1, deck2};
     Game_master gm(deck_images);
 
@@ -59,7 +64,6 @@ int main()
 
     while(commander.is_on())
     {
-        TUI::get().clear();
         int turn = gm.get_turn();
         commander.update_state(gm.get_game_state(turn));
 
@@ -73,7 +77,10 @@ int main()
 
         unsigned input = TUI::get().get_input();
         commander.active_id = turn;
+        
+        TUI::get().clear();
         commander.draw(input);
+        TUI::get().render();
 
         std::optional<Commander::Order> ord = commander.get_order();
         if (ord.has_value()) {
@@ -81,7 +88,6 @@ int main()
             commander.process_order_feedback(order_code);
         }
         
-        TUI::get().render();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 }

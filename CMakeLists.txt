@@ -24,7 +24,7 @@ add_executable(game_test logic/source/gameplay/Ability.cpp logic/source/gameplay
                logic/source/gameplay/Card.cpp logic/source/gameplay/Deck.cpp logic/source/gameplay/Effects.cpp logic/source/gameplay/Game_master.cpp
                logic/source/gameplay/Player.cpp logic/source/gameplay/Tile.cpp logic/source/interface/Description_generator.cpp 
                logic/source/utility/Unique.cpp logic/source/utility/Misc_functions.cpp logic/source/interface/NCurses_commander.cpp 
-               logic/source/utility/Focus.cpp logic/source/utility/TUI.cpp main/Ncurses_test.cpp)
+               logic/source/utility/Focus.cpp logic/source/utility/TUI.cpp  logic/source/utility/Logger.cpp main/Ncurses_test.cpp)
 
 add_executable(socket_test_p2p logic/source/network/UDP_wrapper.cpp main/Socket_test_p2p.cpp )
 add_executable(tcp_client logic/source/network/TCP_client.cpp main/TCP_test_client.cpp)
@@ -49,7 +49,7 @@ add_executable(sprite_editor logic/source/utility/Sprite_editor.cpp logic/source
 
 add_executable(game main/Game.cpp logic/source/utility/TUI.cpp logic/source/utility/Misc_functions.cpp  
                logic/source/utility/Animations.cpp logic/source/utility/Timer.cpp logic/source/utility/Sprite_storage.cpp
-               logic/source/utility/Storage_manager.cpp)
+               logic/source/utility/Storage_manager.cpp logic/source/interface/Deck_editor.cpp)
 
 # Links the "corporatewars" executable target with the SFML libraries.
 # target_link_libraries(game sfml-system sfml-window sfml-graphics sfml-network sfml-audio)

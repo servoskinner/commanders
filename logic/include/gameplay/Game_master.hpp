@@ -14,6 +14,12 @@
 #include "Card_index.hpp"
 #include "Misc_functions.hpp"
 
+#define LOGGER_ON
+
+#ifdef LOGGER_ON
+#include "Logger.hpp"
+#endif
+
 #define GRID_WIDTH 		8
 #define GRID_HEIGHT 	6
 
@@ -39,7 +45,7 @@ protected:
     typedef std::reference_wrapper<Game_master::Tile>   Tile_ref;
 
     typedef std::function<void(std::vector<int>)> Effect;
-    typedef std::vector<int> RArgs;
+    typedef std::vector<int> EArgs;
     typedef std::unordered_map<int, Effect> Cause;
     typedef std::reference_wrapper<Game_master::Cause>   Cause_ref;
 

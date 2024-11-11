@@ -4,6 +4,10 @@
 #include "Unique.hpp"
 #include "Ability.hpp"
 
+#ifdef LOGGER_ON
+#include "Logger.hpp"
+#endif
+
 /// @brief A gameplay-wise representation of a card.
 class Game_master::Card
 {

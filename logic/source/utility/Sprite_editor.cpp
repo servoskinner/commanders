@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
 
         switch (input)
         {
-        case KEY_ENTR:
+        case KEY_SUBMIT:
 
             break;
         case '`': case '~':

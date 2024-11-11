@@ -12,14 +12,14 @@ public: // _____________________________________________________________________
 
     enum Tile_neighbor
     {
-        UP,
+        TOP,
         RIGHT,
-        DOWN,
+        BOTTOM,
         LEFT,
-        UPRIGHT,
-        DOWNRIGHT,
-        DOWNLEFT,
-        UPLEFT
+        TOP_RIGHT,
+        BOTTOM_RIGHT,
+        BOTTOM_LEFT,
+        TOP_LEFT
     };
     enum Tile_type
     {

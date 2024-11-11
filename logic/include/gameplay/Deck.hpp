@@ -3,6 +3,10 @@
 #include "Game_master.hpp"
 #include <list>
 
+#ifdef LOGGER_ON
+#include "Logger.hpp"
+#endif
+
 class Game_master::Deck
 {
 public: // _____________________________________________________________________________

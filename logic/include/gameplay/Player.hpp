@@ -3,6 +3,10 @@
 #include "Game_master.hpp"
 #include "Ability.hpp"
 
+#ifdef LOGGER_ON
+#include "Logger.hpp"
+#endif
+
 class Game_master::Player
     {
     public: // _____________________________________________________________________________

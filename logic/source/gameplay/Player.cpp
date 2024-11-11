@@ -6,7 +6,9 @@
 
 Game_master::Player::Player(int player_id, Deck& p_deck) : id(player_id), deck(p_deck)
 {
-    std::cout << "created player with ID " << id << " at " << this <<  std::endl;
+    #ifdef LOGGER_ON
+        Logger::get().write("Created player (id " + std::to_string(player_id) + ")");
+    #endif
 
     funds = 0;
     points = 0;

@@ -21,7 +21,7 @@
 
 #define KEY_ESC         27
 #define KEY_TAB         9
-#define KEY_ENTR        10
+#define KEY_SUBMIT      10
 
 #define KEY_UARROW      91
 #define KEY_DARROW      66

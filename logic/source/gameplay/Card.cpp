@@ -12,6 +12,8 @@ Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), car
     // Initialize abilities
     switch (card_id)
     {
+        status = CSTATUS_UNDEFINED;
+
         case BOUNTYHUNTER:
         case TERRORGUARD:
         case MEGALO:
@@ -27,7 +29,7 @@ Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), car
         {
             std::unique_ptr<Ability_simple> ability = std::make_unique<Ability_simple>(master, std::ref(*this), std::pair<Cause_ref, Effect>
                                                                     (std::ref(leaves_play), 
-                                                                    [this, &master](RArgs _){ master.players[this->controller_id].funds += 2;}));
+                                                                    [this, &master](EArgs _){ master.players[this->controller_id].funds += 2;}));
             abilities.push_back(std::move(ability));
         }
         break;
@@ -35,23 +37,30 @@ Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), car
         {
             std::unique_ptr<Ability_simple> ability = std::make_unique<Ability_simple>(master, std::ref(*this), std::pair<Cause_ref, Effect>
                                                                     (std::ref(enters_play), 
-                                                                    [this, &master](RArgs _){ master.resolve_draw_multi(this->controller_id, 3);}));
+                                                                    [this, &master](EArgs _){ master.resolve_draw_multi(this->controller_id, 3);}));
             abilities.push_back(std::move(ability));
         }
         break;
     }
+    #ifdef LOGGER_ON
+        Logger::get().write("Created card instance " + ref_to_string(this));
+        Logger::get().write("(EID: " + std::to_string(entity_id.get_id()) + " CID: " + std::to_string(id) + ")");
+    #endif
 
     reset();
 }
 
 void Game_master::Card::reset() 
 {
+    #ifdef LOGGER_ON
+        Logger::get().write("Resetting card " + ref_to_string(this));
+        Logger::get().write("(EID: " + std::to_string(entity_id.get_id()) + " CID: " + std::to_string(card_id) + ", Status: " + std::to_string(status) + ")");
+    #endif
+
     can_attack = false;
     can_move = false;
     is_overwhelmed = false;
     x = -1, y = -1;
-
-    status = CSTATUS_UNDEFINED;
 
     switch (card_id)
     {

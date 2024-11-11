@@ -168,7 +168,7 @@ void NCurses_commander::draw(unsigned input)
 {
     // Reset focuses here
     if (input != 0) {
-        if (focus_message.has_control() && focus_end_turn.has_control() && input != KEY_ENTR ||
+        if (focus_message.has_control() && focus_end_turn.has_control() && input != KEY_SUBMIT ||
             focus_examine.has_control()) 
         {
             focus_field.claim_control();
@@ -274,7 +274,7 @@ void NCurses_commander::draw(unsigned input)
         }
         break;
 
-    case KEY_ENTR:
+    case KEY_SUBMIT:
         if (focus_message.has_control() && focus_end_turn.has_control() && !pending_order.has_value()) {
             // pass order
             Order ord = {Order::ORD_PASS, {}};
