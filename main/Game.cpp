@@ -3,6 +3,7 @@
 #include "Timer.hpp"
 #include "Sprite_storage.hpp"
 #include "Misc_functions.hpp"
+#include "Deck_editor.hpp"
 
 #include "NCurses_commander.hpp"
 #include "Game_master.hpp"
@@ -139,6 +140,8 @@ int main()
     TUI::Rect deck_ed_deck_selector(11, 11, 17, 0, COLOR_BLACK, COLOR_BRIGHT_WHITE);
     TUI::Text deck_ed_deck_caption("");
 
+    Deck_editor editor;
+
     while (run_loop) {
         unsigned input = tui.get_input();
         tui.clear();
@@ -160,7 +163,7 @@ int main()
                 input = 0; // allow no spaces in callsign
             }
             callsign_prompt_frame.draw(input);
-            if (input == KEY_ENTR && callsign_prompt.text.size() > 1) {
+            if (input == KEY_SUBMIT && callsign_prompt.text.size() > 1) {
                 storage.put_string("callsign", callsign_prompt.text);
                 callsign = callsign_prompt.text;
                 cur_screen = GAME_MAIN_MENU;
@@ -180,10 +183,14 @@ int main()
                         menu_selected_item++;
                     }
                     break;
-                case KEY_ENTR:
+                case KEY_SUBMIT:
                     switch (menu_selected_item)
                     {
-                    case 4:
+                    case MAIN_MENU_DECK_ED:
+                        cur_screen = GAME_DECK_ED_MAIN;
+                        editor.on_load();
+                        break;
+                    case MAIN_MENU_QUIT:
                         run_loop = false;
                         break;
                     }
@@ -253,7 +260,7 @@ int main()
             // }
             break;
         case GAME_DECK_ED_MAIN:
-
+            editor.draw(input);
             break;
         }
         tui.render();

@@ -13,3 +13,4 @@ CMakeFiles
 *.cmake
 *.vcxproj.*
 *.vscode
+log.txt
