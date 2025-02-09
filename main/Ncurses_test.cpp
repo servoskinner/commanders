@@ -75,12 +75,12 @@ int main()
             ev = gm.get_event(turn);
         }
 
-        unsigned input = TUI::get().get_input();
+        unsigned input = NCursesTUI::get().get_input();
         commander.active_id = turn;
         
-        TUI::get().clear();
+        NCursesTUI::get().clear();
         commander.draw(input);
-        TUI::get().render();
+        NCursesTUI::get().render();
 
         std::optional<Commander::Order> ord = commander.get_order();
         if (ord.has_value()) {
