@@ -10,14 +10,16 @@
 #include <utility>
 #include <queue>
 
+#include "Vector2i.hpp"
 #include "Commander.hpp"
 #include "Card_index.hpp"
 #include "Misc_functions.hpp"
+#include "Unimap_test.hpp"
 
 #define LOGGER_ON
 
 #ifdef LOGGER_ON
-#include "Logger.hpp"
+    #include "Logger.hpp"
 #endif
 
 #define GRID_WIDTH 		8
@@ -36,23 +38,25 @@ class Game_master
 protected:
 
     class Card;
-    typedef std::reference_wrapper<Game_master::Card>   Card_ref;
+    typedef std::reference_wrapper<Card> Card_ref;
+
+    class Ability;
+    typedef std::reference_wrapper<Ability> Ability_ref;
+    typedef std::unique_ptr<Ability> Anon_ability;
+
     class Deck;
-    typedef std::reference_wrapper<Game_master::Deck>   Deck_ref;
+    typedef std::reference_wrapper<Deck> Deck_ref;
+
     class Player;
-    typedef std::reference_wrapper<Game_master::Player> Player_ref;
+    typedef std::reference_wrapper<Player> Player_ref;
+    
     class Tile;
-    typedef std::reference_wrapper<Game_master::Tile>   Tile_ref;
+    typedef std::reference_wrapper<Tile> Tile_ref;
 
     typedef std::function<void(std::vector<int>)> Effect;
     typedef std::vector<int> EArgs;
     typedef std::unordered_map<int, Effect> Cause;
     typedef std::reference_wrapper<Game_master::Cause>   Cause_ref;
-
-    class Ability;
-    class Binding;
-
-    class Ability_simple;
 
 public: // _____________________________________________________________________________
     enum Gamemode {
@@ -60,8 +64,30 @@ public: // _____________________________________________________________________
         GM_SKIRMISH,
         GM_2V2
     };
+    enum Direction
+    {
+        TOP,
+        RIGHT,
+        BOTTOM,
+        LEFT,
+        TOP_RIGHT,
+        BOTTOM_RIGHT,
+        BOTTOM_LEFT,
+        TOP_LEFT,
+        NOT_A_NEIGHBOR
+    };
+    enum Tile_type
+    {
+        NORMAL      = -1,
+        OBJECTIVE   = -2,
+        // Special terrain has too much impact on gameplay and its use is discouraged
+        OBSTACLE    = -3,
+        NO_DEPLOY   = -4,
+        TERR_ADV    = -5,
+        TERR_DISADV = -6
+    }; // Non-negatives refer to deploy zones of players with same IDs
 
-    Game_master(const std::vector<std::vector<int>> &deck_images,
+    Game_master(const std::vector<std::vector<unsigned int>> &deck_images,
                 Gamemode gamemode = GM_STANDARD,
                 int nplayers = 2,
                 const std::vector<std::vector<int>>& terrain = {});
@@ -80,19 +106,22 @@ public: // _____________________________________________________________________
     int get_absolute_turn() { return turn_absolute; }
 
     /// @return Whether a game is active.
-    bool is_on() { return game_is_on; }
+    bool is_ongoing() { return game_is_ongoing; }
 
     /// @return game information that does not change over time and is available to each player.
     Commander::Game_params get_static_game_info();
 
-    /// @return height and width of the battlefield.
-    std::pair<int, int> get_grid_params() { return {grid.size(), grid[0].size()}; }
+
+    /// @brief Dimensions of battlefield.
+    Vector2i grid_size;
+    /// @return dimensions of the battlefield.
+    Vector2i get_grid_size() { return grid_size; }
     
     /// @brief executes an order from the perspective of given player.
     /// @param player_id id of player who issues the order.
     /// @param order order to execute.
     /// @return 0 if order was executed successfully, or an error code describing why it failed.
-    int exec_order(int player_id, const Commander::Order &order);
+    Commander::Order_result exec_order(int player_id, const Commander::Order &order);
     
     /// @brief Gets the least recent event that given player was notified of.
     /// @param player_id id of player who received the event.
@@ -117,13 +146,14 @@ private: // ____________________________________________________________________
 
     std::vector<std::queue<Commander::Event>> event_queues;
 
-    std::list<Card> tokens;
     std::vector<Player> players;
-    std::vector<Deck> decks;
+    // Indexed by EIDs
+    std::unordered_map<unsigned int, Card> tokens;
+    std::unordered_map<unsigned int, Deck> decks;
     // Playing field
 
     std::vector<std::vector<Tile>> grid; /// The playing field. (0,0) is top left corner; X axis is vertical, Y is horizontal.
-    std::vector<Game_master::Card_ref> active_cards;   /// Cards that are currently on the playing field.
+    std::unordered_map<unsigned int, Card_ref> active_cards;   /// Cards that are currently on the playing field.
 
     // Global triggers
 
@@ -141,7 +171,7 @@ private: // ____________________________________________________________________
     int turn; /// The id of the player who moves now.
     int turn_absolute; /// Total number of turns that have passed.
 
-    bool game_is_on;
+    bool game_is_ongoing;
 
     /// @brief Pass the turn to next player and process the necessary triggers.
     void end_turn();
@@ -154,7 +184,7 @@ private: // ____________________________________________________________________
     inline void fire_trigger(Cause& trigger, std::vector<int> args);
 
     /// @returns If player with given id has the most units within the capture zone.
-    bool check_dominance(int player_id);
+    bool check_dominance(int player_id) const;
 
     /// @brief Notifies a single player about given event.
     inline void push_event(int player_id, const Commander::Event& event);
@@ -162,27 +192,40 @@ private: // ____________________________________________________________________
 
     inline void broadcast_event(const Commander::Event& event);
 
-    // Card actions
-    bool deploy_card(Card &card, int player, std::optional<Tile_ref> target = {});         // Place a card in play.
-    bool resolve_movement(Card &card, int direction);   // Move a card in specified direction.
-    void resolve_destruction(Card &card);                      // Remove a card from play and discard it.
-    bool resolve_attack(Card &card, int direction); // Resolve an attack from one tile to another.
-    bool inflict_damage(Card &card, int amount);
+    // Card functions
 
-    int resolve_combat(Card &attacker, Card &defender); // Resolve combat between two units.
+    /// @brief Try to place a card in play.
+    Commander::Order_result deploy_card(Card &card, int player, std::optional<Tile_ref> target = {});
+    /// @brief Try to move a card in specified direction.
+    Commander::Order_result resolve_movement(Card &card, Direction direction); // Move a card in specified direction.
+    /// @brief Try to attack an adjacent tile with card.
+    Commander::Order_result resolve_attack(Card &card, Direction direction); // Resolve an attack from one tile to another.
+    /// @brief Resolve dealing damage to a card, making destruction checks and 
+    /// @returns true if card was destroyed.
+    bool inflict_damage(Card &card, unsigned int amount);
+    /// @brief Put a card from battlefield to junk.
+    void resolve_destruction(Card &card);
+
     enum Combat_outcome
     {
-        COMBAT_WIN = 1,
-        COMBAT_TIE = 0,
-        COMBAT_LOSE = -1
+        ATTACKER_LIVES = 1,
+        BOTH_DIE = 0,
+        DEFENDER_LIVES = -1
     };
-    // Tile
+    /// @brief Resolve combat between two units.
+    Combat_outcome resolve_combat(Card &attacker, Card &defender);
+
+    // Tile functions
 
     /// @return References to Tiles adjoined to Tile, excluding diagonals.
-    std::vector<std::optional<Game_master::Tile_ref>> get_4neighbors(const Tile &tile);
+    std::array<std::optional<Game_master::Tile_ref>, 4> get_4neighbors(const Tile &tile);
     /// @return References to Tiles adjoined to Tile, including diagonals.
-    std::vector<std::optional<Game_master::Tile_ref>> get_8neighbors(const Tile &tile);
+    std::array<std::optional<Game_master::Tile_ref>, 8> get_8neighbors(const Tile &tile);
 
+    /// @brief Returns a Tile_neighbor value corresponding to given delta.
+    Direction delta_to_neighbor(Vector2i delta) const;
+
+    inline bool is_4neighbor(Direction neighbor) { return neighbor < 4; }
     // Players
 
     /// @brief resolve a player drawing one card from the top of their deck's library.

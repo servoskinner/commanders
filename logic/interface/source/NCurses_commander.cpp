@@ -138,25 +138,25 @@ void NCurses_commander::process_order_feedback(int code)
 {
     switch (code)
     {
-    case Commander::Event::ORD_INVARGS:
+    case Commander::Event::ORD_INV_ARGS:
         status_message.set_text("Invalid order arguments!");
         break;
-    case Commander::Event::ORD_INVTYPE:
+    case Commander::Event::ORD_UNKNOWN_TYPE:
         status_message.set_text("Invalid order type!");
         break;
     case Commander::Event::ORD_EXHAUSTED:
         status_message.set_text("Invalid order: action exhausted!");
         break;
-    case Commander::Event::ORD_NOFUNDS:
+    case Commander::Event::ORD_LOW_FUNDS:
         status_message.set_text("Invalid order: insufficient funds!");
         break;
-    case Commander::Event::ORD_NOSELECT:
+    case Commander::Event::ORD_NO_ACTOR:
         status_message.set_text("Invalid order: no subject specified!");
         break;
-    case Commander::Event::ORD_NOTARGET:
+    case Commander::Event::ORD_NO_TARGET:
         status_message.set_text("Invalid order: no target specified!");
         break;
-    case Commander::Event::ORD_PERMISSION:
+    case Commander::Event::ORD_NO_PERMISSION:
         status_message.set_text("Invalid order: you don't have permission!");
         break;
     }
@@ -422,7 +422,7 @@ void NCurses_commander::render_grid()
         contract_name.position.x = left_contracts_origin_x;
         contract_name.position.y = left_contracts_origin_y + i + 2;
 
-        contract_name.set_text(Description_generator::get_card_instance(contracts[0][i].card_id).name);
+        contract_name.set_text(Description_generator::get_desc(contracts[0][i].card_id).name);
         contract_duration.set_text("(" + std::to_string(contracts[0][i].value) + ")");
         contract_name.draw(tui);
     }
@@ -431,7 +431,7 @@ void NCurses_commander::render_grid()
         contract_name.position.x = right_contracts_origin_x;
         contract_name.position.y = right_contracts_origin_y + i + 2;
 
-        contract_name.set_text(Description_generator::get_card_instance(contracts[1][i].card_id).name);
+        contract_name.set_text(Description_generator::get_desc(contracts[1][i].card_id).name);
         contract_duration.set_text("(" + std::to_string(contracts[1][i].value) + ")");
         contract_name.draw(tui);
     }
@@ -761,7 +761,7 @@ NCurses_commander::Unit_sprite::Unit_sprite(Card_info c_info)
 void NCurses_commander::Unit_sprite::set_card(Card_info c_info)
 {
     card_info = c_info;
-    name.set_text(Description_generator::get_card_instance(card_info.card_id).name);
+    name.set_text(Description_generator::get_desc(card_info.card_id).name);
 
     value.set_text(std::to_string(card_info.value));
     advantage.set_text(card_info.advantage != 0 ? std::to_string(card_info.advantage) : "");

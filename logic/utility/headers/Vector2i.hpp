@@ -5,8 +5,8 @@
 /// @brief 2D integer vector.
 struct Vector2i
 {
-    int x;
-    int y;
+    int32_t x;
+    int32_t y;
 
     constexpr Vector2i(int x = 0, int y = 0) : x(x), y(y) {} 
 

@@ -7,7 +7,7 @@
 #include "Ability.hpp"
 class Game_master;
 
-Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), card_id(id), owner_id(oid), controller_id(-1)
+Game_master::Card::Card(int id, int oid) : entity_id(), card_id(id), owner_id(oid), controller_id(-1)
 {
     status = CSTATUS_UNDEFINED;
     
@@ -27,24 +27,18 @@ Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), car
 
         case UNICYCLONE:
         {
-            std::unique_ptr<Ability_simple> ability = std::make_unique<Ability_simple>(master, std::ref(*this), std::pair<Cause_ref, Effect>
-                                                                    (std::ref(leaves_play), 
-                                                                    [this, &master](EArgs _){ master.players[this->controller_id].funds += 2;}));
-            abilities.push_back(std::move(ability));
-        }
+            
+        }  
         break;
         case LOGISTICS:
         {
-            std::unique_ptr<Ability_simple> ability = std::make_unique<Ability_simple>(master, std::ref(*this), std::pair<Cause_ref, Effect>
-                                                                    (std::ref(enters_play), 
-                                                                    [this, &master](EArgs _){ master.resolve_draw_multi(this->controller_id, 3);}));
-            abilities.push_back(std::move(ability));
+            
         }
         break;
     }
     #ifdef LOGGER_ON
-        Logger::get().write("Created card instance " + ref_to_string(this));
-        Logger::get().write("(EID: " + std::to_string(entity_id) + " CID: " + std::to_string(id) + ")");
+        Logger::get() << "Instantiated card #" << card_id << " (" << Description_generator::get_desc(id).name << ") EID: " << (unsigned int)entity_id;
+        Logger::get().flush();
     #endif
 
     reset();
@@ -53,14 +47,14 @@ Game_master::Card::Card(Game_master& master, int id, int oid) : entity_id(), car
 void Game_master::Card::reset() 
 {
     #ifdef LOGGER_ON
-        Logger::get().write("Resetting card " + ref_to_string(this));
-        Logger::get().write("(EID: " + std::to_string(entity_id) + " CID: " + std::to_string(card_id) + ", Status: " + std::to_string(status) + ")");
+        Logger::get() << "Resetting card (EID " << entity_id << ")";
+        Logger::get().flush();
     #endif
 
     can_attack = false;
     can_move = false;
     is_overwhelmed = false;
-    x = -1, y = -1;
+    pos = {-1, -1};
 
     switch (card_id)
     {
@@ -134,6 +128,8 @@ void Game_master::Card::reset()
     }
 }
 
+/// @brief Get a snapshot of the card, stripped of 
+/// @return Card_info suitable to be represented by frontend
 Commander::Card_info Game_master::Card::get_info()
 {
     Commander::Card_info info;
@@ -142,7 +138,7 @@ Commander::Card_info Game_master::Card::get_info()
     info.card_id = card_id;
     info.entity_id = entity_id;
 
-    info.x = x, info.y = y;
+    info.pos = pos;
 
     info.value = value;
     info.cost = cost;

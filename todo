@@ -1,0 +1,2 @@
+- replace instances of std::pair<int, int> with Vector2i where necessary
+- rewrite NCurses commander

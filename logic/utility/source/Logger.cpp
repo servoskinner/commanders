@@ -8,25 +8,31 @@ Logger& Logger::get()
 
 Logger::~Logger()
 {
+    disable();
+}
+
+void Logger::enable(const std::string& filename)
+{
     if (logfile.has_value()) {
         logfile->close();
     }
-}
-
-void Logger::enable(std::string filename)
-{
     logfile.emplace();
     logfile->open(filename);
+    if (!logfile->is_open()) {
+        logfile.reset(); // Reset if the file couldn't be opened
+    }
 }
 
 void Logger::disable()
 {
+    if (logfile.has_value()) {
+        logfile->close();
+    }
     logfile.reset();
 }
 
-void Logger::write(std::string msg = "")
-{
+void Logger::flush() {
     if (logfile.has_value()) {
-        logfile.value() << msg << std::endl;
+        logfile.value() << std::endl;
     }
 }

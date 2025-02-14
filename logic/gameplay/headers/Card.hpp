@@ -1,27 +1,40 @@
-#pragma once
+#ifndef _INCLUDE_CARD_HPP
+#define _INCLUDE_CARD_HPP
 
 #include "Game_master.hpp"
 #include "Unique.hpp"
 #include "Ability.hpp"
 
 #ifdef LOGGER_ON
-#include "Logger.hpp"
+    #include "Logger.hpp"
+    #include "Description_generator.hpp"
 #endif
 
 /// @brief A gameplay-wise representation of a card.
-class Game_master::Card
+class Game_master::Card : Unique
 {
+private: // _____________________________________________________________________________
+    // Non-copyable
+    Card(const Card& other) = delete;
+    Card& operator=(const Card& other) = delete;
+
+    int owner_id; /// ID of the player in whose deck was this card when the game began.
+    int card_id; /// Which card in game it is
+
 public: // _____________________________________________________________________________
-    Card(Game_master& master, int id, int oid = -1);
+    Card(int id, int oid = -1);
     /// @brief Re-initializes everything that could have changed when the card was on field (Power, etc.)
     void reset();
 
+    // Movable
+    Card(Card&& other) noexcept = default;
+    Card& operator=(Card&& other) noexcept = default;
+ 
     // Identification
-    const int owner_id; /// ID of the player in whose deck was this card when the game began.
-    const int card_id; /// Which card in game it is
     int controller_id; /// ID of the player who can give orders to this card.
+    inline int get_owner_id() const { return owner_id; }
+    inline int get_card_id() const { return owner_id; }
 
-    Unique entity_id; /// Unique ID used to compare identities of different objects.
 
     Card_type type;
     enum Card_status
@@ -36,7 +49,7 @@ public: // _____________________________________________________________________
 
     Commander::Card_info get_info();
     // Gameplay
-    int x, y; /// The card's position on the grid, if it is there.
+    Vector2i pos; /// The card's position on the grid, if it is there.
 
     int cost; /// Funds required to deploy the card.
     int value; /// The unit's Combat Power or the contract's duration.
@@ -60,3 +73,5 @@ public: // _____________________________________________________________________
     Cause before_attacked; /// Triggered after an attack has been declared on the card and before the combat is resolved.
     Cause after_attacked; /// Triggered after the card was attacked, after the resolution of combat.
 };
+
+#endif

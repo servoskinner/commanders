@@ -118,8 +118,8 @@ class NCurses_commander : public Commander
     {
         public:
         Hand_card_sprite(Description_generator::Card_descr c_descr = {});
-        Hand_card_sprite(Card_info c_info) : Hand_card_sprite(Description_generator::get_card_instance(c_info.card_id)) { card_info = c_info;}
-        Hand_card_sprite(int id) : Hand_card_sprite(Description_generator::get_card_instance(id)) {}
+        Hand_card_sprite(Card_info c_info) : Hand_card_sprite(Description_generator::get_desc(c_info.card_id)) { card_info = c_info;}
+        Hand_card_sprite(int id) : Hand_card_sprite(Description_generator::get_desc(id)) {}
 
         void set_card(Card_info c_info);
         inline const std::optional<Card_info> get_card() { return card_info;}

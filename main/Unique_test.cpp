@@ -5,15 +5,15 @@ int main()
 {
     {
     Unique u1, u2;
-    std::cout << u1.get_id() << " " << u2.get_id() << std::endl;
+    std::cout << u1 << " " << u2 << std::endl;
     }
 
     Unique u3, u4, u5;
 
-    std::cout << u3.get_id() << " " << u4.get_id() << " " << u5.get_id() << std::endl;
+    std::cout << u3 << " " << u4 << " " << u5 << std::endl;
     u4.~Unique();
     Unique u6;
 
-    std::cout << u3.get_id() << " " << u5.get_id() << " " << u6.get_id() << std::endl;
+    std::cout << u3 << " " << u5 << " " << u6 << std::endl;
     return 0;
 }

@@ -43,7 +43,7 @@ void CLI_commander::render_UI()
      // Render Units
    for(Card_info card : game_state.active_cards)
    {
-      Description_generator::Card_descr original = Description_generator::get_card_instance(card.card_id);
+      Description_generator::Card_descr original = Description_generator::get_desc(card.card_id);
       if(card.type == CTYPE_UNIT)
       {
          if(card.y == 3 || card.y == 4) //in capture zone
@@ -102,7 +102,7 @@ void CLI_commander::render_UI()
 
    for(int i=0; i<game_state.hands[active_id].size(); i++)
    {
-      Description_generator::Card_descr original = Description_generator::get_card_instance(game_state.hands[active_id][i].card_id);
+      Description_generator::Card_descr original = Description_generator::get_desc(game_state.hands[active_id][i].card_id);
 
       std::cout  << "[" << i << "] $" << game_state.hands[active_id][i].cost << " " << original.name << " (";
       			 (game_state.hands[active_id][i].value >= 0 ? std::cout << game_state.hands[active_id][i].value : std::cout << "T") \
@@ -116,7 +116,7 @@ void CLI_commander::render_UI()
    {
       if(card.type == CTYPE_CONTRACT && card.owner_id == active_id)
       {
-         Description_generator::Card_descr origin = Description_generator::get_card_instance(card.entity_id);
+         Description_generator::Card_descr origin = Description_generator::get_desc(card.entity_id);
          std::cout << origin.name << " (" << card.value << ")\n";
       }
    }
@@ -201,23 +201,23 @@ void CLI_commander::process_order_feedback(int code)
          std::cout << "\nExecuted\n" << std::endl;
          break;
 
-      case Order::ORD_INVTYPE:
+      case Order::ORD_UNKNOWN_TYPE:
          std::cout << "\nInvalid command type...\n" << std::endl;
          break;
 
-      case Order::ORD_INVARGS:
+      case Order::ORD_INV_ARGS:
          std::cout << "\nInvalid argument(s)...\n" << std::endl;
          break;
 
-      case Order::ORD_PERMISSION:
+      case Order::ORD_NO_PERMISSION:
          std::cout << "\nYou don't have permission...\n" << std::endl;
          break;
 
-      case Order::ORD_NOSELECT:
+      case Order::ORD_NO_ACTOR:
          std::cout << "\nNo unit has been selected...\n" << std::endl;
          break;
 
-      case Order::ORD_NOTARGET:
+      case Order::ORD_NO_TARGET:
          std::cout << "\nNo target has been specified...\n" << std::endl;
          break;
 
@@ -225,7 +225,7 @@ void CLI_commander::process_order_feedback(int code)
          std::cout << "\nOption exhausted...\n" << std::endl;
          break;
       
-      case Order::ORD_NOFUNDS:
+      case Order::ORD_LOW_FUNDS:
          std::cout << "\nInsufficient funds...\n" << std::endl;
          break;
 

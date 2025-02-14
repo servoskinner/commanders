@@ -82,12 +82,3 @@ constexpr inline std::pair<int, int> unflatten_index(int index, int width)
 {
     return {index / width, index % width};
 }
-
-/// @brief Converts references to string via streambuf
-template <typename Type>
-inline std::string ref_to_string(Type ref)
-{
-    std::ostringstream oss;
-    oss << ref;
-    return oss.str();
-}

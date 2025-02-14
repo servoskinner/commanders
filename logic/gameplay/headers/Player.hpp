@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _INCLUDE_PLAYER_HPP
+#define _INCLUDE_PLAYER_HPP
 
 #include "Game_master.hpp"
 #include "Ability.hpp"
@@ -12,9 +13,13 @@ class Game_master::Player
     public: // _____________________________________________________________________________
         Player(int player_id, Deck& p_deck);
 
+        // Movable
+        Player(Player&& other) noexcept = default;
+        Player& operator=(Player&& other) noexcept = default;
+
         const int id; /// Unique player ID and turn no. on which it issues orders.
         bool is_active; /// Whether the player is allowed to actively participate in game
-        std::vector<Card_ref> hand;
+        std::vector<Card> hand;
         Deck_ref deck;
 
         int points; /// Dominance Points scored by the player. a total of POINTS_REQ_FOR_VICTORY is required to win the game;
@@ -27,4 +32,11 @@ class Game_master::Player
         Cause turn_end;
         Cause deploys;
         Cause draws;
+
+        private:
+        // Non-copyable
+        Player(Player& other) = delete;
+        Player& operator=(Player& other) = delete;
     };
+
+#endif

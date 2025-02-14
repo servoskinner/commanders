@@ -1,13 +1,11 @@
-# Specifies the minimum version of CMake required to process this CMakeLists file.
 cmake_minimum_required(VERSION 3.10)
+project(corporatewars VERSION 0.2.2 LANGUAGES CXX)
 
-# Sets the name of the project and stores it in the PROJECT_NAME variable.
-project(corporatewars)
-
-# Sets the C++ standard to C++11 for the project.
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+
+message(${CMAKE_C_COMPILER},${CMAKE_CXX_COMPILER},${CMAKE_MAKE_PROGRAM})
 
 # Adds the specified directory to the list of paths in which the compiler should search for include files.
 file (GLOB INCLUDE "logic/*/headers")
@@ -33,6 +31,8 @@ add_executable(tui_test logic/utility/source/Misc_functions.cpp logic/utility/so
                logic/tui/source/Scrollable_text.cpp logic/tui/source/Sprite.cpp logic/tui/source/Text_input.cpp 
                logic/tui/source/Text.cpp logic/tui/source/UI_Object.cpp logic/utility/source/Animations.cpp logic/utility/source/Timer.cpp 
                main/TUI_test.cpp)
+
+add_executable(unimap_test logic/utility/source/Unique.cpp main/Unimap_test.cpp)
 
 # target_link_libraries(game sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 target_link_libraries(game_test PRIVATE ncurses)

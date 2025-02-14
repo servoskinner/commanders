@@ -6,7 +6,7 @@ Sprite::Sprite(Vector2i size, Vector2i position) : UI_Object(position)
         throw std::invalid_argument("TUI::Sprite::Sprite(): width and height must be greater than zero");
     }
 
-    sprite = std::vector<std::vector<Glyph>>(size.y, std::vector<Glyph>(size.x, {' ', TRANSPARENT, TRANSPARENT}));
+    sprite = std::vector<std::vector<TUI::Glyph>>(size.y, std::vector<TUI::Glyph>(size.x, {' ', TUI::TRANSPARENT, TUI::TRANSPARENT}));
 }
 
 Vector2i Sprite::get_size() const {

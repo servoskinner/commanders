@@ -10,9 +10,9 @@
 class Description_generator // A singleton that returns a card's description for its ID.
 {
 public:
+    /// @brief Everything that would be written on a paper card
     struct Card_descr
     {
-        int entity_id = -1;
         std::string name = "unknown";
         std::string ability_text = "";
         std::string flavor_text = "";
@@ -22,7 +22,7 @@ public:
         int type = -1;
         std::array<bool, 15> mnemosprite = {};
     };
-    static Card_descr get_card_instance(int index);
+    static Card_descr get_desc(int card_id);
 
 private:
     Description_generator() = delete;

@@ -1,9 +1,10 @@
 #include "Description_generator.hpp"
 
-Description_generator::Card_descr Description_generator::get_card_instance(int index) // instantiate all cards in game 
+Description_generator::Card_descr Description_generator::get_desc(int card_id) // instantiate all cards in game 
 {
     Card_descr card_desc = {};
-    switch (index)
+    
+    switch (card_id)
     {
     //______________________________
     case BOUNTYHUNTER:

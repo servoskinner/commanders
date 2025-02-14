@@ -3,6 +3,7 @@
 #include <vector>
 #include <mutex>
 #include <stdexcept>
+#include <optional>
 
 #define UNIQUE_ENTITY_LIMIT 4096
 
@@ -10,33 +11,38 @@
 class Unique 
 {
     private:
-    unsigned int id;
+    uint32_t id;
+    bool valid = true;
 
-    static std::vector<bool> available_ids;
+    static std::vector<bool> claimed_ids;
     static std::mutex id_mutex;
 
-    /// @brief Marks given id as "in use" or "not in use"
-    static void claim_id(int id, bool val);
-
     // Non-copyable
-    Unique& operator= (const Unique& other) = delete;
     Unique(const Unique& other) = delete;
+    Unique& operator= (const Unique& other) = delete;
     
     public:
-    const static bool is_taken(int id);
+    static bool is_taken(unsigned int id);
+    inline unsigned int get_uid() const { return id; }
+    inline bool is_valid() const { return valid; }
+
+    // Movable
+    Unique(Unique&& other) noexcept;
+    Unique& operator= (Unique&& other) noexcept;
 
     Unique();
-    ~Unique();
+    virtual ~Unique();
 
-    bool operator==(const Unique& other) const 
+    virtual bool operator==(const Unique& other) const 
     { return other.id == id;}
-    bool operator!=(const Unique& other) const 
+    virtual bool operator!=(const Unique& other) const 
     { return other.id != id;}
 
-    bool operator==(const unsigned int& other) const 
+    virtual bool operator==(const unsigned int& other) const 
     { return other == id;}
-    bool operator!=(const unsigned int& other) const 
+    virtual bool operator!=(const unsigned int& other) const 
     { return other != id;}
 
-    operator unsigned int() const { return id; }
+
+    virtual operator unsigned int() const { return id; }
 };
