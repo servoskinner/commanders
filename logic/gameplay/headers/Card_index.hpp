@@ -1,5 +1,11 @@
 #pragma once
 
+enum Card_type
+{
+    CTYPE_UNIT,
+    CTYPE_CONTRACT,
+    CTYPE_TACTIC
+};
 enum Card_id
 {
     BOUNTYHUNTER,
@@ -17,10 +23,4 @@ enum Card_id
     DEMOLITIONIST,
 
     TOTAL_CARDS_IN_GAME // do not add anything PAST this entry
-};
-enum Card_type
-{
-    CTYPE_UNIT,
-    CTYPE_CONTRACT,
-    CTYPE_TACTIC
 };

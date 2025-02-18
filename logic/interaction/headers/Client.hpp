@@ -4,6 +4,7 @@
 #include "TCP_server.hpp"
 #include "UDP_peer.hpp"
 #include "Commander.hpp"
+#include "Game_master.hpp"
 
 #include <queue>
 #include <vector>
@@ -39,12 +40,12 @@ class Client
     const std::vector<Server_list_entry> get_discovered_connections() { return discovered_servers; }
     void request_connection(Socket_info server);
 
-    std::vector<Commander::Card_info> get_active_cards();
-    std::vector<Commander::Player_info> get_players();
-    std::vector<std::vector<std::optional<Commander::Card_info>>> get_field() { return field;}
+    std::vector<Game_master::Card_info> get_active_cards();
+    std::vector<Game_master::Player_info> get_players();
+    std::vector<std::vector<std::optional<Game_master::Card_info>>> get_field() { return field;}
 
     const int events_size() { return events.size(); }
-    const Commander::Event events_back() { return events.back(); }
+    const Game_master::Event events_back() { return events.back(); }
     bool events_pop_back();
     
     private:
@@ -56,9 +57,9 @@ class Client
     int connection_upkeep;
     std::vector<Server_list_entry> discovered_servers;
 
-    std::queue<Commander::Event> events;
-    std::vector<std::vector<std::optional<Commander::Card_info>>> field;
-    std::vector<Commander::Player_info> players;
+    std::queue<Game_master::Event> events;
+    std::vector<std::vector<std::optional<Game_master::Card_info>>> field;
+    std::vector<Game_master::Player_info> players;
 
     int grid_width, grid_height;
 };

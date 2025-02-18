@@ -47,7 +47,7 @@ public: // _____________________________________________________________________
     };
     Card_status status;
 
-    Commander::Card_info get_info();
+    Card_info get_info();
     // Gameplay
     Vector2i pos; /// The card's position on the grid, if it is there.
 

@@ -5,10 +5,13 @@
 #include <type_traits>
 #include <unordered_map>
 #include <iterator>
+#include <functional>
+#include <memory>
+
+
 
 template <typename Type>
-class Unique_map{
-    static_assert(std::is_base_of<Unique, Type>::value, "This container accepts only Unique or derivatives.");
+class Unique_map_base {
 
 public:
     using map_t = std::unordered_map<uint32_t, Type>;
@@ -18,9 +21,14 @@ public:
     class iterator;
     class const_iterator;
 
+    virtual uint32_t get_uid(const Type& unique) = 0;
+    
+    inline void emplace(Type&& value) {
+        map.emplace(get_uid(value), std::move(value)); 
+    }
+
     inline void clear() { map.clear(); }
-    inline void emplace(Type&& value) { map.emplace(value.get_uid(), std::move(value)); };
-    inline void swap(Unique_map<Type>& other) { map.swap(other.map); }
+    inline void swap(Unique_map_base<Type>& other) { map.swap(other.map); }
     inline iterator find(uint32_t key) { return iterator(map.find(key)); }
     inline Type& operator[](uint32_t key) { 
         auto access_iter = map.find(key);
@@ -84,15 +92,52 @@ public:
         bool operator!=(const iterator& other) const;
     };
 
-private:
+protected:
     map_t map = {};
 };
 
+template<typename Type>
+class Unique_map : public Unique_map_base<Type> {
+    static_assert(std::is_base_of<Unique, Type>::value, "Unique_map contents or elements they refer to must have Unique as their base.");
+    virtual uint32_t get_uid(const Type& unique) override { return unique.get_uid(); }
+};
+
+template<typename Type>
+class Unique_map<std::unique_ptr<Type>> : public Unique_map_base<std::unique_ptr<Type>> {
+    static_assert(std::is_base_of<Unique, Type>::value, "Unique_map contents or elements they refer to must have Unique as their base.");
+    virtual uint32_t get_uid(const std::unique_ptr<Type>& unique) override { return unique->get_uid(); }
+};
+
+template<typename Type>
+class Unique_map<std::shared_ptr<Type>> : public Unique_map_base<std::shared_ptr<Type>> {
+    static_assert(std::is_base_of<Unique, Type>::value, "Unique_map contents or elements they refer to must have Unique as their base.");
+    using BaseType = Unique_map_base<std::reference_wrapper<Type>>;
+
+    virtual uint32_t get_uid(const std::shared_ptr<Type>& unique) override { return unique->get_uid(); }
+
+    void insert(const std::shared_ptr<Type>& value) {
+        BaseType::map[get_uid(value)] = value;
+    }
+};
+
+template<typename Type>
+class Unique_map<std::reference_wrapper<Type>> : public Unique_map_base<std::reference_wrapper<Type>> {
+    static_assert(std::is_base_of<Unique, Type>::value);
+    using BaseType = Unique_map_base<std::reference_wrapper<Type>>;
+
+    virtual uint32_t get_uid(const std::reference_wrapper<Type>& unique) override { return unique.get().get_uid(); }
+
+    void insert(const std::reference_wrapper<Type>& value) {
+        BaseType::map[get_uid(value)] = value;
+    }
+};
+
+
 template <typename Type>
-bool Unique_map<Type>::iterator::operator==(const Unique_map<Type>::const_iterator& other) const { return iter == other.iter; }
+bool Unique_map_base<Type>::iterator::operator==(const Unique_map_base<Type>::const_iterator& other) const { return iter == other.iter; }
 template <typename Type>
-bool Unique_map<Type>::iterator::operator!=(const Unique_map<Type>::const_iterator& other) const { return iter != other.iter; }
+bool Unique_map_base<Type>::iterator::operator!=(const Unique_map_base<Type>::const_iterator& other) const { return iter != other.iter; }
 template <typename Type>
-bool Unique_map<Type>::const_iterator::operator==(const Unique_map<Type>::iterator& other) const { return iter == other.iter; }
+bool Unique_map_base<Type>::const_iterator::operator==(const Unique_map_base<Type>::iterator& other) const { return iter == other.iter; }
 template <typename Type>
-bool Unique_map<Type>::const_iterator::operator!=(const Unique_map<Type>::iterator& other) const { return iter == other.iter; }
+bool Unique_map_base<Type>::const_iterator::operator!=(const Unique_map_base<Type>::iterator& other) const { return iter == other.iter; }

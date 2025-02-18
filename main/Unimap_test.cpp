@@ -32,5 +32,14 @@ int main() {
     }
     std::cout << unimap[1].str << std::endl;
 
+    Unique_map<std::reference_wrapper<Unique>> map2;
+    Unique_map<std::reference_wrapper<unistring>> map3;
+    Unique_map<std::unique_ptr<Unique>> map4;
+    map4.emplace(std::make_unique<Unique>());
+
+    for (const auto& u : map4) {
+        std::cout << "(" << u->get_uid() << ")" << std::endl;
+    }
+
     return 0;
 }

@@ -11,10 +11,9 @@
 #include <queue>
 
 #include "Vector2i.hpp"
-#include "Commander.hpp"
 #include "Card_index.hpp"
 #include "Misc_functions.hpp"
-#include "Unimap_test.hpp"
+#include "Unique_map.hpp"
 
 #define LOGGER_ON
 
@@ -86,6 +85,112 @@ public: // _____________________________________________________________________
         TERR_ADV    = -5,
         TERR_DISADV = -6
     }; // Non-negatives refer to deploy zones of players with same IDs
+    /// @brief Player info without implementation details.
+    struct Player_info
+    {
+        uint8_t id;
+        int16_t points;
+        int16_t funds;
+
+        uint16_t deck_total_size;
+        uint16_t library_size;
+        uint16_t discard_size;
+        uint16_t hand_size;
+
+        Player_info() = default;
+    };
+    struct Card_info // Card information to be exchanged between commanders and the master
+    {
+        uint16_t card_id;
+        uint32_t entity_id;
+        uint8_t owner_id;
+
+        Vector2i pos;
+
+        uint8_t can_attack;
+        uint8_t can_move;
+        uint8_t is_overwhelmed;
+
+        uint16_t value;
+        uint16_t cost;
+        int8_t advantage; // may be negative!
+        uint8_t type;
+
+        Card_info() = default; 
+    };
+
+    enum Order_type : uint8_t
+    {
+        ORD_DO_NOTHING, 
+        ORD_PASS, 
+        ORD_SURRENDER, 
+        ORD_PLAY_CARD, 
+        ORD_MOVE, 
+        ORD_ATTACK, 
+        ORD_CHOICE,
+        ORD_ABILITY
+    };
+
+    enum Order_result : uint8_t
+    {
+        ORD_SUCCESS,
+        ORD_UNKNOWN,
+        ORD_UNKNOWN_TYPE,
+        ORD_INV_ARGS,
+        ORD_OUT_OF_RANGE,
+        ORD_NO_PERMISSION,
+        ORD_FRIENDLY_FIRE,
+        ORD_NO_ACTOR,
+        ORD_NO_TARGET,
+        ORD_EXHAUSTED,
+        ORD_LOW_FUNDS
+    };
+
+    enum Event_type : uint8_t
+    {
+        EV_DUMMY,
+        EV_ORDER_FEEDBACK,
+        EV_GAME_WON_BY,
+        EV_TURN_PASSED_TO,
+        EV_PLAYER_DEPLOYS,
+        EV_CARD_MOVED,
+        EV_CARD_ATTACKS,
+        EV_CARD_DESTROYED,
+        EV_PLAYER_DRAWS,
+        EV_PLAYER_DISCARDS,
+        EV_DECK_REFRESH,
+        EV_DECK_NOREFRESH,
+        EV_CHOICE_PROMPT
+    };
+    
+    struct Message // Data structure that represents the player's in-game actions.
+    {
+        uint8_t type;
+
+        std::vector<int32_t> data;
+
+        Message() : type(ORD_DO_NOTHING), data(0) {}
+        Message(unsigned short type, std::vector<int32_t> data) : type(type), data(data) {}
+        const std::vector<uint8_t> packed();
+        Message(const std::vector<uint8_t>& packed);
+    };
+
+    struct Game_params
+    {
+        std::unordered_map<uint32_t, Card_info> card_manifest;
+        Vector2i grid_size;
+    };
+
+    struct Game_state
+    {
+        uint32_t turn, turn_absolute;
+        std::vector<Card_info> active_cards;
+        std::vector<Player_info> players;
+        std::vector<std::vector<Card_info>> hands;
+    };
+
+    typedef Message Order; // Command issued by player
+    typedef Message Event; // Message describing a happening in game.
 
     Game_master(const std::vector<std::vector<unsigned int>> &deck_images,
                 Gamemode gamemode = GM_STANDARD,
@@ -97,7 +202,7 @@ public: // _____________________________________________________________________
     /// @brief Returns game state as seen from perspective of given player.
     /// @param player_id id of player, the available information for whom is returned.
     /// @return The current game state.
-    const Commander::Game_state get_game_state(int player_id);
+    Game_state get_game_state(int player_id) const;
 
     /// @return the id of player who goes now.
     int get_turn() { return turn; }
@@ -109,7 +214,7 @@ public: // _____________________________________________________________________
     bool is_ongoing() { return game_is_ongoing; }
 
     /// @return game information that does not change over time and is available to each player.
-    Commander::Game_params get_static_game_info();
+    Game_params get_static_game_info() const;
 
 
     /// @brief Dimensions of battlefield.
@@ -121,12 +226,12 @@ public: // _____________________________________________________________________
     /// @param player_id id of player who issues the order.
     /// @param order order to execute.
     /// @return 0 if order was executed successfully, or an error code describing why it failed.
-    Commander::Order_result exec_order(int player_id, const Commander::Order &order);
+    Order_result exec_order(int player_id, const Order &order);
     
     /// @brief Gets the least recent event that given player was notified of.
     /// @param player_id id of player who received the event.
     /// @return game event.
-    std::optional<Commander::Event> get_event(int player_id);
+    std::optional<Event> get_event(int player_id);
 
     /// @brief Discards the least recent event that given player was notified of.
     /// Call this after the event has been fully processed.
@@ -139,12 +244,12 @@ public: // _____________________________________________________________________
     }
 
     /// @brief Callback for whenever an event visible to all players happens.
-    std::vector<std::function<void(Commander::Event)>> on_event_broadcast;
+    std::vector<std::function<void(Event)>> on_event_broadcast;
 
 private: // _____________________________________________________________________________
-    std::optional<Commander::Order> processed_order;
+    std::optional<Order> processed_order;
 
-    std::vector<std::queue<Commander::Event>> event_queues;
+    std::vector<std::queue<Event>> event_queues;
 
     std::vector<Player> players;
     // Indexed by EIDs
@@ -187,19 +292,19 @@ private: // ____________________________________________________________________
     bool check_dominance(int player_id) const;
 
     /// @brief Notifies a single player about given event.
-    inline void push_event(int player_id, const Commander::Event& event);
+    inline void push_event(int player_id, const Event& event);
     /// @brief  
 
-    inline void broadcast_event(const Commander::Event& event);
+    inline void broadcast_event(const Event& event);
 
     // Card functions
 
     /// @brief Try to place a card in play.
-    Commander::Order_result deploy_card(Card &card, int player, std::optional<Tile_ref> target = {});
+    Order_result deploy_card(Card &card, int player, std::optional<Tile_ref> target = {});
     /// @brief Try to move a card in specified direction.
-    Commander::Order_result resolve_movement(Card &card, Direction direction); // Move a card in specified direction.
+    Order_result resolve_movement(Card &card, Direction direction); // Move a card in specified direction.
     /// @brief Try to attack an adjacent tile with card.
-    Commander::Order_result resolve_attack(Card &card, Direction direction); // Resolve an attack from one tile to another.
+    Order_result resolve_attack(Card &card, Direction direction); // Resolve an attack from one tile to another.
     /// @brief Resolve dealing damage to a card, making destruction checks and 
     /// @returns true if card was destroyed.
     bool inflict_damage(Card &card, unsigned int amount);

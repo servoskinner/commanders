@@ -26,7 +26,7 @@ class Game_master::Player
         int funds;  /// Funds used to play cards and fire abilities.
 
         /// @return Player information to display on interface, formatted and stripped of technical details.
-        Commander::Player_info get_info(); 
+        Player_info get_info(); 
 
         Cause turn_start;
         Cause turn_end;

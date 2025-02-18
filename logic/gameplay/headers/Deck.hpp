@@ -2,6 +2,7 @@
 #define _INCLUDE_DECK_HPP
 
 #include "Game_master.hpp"
+#include "Unique_map.hpp"
 #include <list>
 
 #ifdef LOGGER_ON
